@@ -1,0 +1,213 @@
+import { ArkErrors } from "arktype";
+import { Hono } from "hono";
+
+import { arktypeValidator } from "@hono/arktype-validator";
+import { getAuth } from "@clerk/hono";
+
+import { enforceUserRateLimit } from "../../middleware/rateLimit";
+import { notify } from "../../lib/observability";
+import { getProfile, getUser, patchProfile } from "../../clerk/profile";
+
+import {
+  AccountMetadata,
+  accountUserSchema,
+  isProfileComplete,
+  Role,
+  updateAccountSchema,
+} from "record-domain";
+
+export const clerk = new Hono<{ Bindings: Env }>() //
+  .get("/account", async (c) => {
+    const auth = getAuth(c);
+    if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
+    const user = await getUser(c);
+    if (!user) return c.json({ error: "User not found" }, 404);
+    const publicUser = accountUserSchema.assert({
+      userId: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      imageUrl: user.imageUrl,
+    });
+    return c.json(publicUser, 200);
+  })
+  .patch(
+    "/account",
+    arktypeValidator("form", updateAccountSchema, (result, c) => {
+      if (!result.success) {
+        return c.json({ error: "Invalid account payload" }, 400);
+      }
+      return;
+    }),
+    async (c) => {
+      const auth = getAuth(c);
+      if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
+
+      const limited = await enforceUserRateLimit(
+        c,
+        c.env.ACCOUNT_MUTATION_RATE_LIMIT,
+        "account-update",
+      );
+      if (limited) return limited;
+
+      const body = c.req.valid("form");
+
+      const username = body.username;
+      const firstName = body.firstName;
+      const lastName = body.lastName;
+
+      const { createClerkClient } = await import("@clerk/backend");
+      const clerkClient = createClerkClient({
+        secretKey: c.env.CLERK_SECRET_KEY,
+      });
+
+      try {
+        const updatePayload: Parameters<typeof clerkClient.users.updateUser>[1] = {};
+
+        if (username !== undefined && typeof username === "string")
+          updatePayload.username = username;
+        if (username === undefined) updatePayload.username = "";
+        if (firstName !== undefined && typeof firstName === "string")
+          updatePayload.firstName = firstName;
+        if (firstName === undefined) updatePayload.firstName = "";
+        if (lastName !== undefined && typeof lastName === "string")
+          updatePayload.lastName = lastName;
+        if (lastName === undefined) updatePayload.lastName = "";
+        if (Object.keys(updatePayload).length > 0)
+          await clerkClient.users.updateUser(auth.userId, updatePayload);
+
+        const updatedUser = await clerkClient.users.getUser(auth.userId);
+
+        return c.json(
+          {
+            userId: updatedUser.id,
+            username: updatedUser.username,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            imageUrl: updatedUser.imageUrl,
+          },
+          200,
+        );
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        notify(c, err, { statusCode: 500 });
+        return c.json({ error: "Failed to update account" }, 500);
+      }
+    },
+  )
+  .get("/profile", async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
+
+    const profile = await getProfile(c);
+
+    if (!profile) {
+      return c.json(
+        {
+          profile: null,
+          needsProfileCompletion: true,
+        },
+        200,
+      );
+    }
+
+    return c.json(
+      {
+        profile: { id: auth.userId, ...profile },
+        needsProfileCompletion: !isProfileComplete(profile),
+      },
+      200,
+    );
+  })
+  .patch(
+    "/profile",
+    arktypeValidator("json", AccountMetadata.omit("role"), (result, c) => {
+      if (!result.success) {
+        return c.json({ error: "Invalid profile payload" }, 400);
+      }
+      return;
+    }),
+    async (c) => {
+      const limited = await enforceUserRateLimit(
+        c,
+        c.env.ACCOUNT_MUTATION_RATE_LIMIT,
+        "profile-update",
+      );
+      if (limited) return limited;
+
+      const reqData = c.req.valid("json");
+      const profile = await getProfile(c);
+
+      const newUserData = await patchProfile(c, {
+        role: profile?.role ?? "member",
+        ...reqData,
+      });
+
+      if (Object.keys(newUserData.publicMetadata).length === 0)
+        return c.json({ error: "Failed to update user data." }, 500);
+
+      const newProfile = AccountMetadata(newUserData.publicMetadata);
+
+      if (newProfile instanceof ArkErrors) return c.json({ error: "Invalid profile data" }, 400);
+
+      return c.json(
+        {
+          profile: { id: newUserData.id, ...newProfile },
+          needsProfileCompletion: !isProfileComplete(newProfile),
+        },
+        200,
+      );
+    },
+  )
+  .get("/menu", async (c) => {
+    const auth = getAuth(c);
+    if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
+
+    const profile = await getProfile(c);
+    const role = profile ? Role.parse(profile.role) : undefined;
+    const isManagement = role?.isManagement() ?? false;
+
+    const menuItems = [
+      {
+        id: "record",
+        title: "活動記録",
+        href: "/record",
+        icon: "clipboard-list",
+        theme: "blue",
+      },
+      {
+        id: "account",
+        title: "アカウント",
+        href: "/account",
+        icon: "user",
+        theme: "green",
+      },
+      {
+        id: "schedule",
+        title: "カレンダー ↗",
+        href: "https://omu-aikido.com/calendar",
+        icon: "calendar",
+        theme: "green",
+      },
+      {
+        id: "apps",
+        title: "便利ツール ↗",
+        href: "https://omu-aikido.com/apps",
+        icon: "tool-case",
+        theme: "blue",
+      },
+    ];
+
+    if (isManagement) {
+      menuItems.push({
+        id: "admin",
+        title: "管理パネル",
+        href: "/admin",
+        icon: "settings",
+        theme: "indigo",
+      });
+    }
+
+    return c.json({ menu: menuItems }, 200);
+  });

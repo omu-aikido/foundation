@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "allowJs": true,
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "types": ["node", "./.cloudflare/types"]
+  },
+  "include": ["src/**/*.ts", "env.d.ts"],
+  "extends": "../../../tsconfig.base.json"
+}

@@ -1,0 +1,69 @@
+:root {
+  color-scheme: light dark;
+  background: #fafafa;
+  color: #18181b;
+  font-family: "Inter", sans-serif;
+}
+
+html {
+  min-width: 320px;
+  scroll-behavior: auto;
+}
+
+body {
+  min-height: 100dvh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 15% 0%, rgb(29 78 216 / 12%), transparent 34%),
+    radial-gradient(circle at 85% 12%, rgb(6 95 70 / 14%), transparent 38%);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+::view-transition-old(root) {
+  animation: 120ms ease-out both page-fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 120ms ease-in both page-fade-in;
+}
+
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    background: #18181b;
+    color: #fafafa;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

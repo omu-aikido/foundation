@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "cloudflare": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/cloudflare/SKILL.md",
+      "computedHash": "6f0a70840cad114f020e5950874f255b22e669f07036cf4f81d8f733ae0233a0"
+    },
+    "custom-apis": {
+      "source": "vercel-labs/emulate",
+      "sourceType": "github",
+      "skillPath": "skills/custom-apis/SKILL.md",
+      "computedHash": "1b2d0fb95db034ff455f3439d87b1d32576445223d8d08eda3d067536bc7e9fe"
+    },
+    "durable-objects": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/durable-objects/SKILL.md",
+      "computedHash": "f328205f9d11381902a160ace4622cd1ac9602acba00b091f6d63f59a6869900"
+    },
+    "emulate": {
+      "source": "vercel-labs/emulate",
+      "sourceType": "github",
+      "skillPath": "skills/emulate/SKILL.md",
+      "computedHash": "f9f00dad70d82ec377bc6e0faf765b52bcde1784bc89905997a9ecfe553ea358"
+    },
+    "h5i": {
+      "source": "h5i-dev/h5i",
+      "sourceType": "github",
+      "skillPath": "skills/h5i/SKILL.md",
+      "computedHash": "45f09c6281bf588a8aa2b5d3cfe984cb08ee0628d98909172c579b4f60cd6dfd"
+    },
+    "turnstile-spin": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/turnstile-spin/SKILL.md",
+      "computedHash": "767b0aec38033a8f17f958f85ce559952a70495291f13551bfa8cd28a237a8cf"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a"
+    },
+    "web-perf": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-perf/SKILL.md",
+      "computedHash": "72d0dd9706147e19bf3c1a36fdc02570f77685541d89d901a3a2f570824ba3cb"
+    },
+    "workers-best-practices": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/workers-best-practices/SKILL.md",
+      "computedHash": "e1c30e93854345114dfa6a0a077363119eb99c03e5c64a8f2109349802e1f2aa"
+    }
+  }
+}

@@ -1,0 +1,522 @@
+<template>
+  <AdminPageLayout>
+    <div class="gap-2 text-sub flex items-center">
+      <router-link to="/admin/accounts" class="hover:text-blue-500 hover:underline">
+        アカウント一覧
+      </router-link>
+      <span class="text-subtext">/</span>
+      <span class="font-medium text">ユーザー詳細</span>
+    </div>
+
+    <div v-if="loading" class="loading-container">
+      <div class="loading-spinner" />
+      <p class="text-sub">Loading...</p>
+    </div>
+
+    <div v-else-if="error" class="alert-error">
+      {{ error }}
+    </div>
+
+    <div v-else-if="user" class="gap-6 flex flex-col">
+      <div class="flex flex-col">
+        <div class="stack">
+          <div class="gap-4 flex items-start justify-between">
+            <div class="gap-4 flex items-center">
+              <img :src="user.imageUrl" alt="" class="avatar-lg" />
+              <div class="flex flex-col">
+                <div class="gap-2 flex flex-wrap items-center">
+                  <h1 class="heading-2">{{ user.lastName }} {{ user.firstName }}</h1>
+                  <div v-if="!isEditing" class="gap-1.5 flex items-center">
+                    <span class="badge-gray">
+                      {{ roleLabels[user.profile?.role as string] || "部員" }}
+                    </span>
+                    <span class="badge-gray">
+                      {{ displayGrade(user.profile?.grade) }}
+                    </span>
+                  </div>
+                </div>
+                <div class="gap-2 text-sub mt-1 flex flex-wrap items-center">
+                  <span>{{ user.emailAddress }}</span>
+                  <template v-if="!isEditing">
+                    <span class="sq-1 bg-subtext rounded-full" />
+                    <span>{{ displayYear(user.profile?.year) }}</span>
+                    <span class="sq-1 bg-subtext rounded-full" />
+                    <span>{{
+                      user.profile?.joinedAt ? `${user.profile.joinedAt}年度入部` : "入部年度未登録"
+                    }}</span>
+                    <span class="sq-1 bg-subtext rounded-full" />
+                    <span>誕生日: {{ formatDateSlash(user.profile?.birthday) }}</span>
+                  </template>
+                </div>
+              </div>
+            </div>
+
+            <button
+              v-if="!isEditing"
+              class="p-2 text-subtext hover:bg-overlay1 hover:text-blue-500 cursor-pointer rounded-full border-none bg-transparent transition-all"
+              title="編集"
+              @click="startEditing"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              </svg>
+            </button>
+          </div>
+
+          <form v-if="isEditing" class="card" @submit.prevent="handleUpdateProfile">
+            <FormPattern variant="compact">
+              <template #fields>
+                <div class="gap-4 md:grid-cols-2 grid grid-cols-1">
+                  <div class="gap-1 flex flex-col">
+                    <label class="form-label">役職</label>
+                    <select v-model="formData.role" class="input-base h-fit">
+                      <option v-for="(label, key) in roleLabels" :key="key" :value="key">
+                        {{ label }}
+                      </option>
+                    </select>
+                  </div>
+                  <ProfileFields
+                    v-model:grade="formData.grade"
+                    v-model:year="formData.year"
+                    v-model:joined-at="formData.joinedAt"
+                    v-model:get-grade-at="formData.getGradeAt"
+                    v-model:birthday="formData.birthday"
+                    joined-at-label="入部年度"
+                    :joined-at-min="1950"
+                    :joined-at-max="new Date().getFullYear() + 1"
+                    get-grade-at-label="級段位取得日"
+                  />
+                </div>
+              </template>
+
+              <template #secondary>
+                <button type="button" class="btn-secondary" @click="cancelEditing">
+                  キャンセル
+                </button>
+              </template>
+              <template #primary>
+                <button type="submit" class="btn-primary" :disabled="updating">
+                  {{ updating ? "更新中..." : "更新" }}
+                </button>
+              </template>
+            </FormPattern>
+          </form>
+          <div v-if="updateError" class="alert-error">{{ updateError }}</div>
+          <div v-if="updateSuccess" class="alert-success">{{ updateSuccess }}</div>
+        </div>
+      </div>
+
+      <div v-if="stats" class="border-overlay0 rounded-lg grid grid-cols-2 overflow-hidden border">
+        <div class="border-overlay0 flex flex-col border-r">
+          <div class="p-4 border-overlay0 border-b text-center">
+            <p class="heading-1">
+              {{ stats.trainCount }}
+            </p>
+            <span class="text-sub">総稽古回数</span>
+          </div>
+          <div class="p-4 text-center">
+            <p class="heading-1">
+              {{ stats.doneTrain }}
+            </p>
+            <span class="text-sub">現在の級での稽古</span>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="p-4 border-overlay0 border-b text-center">
+            <p class="heading-1">
+              {{ stats.totalDays }}
+            </p>
+            <span class="text-sub">稽古日数</span>
+          </div>
+          <div class="p-4 text-center">
+            <p class="heading-1">
+              {{ stats.totalHours }}
+            </p>
+            <span class="text-sub">総時間</span>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="user.profile?.norm" class="card">
+        <NormSummary :norm="user.profile.norm" />
+      </div>
+
+      <div class="stack">
+        <h3 class="text-base font-medium text">アクティビティ履歴</h3>
+
+        <div v-if="activities.length > 0">
+          <div class="overflow-x-auto">
+            <table class="table-base">
+              <thead class="border-overlay0 border-b">
+                <tr>
+                  <th class="th-base">日時</th>
+                  <th class="th-base">時間 (h)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="activity in activities"
+                  :key="activity.id"
+                  class="border-overlay0 border-b"
+                >
+                  <td class="td-base whitespace-nowrap">
+                    {{ new Date(activity.date).toLocaleDateString() }}
+                  </td>
+                  <td class="td-base whitespace-nowrap">{{ activity.period }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="py-4 border-overlay0 flex items-center justify-between border-t">
+            <button
+              :disabled="page <= 1"
+              class="px-3 py-1 text-sm border-overlay0 rounded-md text hover:bg-overlay0 cursor-pointer border bg-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+              @click="page > 1 && changePage(page - 1)"
+            >
+              前へ
+            </button>
+            <span class="text-sub">{{ page }} ページ目</span>
+            <button
+              :disabled="activities.length < limit"
+              class="px-3 py-1 text-sm border-overlay0 rounded-md text hover:bg-overlay1 cursor-pointer border bg-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+              @click="changePage(page + 1)"
+            >
+              次へ
+            </button>
+          </div>
+        </div>
+
+        <div v-else class="p-8 text-sub text-center">履歴はありません</div>
+      </div>
+
+      <div class="mt-8 border-red-500/30 rounded-lg overflow-hidden border">
+        <div class="px-4 py-3 bg-red-500/10 border-red-500/20 border-b">
+          <h3 class="text-sm font-medium text-red-500">危険な操作</h3>
+        </div>
+        <div class="p-4 stack">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text">ユーザーを削除</p>
+            <button
+              v-if="!showDeleteConfirm"
+              class="px-4 py-1.5 text-sm font-medium text-red-500 border-red-500 rounded-md hover:bg-red-500/10 cursor-pointer border bg-transparent transition-all"
+              @click="showDeleteConfirm = true"
+            >
+              削除
+            </button>
+          </div>
+          <p class="text-sub">
+            このユーザーとそのすべてのデータを完全に削除します。<strong
+              >この操作は取り消せません。</strong
+            >
+          </p>
+
+          <div
+            v-if="showDeleteConfirm && !showFinalConfirm"
+            class="p-4 bg-red-500/5 rounded-md gap-3 flex flex-col"
+          >
+            <p class="text-sm text-red-500">
+              削除操作を続行するには、以下に
+              <strong>{{ user?.lastName }}{{ user?.firstName }}</strong>
+              と入力してください：
+            </p>
+            <input
+              v-model="deleteConfirmName"
+              type="text"
+              placeholder="ユーザー名を入力"
+              class="px-3 py-2 border-red-500/30 rounded-md text-base bg-base text focus:ring-red-500 w-full border focus:ring-2 focus:outline-none"
+            />
+            <div class="gap-2 flex">
+              <button
+                class="btn text-subtext hover:bg-base-overlay hover:text bg-transparent"
+                @click="
+                  showDeleteConfirm = false;
+                  deleteConfirmName = '';
+                "
+              >
+                キャンセル
+              </button>
+              <button
+                class="btn-danger"
+                :disabled="deleteConfirmName !== (user?.lastName ?? '') + (user?.firstName ?? '')"
+                @click="showFinalConfirm = true"
+              >
+                次へ
+              </button>
+            </div>
+          </div>
+
+          <ConfirmDialog
+            :open="showFinalConfirm"
+            title="本当に削除しますか？"
+            :description="`${user?.lastName ?? ''} ${user?.firstName ?? ''}さんのアカウントとすべての活動記録が削除されます。この操作は元に戻せません。`"
+            confirm-text="削除する"
+            cancel-text="キャンセル"
+            :error="deleteError || undefined"
+            :loading="deleting"
+            @confirm="handleDeleteUser"
+            @cancel="cancelFinalDelete"
+          />
+        </div>
+      </div>
+    </div>
+  </AdminPageLayout>
+</template>
+
+<script setup lang="ts">
+  import AdminPageLayout from "@/components/admin/AdminPageLayout.vue";
+  import ConfirmDialog from "@/components/ui/ConfirmDialog.vue";
+  import FormPattern from "@/components/ui/FormPattern.vue";
+  import hc from "@/lib/honoClient";
+  import NormSummary from "@/components/admin/NormSummary.vue";
+  import ProfileFields from "@/components/account/ProfileFields.vue";
+  import { queryKeys } from "@/lib/queryKeys";
+  import { computed, ref, watch } from "vue";
+  import { formatDateSlash, translateGrade, translateYear } from "record-domain";
+  import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+  import { useRoute, useRouter } from "vue-router";
+
+  const route = useRoute();
+  const router = useRouter();
+  const userId = (
+    Array.isArray(route.params.userId) ? route.params.userId[0] : route.params.userId
+  ) as string;
+
+  // Labels configuration
+  const roleLabels: Record<string, string> = {
+    admin: "管理者",
+    captain: "主将",
+    "vice-captain": "副主将",
+    treasurer: "会計",
+    chief: "主務",
+    member: "部員",
+  };
+  const displayGrade = (value: number | null | undefined) => {
+    const label = translateGrade(value ?? 0);
+    return label === "不明" ? "無級" : label;
+  };
+
+  const displayYear = (value: string | null | undefined) => {
+    if (!value) return "";
+    const label = translateYear(value);
+    return label === "不明" ? value : label;
+  };
+
+  // Reactivity via standard refs
+  const page = ref(1);
+  const limit = 10;
+  const queryClient = useQueryClient();
+
+  // Query
+  const {
+    data: apiData,
+    isLoading: loading,
+    error: queryError,
+  } = useQuery({
+    queryKey: computed(() => queryKeys.admin.users(userId, { page: page.value, limit })),
+    queryFn: async () => {
+      if (!userId) throw new Error("Invalid User ID");
+      const res = await hc.admin.users[":userId"].$get({
+        param: { userId },
+        query: { page: page.value, limit },
+      });
+      if (!res.ok) throw new Error("Failed to fetch user data");
+      return res.json();
+    },
+    placeholderData: (previousData) => previousData,
+  });
+
+  const user = computed(() => apiData.value?.user ?? null);
+
+  interface Activity {
+    id: string;
+    date: string;
+    period: number;
+  }
+
+  const activities = computed(() => (apiData.value?.activities as Activity[]) ?? []);
+  const stats = computed(() => {
+    if (!apiData.value) return null;
+    return {
+      trainCount: apiData.value.trainCount,
+      doneTrain: apiData.value.doneTrain,
+      totalDays: apiData.value.totalDays,
+      totalHours: apiData.value.totalHours,
+      totalActivitiesCount: apiData.value.totalActivitiesCount,
+    };
+  });
+
+  const error = computed(() => (queryError.value ? "ユーザー情報の読み込みに失敗しました" : ""));
+
+  // Edit form state
+  const formData = ref({
+    role: "member",
+    grade: 0,
+    year: "b1",
+    joinedAt: null as number | null,
+    getGradeAt: "",
+    birthday: "",
+  });
+  const updateSuccess = ref("");
+  const updateError = ref("");
+  const isEditing = ref(false);
+
+  // Delete state
+  const showDeleteConfirm = ref(false);
+  const showFinalConfirm = ref(false);
+  const deleteConfirmName = ref("");
+  const deleteError = ref("");
+
+  // Initialize form data when data arrives or changes
+  watch(
+    user,
+    (newUser) => {
+      if (newUser && newUser.profile) {
+        formData.value = {
+          role: (newUser.profile.role as string) || "member",
+          grade: Number(newUser.profile.grade || 0),
+          year: (newUser.profile.year as string) || "b1",
+          joinedAt: newUser.profile.joinedAt ? Number(newUser.profile.joinedAt) : null,
+          getGradeAt: newUser.profile.getGradeAt
+            ? new Date(newUser.profile.getGradeAt).toISOString().split("T")[0]!
+            : "",
+          birthday: newUser.profile.birthday
+            ? new Date(newUser.profile.birthday).toISOString().split("T")[0]!
+            : "",
+        };
+      } else {
+        formData.value = {
+          role: "member",
+          grade: 0,
+          year: "b1",
+          joinedAt: null,
+          getGradeAt: "",
+          birthday: "",
+        };
+      }
+    },
+    { immediate: true },
+  );
+
+  const startEditing = () => {
+    isEditing.value = true;
+    updateSuccess.value = "";
+    updateError.value = "";
+  };
+
+  const cancelEditing = () => {
+    isEditing.value = false;
+    updateSuccess.value = "";
+    updateError.value = "";
+  };
+
+  const cancelFinalDelete = () => {
+    showFinalConfirm.value = false;
+    showDeleteConfirm.value = false;
+    deleteConfirmName.value = "";
+  };
+
+  const changePage = (newPage: number) => {
+    page.value = newPage;
+  };
+
+  // Mutations
+  const { mutateAsync: updateProfile, isPending: updating } = useMutation({
+    mutationFn: async (payload: {
+      role: string;
+      grade: number;
+      year: string;
+      joinedAt: number | null;
+      getGradeAt: string | null;
+      birthday: string | null;
+    }) => {
+      const res = await hc.admin.users[":userId"].profile.$patch({
+        param: { userId },
+        json: payload,
+      });
+      if (!res.ok) {
+        const errData = (await res.json()) as { error?: string };
+        throw new Error(errData.error || "更新に失敗しました");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "users"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "accounts"],
+      });
+      updateSuccess.value = "プロファイルを更新しました";
+      isEditing.value = false;
+    },
+    onError: (e) => {
+      updateError.value = e instanceof Error ? e.message : "更新中にエラーが発生しました";
+    },
+  });
+
+  const handleUpdateProfile = async () => {
+    updateError.value = "";
+    updateSuccess.value = "";
+
+    if (!userId) {
+      updateError.value = "ユーザーIDが無効です";
+      return;
+    }
+
+    const payload = {
+      role: formData.value.role,
+      grade: formData.value.grade,
+      year: formData.value.year,
+      joinedAt: formData.value.joinedAt,
+      getGradeAt: formData.value.getGradeAt ? formData.value.getGradeAt : null,
+      birthday: formData.value.birthday ? formData.value.birthday : null,
+    };
+
+    try {
+      await updateProfile(payload);
+    } catch {
+      // Error handled in onError
+    }
+  };
+
+  const { mutateAsync: deleteUserMutation, isPending: deleting } = useMutation({
+    mutationFn: async () => {
+      const res = await hc.admin.users[":userId"].$delete({ param: { userId } });
+      if (!res.ok) {
+        const errData = (await res.json()) as { error?: string };
+        throw new Error(errData.error || "削除に失敗しました");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      router.push("/admin/accounts");
+    },
+    onError: (e) => {
+      deleteError.value = e instanceof Error ? e.message : "削除中にエラーが発生しました";
+    },
+  });
+
+  const handleDeleteUser = async () => {
+    if (deleting.value) return;
+
+    deleteError.value = "";
+    try {
+      await deleteUserMutation();
+    } catch {
+      // Error handled in onError
+    }
+  };
+</script>

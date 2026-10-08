@@ -1,0 +1,16 @@
+[install]
+auto = "auto"
+exact = false
+peer = false
+linker = "isolated"
+
+[test]
+coverage = true
+coverageReporter = ["text", "lcov"]
+retry = 2
+randomize = true
+onlyFailures = true
+
+[run]
+bun = false
+silent = true

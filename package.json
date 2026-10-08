@@ -1,0 +1,44 @@
+{
+  "name": "foundation",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "apps/platform/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "@cloudflare/workers-types": "^5.20261004.1",
+      "@iconify-json/ri": "^1.2.10",
+      "@types/bun": "^1.4.2",
+      "@types/node": "^26.6.4",
+      "arktype": "^2.2.7",
+      "cf": "^1.0.0-beta.13",
+      "hono": "^4.13.13",
+      "rolldown": "^1.2.12",
+      "typescript": "^6.0.3",
+      "unocss": "^66.10.5",
+      "vite-plugin-vue-devtools": "^8.2.1",
+      "vite-plus": "1.1.0",
+      "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0",
+      "vue-router": "^5.3.1",
+      "vue-tsc": "^3.3.12",
+      "vue": "^3.5.43",
+      "wrangler": "^4.147.0"
+    }
+  },
+  "scripts": {
+    "prepare": "vp config"
+  },
+  "devDependencies": {
+    "cf": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {},
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0"
+  },
+  "packageManager": "bun"
+}

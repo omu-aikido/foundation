@@ -1,0 +1,91 @@
+import { type } from "arktype";
+
+function isStrictIsoDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/u.test(value)) {
+    return false;
+  }
+
+  const [yearText, monthText, dayText] = value.split("-");
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return (
+    date.getUTCFullYear() === year && date.getUTCMonth() + 1 === month && date.getUTCDate() === day
+  );
+}
+
+function isNotFutureDate(value: string): boolean {
+  // Activity dates are entered as calendar dates in Japan, so UTC must not
+  // reject the current JST date during the morning hours.
+  const today = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  return value <= today;
+}
+
+export const recordQuerySchema = type({
+  "userId?": /^user_[\w]{27}$/u,
+  "startDate?": /^\d{4}-\d{2}-\d{2}$/u,
+  "endDate?": /^\d{4}-\d{2}-\d{2}$/u,
+});
+
+export const createActivitySchema = type({
+  date: /^\d{4}-\d{2}-\d{2}$/u,
+  period: "number",
+}).narrow((input) => {
+  const { period } = input;
+  return (
+    isStrictIsoDate(input.date) &&
+    isNotFutureDate(input.date) &&
+    Number.isFinite(period) &&
+    period >= 0.5 &&
+    period <= 8 &&
+    Number.isInteger(period * 2)
+  );
+});
+
+export const deleteActivitiesSchema = type({ ids: "string[]" }).narrow(
+  (input) => input.ids.length <= 100,
+);
+
+export const rankingQuerySchema = type({
+  "year?": type("number.integer | string.integer.parse").narrow((n) => n >= 1900 && n < 2100),
+  "month?": type("number.integer | string.integer.parse").narrow((n) => n >= 1 && n <= 12),
+  "period?": "'monthly' | 'annual' | 'fiscal'",
+});
+
+// Ranking Types
+export type RankingEntry = {
+  rank: number | null;
+  userName: string;
+  isCurrentUser: boolean;
+  totalPeriod: number;
+  practiceCount: number;
+};
+
+export type RankingResponse = {
+  period: string;
+  periodType: string;
+  startDate: string;
+  endDate: string;
+  ranking: RankingEntry[];
+  currentUserRanking: RankingEntry | null;
+  totalUsers: number;
+};
+
+// Activity Types
+export type Activity = {
+  id: string;
+  userId: string;
+  date: string;
+  period: number;
+  createAt: string;
+  updatedAt: string | null;
+};
+
+// Practice Count Types
+export type PracticeCountData = {
+  practiceCount: number;
+  totalPeriod: number;
+  since: string;
+};

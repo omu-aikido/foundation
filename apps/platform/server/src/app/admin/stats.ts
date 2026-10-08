@@ -1,0 +1,113 @@
+import { activity } from "../../db/schema";
+import { dbClient } from "../../db/drizzle";
+import { Hono } from "hono";
+import { type } from "arktype";
+import { createClerkClient, type User } from "@clerk/backend";
+import * as drizzleOrm from "drizzle-orm";
+import * as helpers from "./helpers";
+import * as share from "record-domain";
+
+// ============================================================
+// Dashboard - Inactive Users
+// ============================================================
+
+const getDashboardStats = async (env: Env, secretKey: string) => {
+  const clerkClient = createClerkClient({ secretKey });
+  const db = dbClient(env);
+
+  const usersRes = await clerkClient.users.getUserList({ limit: 100 });
+  const allUsers = usersRes.data;
+
+  // Define "Inactive" threshold (3 weeks ago)
+  const now = helpers.getJST(new Date());
+  const threeWeeksAgo = new Date(now.getTime() - 21 * 24 * 60 * 60 * 1000);
+  const threeWeeksAgoStr = threeWeeksAgo.toISOString().split("T")[0];
+
+  // Find users who HAVE activity in the last 3 weeks
+  const activeUsersQuery = await db
+    .selectDistinct({ userId: activity.userId })
+    .from(activity)
+    .where(drizzleOrm.gte(activity.date, threeWeeksAgoStr));
+
+  const activeUserIds = new Set(activeUsersQuery.map((a) => a.userId));
+
+  // Filter users without recent activity
+  const inactiveClerkUsers = allUsers.filter((user) => {
+    if (activeUserIds.has(user.id)) return false;
+    const profile = helpers.publicMetadataProfileSchema(user.publicMetadata);
+    if (profile instanceof type.errors) return true;
+    return true;
+  });
+
+  return {
+    inactiveUsers: inactiveClerkUsers.map((u) => helpers.toAdminUser(u)),
+    thresholdDate: threeWeeksAgoStr,
+  };
+};
+
+// ============================================================
+// Norms - Training Progress
+// ============================================================
+
+export function buildNormSummary(
+  profile: share.PromotionProgressProfile | null,
+  userActivities: share.PromotionProgressActivity[],
+) {
+  return share.buildPromotionProgress(profile, userActivities);
+}
+
+export async function getUsersNorm(env: Env, clerkUsers: User[]) {
+  const db = dbClient(env);
+
+  const validProfiles = clerkUsers
+    .map((u) => {
+      const result = helpers.publicMetadataProfileSchema(u.publicMetadata);
+      if (result instanceof type.errors) return null;
+      return { ...result, id: u.id };
+    })
+    .filter(
+      (
+        p,
+      ): p is {
+        id: string;
+      } & typeof helpers.publicMetadataProfileSchema.infer => p !== null,
+    );
+
+  if (validProfiles.length === 0) return [];
+
+  const conditions = validProfiles.map((profile) => {
+    const gradeDate = share.resolvePromotionSince(profile);
+    return drizzleOrm.and(
+      drizzleOrm.eq(activity.userId, profile.id),
+      drizzleOrm.gte(activity.date, gradeDate),
+    );
+  });
+
+  const activityData = await db
+    .select()
+    .from(activity)
+    .where(drizzleOrm.or(...conditions));
+
+  return validProfiles.map((profile) => {
+    const userActivities = activityData.filter((a) => a.userId === profile.id);
+    const summary = buildNormSummary(profile, userActivities);
+
+    return Object.assign({}, summary, {
+      userId: profile.id,
+      grade: Number(profile.grade ?? 0),
+      gradeLabel: share.translateGrade(profile.grade ?? 0),
+      lastPromotionDate: profile.getGradeAt ?? null,
+    });
+  });
+}
+
+// ============================================================
+// Routes
+// ============================================================
+
+const app = new Hono<{ Bindings: Env }>().get("/dashboard", async (c) => {
+  const stats = await getDashboardStats(c.env, c.env.CLERK_SECRET_KEY);
+  return c.json(stats);
+});
+
+export default app;

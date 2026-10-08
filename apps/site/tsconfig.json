@@ -1,0 +1,18 @@
+{
+  "extends": ["../../tsconfig.base.json", "./.nuxt/tsconfig.json"],
+  "compilerOptions": {
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["node", "./.cloudflare/types"]
+  },
+  "exclude": [
+    "node_modules",
+    "../../node_modules",
+    "dist",
+    ".data",
+    "server/**/*",
+    "test/**/*",
+    "tests/**/*"
+  ]
+}

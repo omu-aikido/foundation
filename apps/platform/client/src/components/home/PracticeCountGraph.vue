@@ -1,0 +1,136 @@
+<script setup lang="ts">
+  import { computed } from "vue";
+  import type { PracticeCountData } from "record-domain";
+  import UiStatus from "@/components/ui/UiStatus.vue";
+  import { buildPromotionProgressFromPracticeCount, translateGrade } from "record-domain";
+
+  interface Props {
+    practiceData: PracticeCountData | null;
+    currentGrade: number;
+    loading?: boolean;
+    error?: string | null;
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    loading: false,
+    error: null,
+  });
+
+  const targetGrade = computed(() => {
+    const grade: number = props.currentGrade;
+    return nextGrade(grade);
+  });
+
+  const nextGrade = (grade: number): number => {
+    switch (grade) {
+      case 5:
+      case 4:
+        return 3;
+      case 3:
+      case 2:
+        return 1;
+      case 1:
+        return -1;
+      case 0:
+        return 5;
+      default:
+        return grade - 1;
+    }
+  };
+
+  const promotionType = computed(() => {
+    const grade = props.currentGrade;
+    return grade <= 1 ? (grade === 0 ? "昇級" : "昇段") : "昇級";
+  });
+
+  const promotionProgress = computed(() => {
+    if (!props.practiceData) return null;
+    return buildPromotionProgressFromPracticeCount(
+      props.currentGrade,
+      props.practiceData.practiceCount,
+    );
+  });
+
+  const requiredCount = computed(() => promotionProgress.value?.required ?? 0);
+
+  const needToNextGrade = computed(() => {
+    if (!promotionProgress.value) return 0;
+    return Math.max(0, promotionProgress.value.required - promotionProgress.value.current);
+  });
+
+  const progressPercentage = computed(() => promotionProgress.value?.progress ?? 0);
+
+  const progressComment = computed(() => {
+    const progressComments = [
+      "まだ始まったばかりです。焦らずコツコツ続けましょう！",
+      "少し進みました！この調子！",
+      "順調なスタートです。",
+      "良いペースです。",
+      "着実に積み重ねています。",
+      "半分近くまで来ました！",
+      "折り返し地点です。",
+      "後半戦、集中していきましょう！",
+      "ゴールが見えてきました。",
+      "あと少しで達成です！",
+      "もうすぐ目標達成！",
+      "素晴らしい！達成目前です。",
+    ];
+    const commentIndex = Math.min(11, Math.floor((progressPercentage.value / 100) * 12));
+    return progressComments[commentIndex];
+  });
+</script>
+
+<template>
+  <div class="w-full" data-testid="practice-count-graph">
+    <UiStatus v-if="error" status="error" class="py-8 text-center">
+      <div class="text-sm text-red-500">エラー: {{ error }}</div>
+    </UiStatus>
+
+    <details v-else class="card select-none">
+      <summary class="rounded-lg cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <div class="flex w-full cursor-pointer flex-col items-center justify-center">
+          <div
+            class="transition-all duration-200"
+            :class="[loading ? 'bg-overlay1 rounded flex justify-center min-w-[120px]' : 'text-lg']"
+          >
+            <span
+              class="transition-opacity duration-200"
+              :class="loading ? 'invisible' : 'visible'"
+            >
+              {{ translateGrade(targetGrade) }}{{ promotionType }}まで
+              <span class="text font-bold text-3xl">{{ needToNextGrade }}</span>
+              日
+            </span>
+          </div>
+
+          <div class="max-w-96 py-4 w-full">
+            <div class="rounded-md h-2" :class="loading ? 'bg-overlay0' : 'bg-surface1'">
+              <div
+                class="rounded-md bg-text h-full max-w-full"
+                :style="{ width: loading ? '0%' : `${progressPercentage}%` }"
+                :data-testid="!loading ? 'progress-bar' : undefined"
+              />
+            </div>
+          </div>
+        </div>
+      </summary>
+
+      <div v-if="practiceData && !loading" class="p-4 border-overlay1 border-t">
+        <div class="space-y-3">
+          <p class="text">{{ progressComment }}</p>
+          <p>
+            目標の<span class="font-bold">{{ translateGrade(targetGrade) }}</span
+            >への{{ promotionType }}まで
+            <span class="font-bold">{{ requiredCount }}日分</span>の稽古が必要です。
+          </p>
+          <p class="mt-2">
+            現在、<span class="text-green-500 font-medium"
+              >{{ promotionProgress?.current ?? 0 }}日</span
+            >達成しています。
+          </p>
+          <p class="text-xs text-subtext mt-1">※ 1.5時間の稽古を1日分として換算</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</template>

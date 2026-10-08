@@ -1,0 +1,225 @@
+import { Hono } from "hono";
+
+import { arktypeValidator } from "@hono/arktype-validator";
+import { getAuth } from "@clerk/hono";
+
+import * as drizzleOrm from "drizzle-orm";
+import * as records from "record-domain";
+
+import { activity } from "../../db/schema";
+import { dbClient } from "../../db/drizzle";
+import { enforceUserRateLimit } from "../../middleware/rateLimit";
+import {
+  calculatePeriodRange,
+  getCurrentUserRanking,
+  getRankingData,
+  invalidateRankingCacheForDates,
+  maskRankingData,
+} from "./ranking";
+import { countPracticeDays, resolvePromotionSince } from "record-domain";
+
+export const record = new Hono<{ Bindings: Env }>()
+  // GET /api/user/record - 活動記録一覧取得
+  .get(
+    "/",
+    arktypeValidator("query", records.recordQuerySchema, (result, c) => {
+      if (!result.success) {
+        return c.json({ error: "Invalid Query" }, 400);
+      }
+      return;
+    }),
+    async (c) => {
+      const auth = getAuth(c);
+      if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
+
+      const query = c.req.valid("query");
+      const userId = query.userId ?? auth.userId;
+
+      if (userId !== auth.userId) {
+        return c.json({ error: "Forbidden" }, 403);
+      }
+
+      const db = dbClient(c.env);
+      const conditions = [drizzleOrm.eq(activity.userId, userId)];
+      if (query.startDate !== undefined)
+        conditions.push(drizzleOrm.gte(activity.date, query.startDate));
+      if (query.endDate !== undefined)
+        conditions.push(drizzleOrm.lte(activity.date, query.endDate));
+
+      const activities = await db
+        .select()
+        .from(activity)
+        .where(drizzleOrm.and(...conditions))
+        .orderBy(drizzleOrm.desc(activity.date));
+
+      return c.json({ activities }, 200);
+    },
+  )
+
+  // POST /api/user/record - 活動記録作成
+  .post(
+    "/",
+    arktypeValidator("json", records.createActivitySchema, (result, c) => {
+      if (!result.success) {
+        return c.json({ error: "Invalid Activity Data" }, 400);
+      }
+      return;
+    }),
+    async (c) => {
+      const auth = getAuth(c);
+      if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
+
+      const limited = await enforceUserRateLimit(
+        c,
+        c.env.ACTIVITY_MUTATION_RATE_LIMIT,
+        "activity-create",
+      );
+      if (limited) return limited;
+
+      const body = c.req.valid("json");
+      const db = dbClient(c.env);
+      const now = new Date().toISOString();
+
+      await db.insert(activity).values({
+        id: crypto.randomUUID(),
+        userId: auth.userId,
+        date: body.date,
+        period: body.period ?? 1.5,
+        createAt: now,
+        updatedAt: now,
+      });
+
+      await invalidateRankingCacheForDates(c, [body.date]);
+
+      return c.json({ success: true }, 201);
+    },
+  )
+
+  // DELETE /api/user/record - 活動記録削除
+  .delete(
+    "/",
+    arktypeValidator("json", records.deleteActivitiesSchema, (result, c) => {
+      if (!result.success) {
+        return c.json({ error: "Invalid Delete Request" }, 400);
+      }
+      return;
+    }),
+    async (c) => {
+      const auth = getAuth(c);
+      if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
+
+      const limited = await enforceUserRateLimit(
+        c,
+        c.env.BULK_DELETE_RATE_LIMIT,
+        "activity-delete",
+      );
+      if (limited) return limited;
+
+      const body = c.req.valid("json");
+      const db = dbClient(c.env);
+
+      const deletedActivities = await db
+        .delete(activity)
+        .where(
+          drizzleOrm.and(
+            drizzleOrm.inArray(activity.id, body.ids),
+            drizzleOrm.eq(activity.userId, auth.userId),
+          ),
+        )
+        .returning({ date: activity.date });
+
+      await invalidateRankingCacheForDates(
+        c,
+        deletedActivities.map(({ date }) => date),
+      );
+
+      return c.json({ success: true }, 200);
+    },
+  )
+
+  // GET /api/user/record/count - 稽古回数取得
+  .get("/count", async (c) => {
+    const auth = getAuth(c);
+    if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
+
+    const db = dbClient(c.env);
+
+    const { getProfile } = await import("../../clerk/profile");
+    const profile = await getProfile(c);
+
+    const startDate = resolvePromotionSince(profile);
+
+    const result = await db
+      .select({
+        totalPeriod: drizzleOrm.sql<number>`COALESCE(SUM(${activity.period}), 0)`,
+      })
+      .from(activity)
+      .where(
+        drizzleOrm.and(
+          drizzleOrm.eq(activity.userId, auth.userId),
+          drizzleOrm.gte(activity.date, startDate),
+        ),
+      );
+
+    const totalPeriod = result[0]?.totalPeriod || 0;
+
+    const practiceCount = countPracticeDays(totalPeriod);
+
+    return c.json({ practiceCount, totalPeriod, since: startDate }, 200);
+  })
+  // GET /api/user/record/ranking - キャッシュ最適化されたランキング取得
+  .get(
+    "/ranking",
+    arktypeValidator("query", records.rankingQuerySchema, (result, c) => {
+      if (!result.success) {
+        return c.json({ error: "Invalid Query Parameters" }, 400);
+      }
+      return;
+    }),
+    async (c) => {
+      const auth = getAuth(c);
+      if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
+
+      const query = c.req.valid("query");
+
+      // JST (UTC+9) で現在時刻を取得
+      const utcNow = new Date();
+      const jstNow = new Date(utcNow.getTime() + 9 * 60 * 60 * 1000);
+      const targetYear = query.year ?? jstNow.getUTCFullYear();
+      const targetMonth = query.month ?? jstNow.getUTCMonth() + 1;
+      const period = query.period ?? "monthly";
+
+      // 日付範囲の算出
+      const { startDate, endDate, periodLabel } = calculatePeriodRange({
+        year: targetYear,
+        month: targetMonth,
+        period,
+      });
+
+      // Edge Cacheからランキングデータを取得（キャッシュミス時はDBから取得してキャッシュ）
+      const rawRankingData = await getRankingData(c, startDate, endDate);
+
+      // ユーザーIDでマスク処理
+      const ranking = maskRankingData(rawRankingData, auth.userId);
+      const currentUserRanking = await getCurrentUserRanking(
+        c,
+        startDate,
+        endDate,
+        auth.userId,
+        rawRankingData,
+      );
+
+      return c.json(
+        {
+          period: periodLabel,
+          periodType: period,
+          startDate,
+          endDate,
+          ranking,
+          currentUserRanking,
+          totalUsers: ranking.length,
+        },
+        200,
+      );
+    },
+  );

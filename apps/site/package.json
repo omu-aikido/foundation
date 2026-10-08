@@ -1,0 +1,43 @@
+{
+  "name": "page",
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "bun run generate-content && nuxt build",
+    "cf-build": "bun run generate-content && cf build",
+    "dev": "nuxt dev",
+    "generate-content": "bun scripts/generate-site-content.ts",
+    "generate-types": "cf workers types",
+    "postinstall": "bun run generate-content && nuxt prepare",
+    "preview": "wrangler dev --experimental-new-config --local --ip 127.0.0.1 --assets .output/public",
+    "test": "bun test",
+    "typecheck": "nuxt typecheck && tsc --noEmit -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@nuxtjs/sitemap": "^8.6.1",
+    "@unocss/nuxt": "^66.10.5",
+    "@unocss/preset-attributify": "^66.10.5",
+    "arktype": "catalog:",
+    "h3": "^1.15.11",
+    "hono": "catalog:",
+    "marked": "^18.1.0",
+    "nuxt": "^4.5.2",
+    "ts-ics": "^2.4.7",
+    "unocss": "catalog:",
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@iconify-json/ri": "catalog:",
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "rolldown": "catalog:",
+    "typescript": "catalog:",
+    "vite-plugin-thirparty-licenses": "workspace:*",
+    "vite-plugin-vue-devtools": "catalog:",
+    "vue-router": "catalog:",
+    "vue-tsc": "catalog:",
+    "wrangler": "catalog:"
+  },
+  "packageManager": "bun"
+}

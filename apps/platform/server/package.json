@@ -1,0 +1,35 @@
+{
+  "name": "server",
+  "type": "module",
+  "scripts": {
+    "build": "cf build",
+    "cf-typegen": "cf workers types",
+    "db:check": "drizzle-kit check",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "deploy": "cf deploy --dry-run",
+    "dev": "cf dev -- --env-file \"$PWD/.env\"",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@clerk/backend": "^3.22.0",
+    "@clerk/hono": "0.1.76",
+    "@hono/arktype-validator": "^2.0.1",
+    "@libsql/client": "^0.18.0",
+    "arktype": "catalog:",
+    "drizzle-orm": "^1.0.0-rc.5-ab785fc",
+    "hono": "catalog:",
+    "record-domain": "workspace:*",
+    "svix": "^2.6.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "cf": "catalog:",
+    "drizzle-kit": "^1.0.0-rc.5-ab785fc",
+    "wrangler": "catalog:"
+  }
+}

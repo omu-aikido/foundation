@@ -1,0 +1,15 @@
+{
+  "extends": ["@vue/tsconfig/tsconfig.dom.json", "../../../tsconfig.base.json"],
+  "compilerOptions": {
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "types": ["node"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.vue", "env.d.ts", "vite/plugins/license-list.ts"]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "vite-plugin-thirparty-licenses",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
+  }
+}

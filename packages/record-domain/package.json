@@ -1,0 +1,20 @@
+{
+  "name": "record-domain",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./hono": {
+      "types": "./src/hono.d.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "arktype": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  }
+}

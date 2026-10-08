@@ -1,0 +1,37 @@
+{
+  "name": "client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vp build",
+    "dev": "vp dev",
+    "preview": "vp preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json && vue-tsc --noEmit -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@clerk/vue": "^2.5.9",
+    "@iconify-json/lucide": "^1.2.139",
+    "@tanstack/vue-form": "^1.33.5",
+    "@tanstack/vue-query": "^5.104.1",
+    "arktype": "catalog:",
+    "date-fns": "^4.4.0",
+    "hono": "catalog:",
+    "record-domain": "workspace:*",
+    "reka-ui": "^2.10.5",
+    "unocss": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:"
+  },
+  "devDependencies": {
+    "@tanstack/vue-query-devtools": "^6.3.1",
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vue/tsconfig": "^0.9.1",
+    "vite": "catalog:",
+    "vite-plugin-thirparty-licenses": "workspace:*",
+    "vite-plugin-vue-devtools": "catalog:",
+    "vue-tsc": "catalog:"
+  }
+}

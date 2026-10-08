@@ -1,0 +1,322 @@
+import { activity } from "../../db/schema";
+import { arktypeValidator } from "@hono/arktype-validator";
+import { createClerkClient } from "@clerk/backend";
+import { dbClient } from "../../db/drizzle";
+import { getAuth } from "@clerk/hono";
+import { Hono } from "hono";
+import { notify } from "../../lib/observability";
+import { Role } from "record-domain";
+import { type } from "arktype";
+import * as drizzleOrm from "drizzle-orm";
+import * as helpers from "./helpers";
+
+import { buildNormSummary, getUsersNorm } from "./stats";
+
+// ============================================================
+// Helper Functions
+// ============================================================
+
+const getUserActivitySummary = (env: Env, userId: string) => {
+  const db = dbClient(env);
+  return db
+    .select()
+    .from(activity)
+    .where(drizzleOrm.eq(activity.userId, userId))
+    .orderBy(drizzleOrm.desc(activity.date));
+};
+
+const getMonthlyRanking = (env: Env) => {
+  const db = dbClient(env);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  const startDate = new Date(year, month, 1);
+  const endDate = new Date(year, month + 1, 0, 23, 59, 59);
+
+  const startDateStr = startDate.toISOString().split("T")[0];
+  const endDateStr = endDate.toISOString().split("T")[0];
+
+  return db
+    .select({
+      userId: activity.userId,
+      total: drizzleOrm.sql<number>`SUM(${activity.period})`,
+    })
+    .from(activity)
+    .where(
+      drizzleOrm.and(
+        drizzleOrm.gte(activity.date, startDateStr),
+        drizzleOrm.lte(activity.date, endDateStr),
+      ),
+    )
+    .groupBy(activity.userId)
+    .orderBy(drizzleOrm.desc(drizzleOrm.sql<number>`SUM(${activity.period})`))
+    .limit(5);
+};
+
+function validateAdminJoinedAt(joinedAt: number | null) {
+  const currentYear = new Date().getFullYear();
+  const minJoinedAt = currentYear - 4;
+  const maxJoinedAt = currentYear + 1;
+
+  if (joinedAt !== null && (joinedAt < minJoinedAt || joinedAt > maxJoinedAt)) {
+    return `入部年度は${minJoinedAt}年から${maxJoinedAt}年の間で入力してください`;
+  }
+
+  return null;
+}
+
+async function resolveManagementRoles(
+  clerkClient: ReturnType<typeof createClerkClient>,
+  adminUserId: string,
+  targetUserId: string,
+) {
+  const adminUser = await clerkClient.users.getUser(adminUserId);
+  const adminProfileParse = helpers.publicMetadataProfileSchema(
+    helpers.coerceProfileMetadata(adminUser.publicMetadata),
+  );
+  const adminProfile = adminProfileParse instanceof type.errors ? null : adminProfileParse;
+  if (adminProfile === null || adminProfile.role === undefined)
+    return { adminRole: null, targetCurrentRole: Role.MEMBER };
+  const adminRole = adminProfile?.role ? Role.fromString(adminProfile.role) : null;
+
+  const targetUser = await clerkClient.users.getUser(targetUserId);
+  const targetProfileParsed = helpers.publicMetadataProfileSchema(
+    helpers.coerceProfileMetadata(targetUser.publicMetadata),
+  );
+  const targetCurrentRole =
+    targetProfileParsed instanceof type.errors
+      ? Role.MEMBER
+      : (Role.fromString(targetProfileParsed.role ?? "member") ?? Role.MEMBER);
+
+  return { adminRole, targetCurrentRole };
+}
+
+function normalizeOptionalDate(dateText: string | null | undefined) {
+  return typeof dateText === "string" ? new Date(`${dateText}T00:00:00.000Z`) : null;
+}
+
+// ============================================================
+// Routes
+// ============================================================
+
+const app = new Hono<{ Bindings: Env }>()
+  // List all users (from accounts.ts)
+  .get("/", arktypeValidator("query", helpers.accountsQuerySchema), async (c) => {
+    const clerkClient = createClerkClient({
+      secretKey: c.env.CLERK_SECRET_KEY,
+    });
+
+    const { query, limit } = c.req.valid("query");
+    const userLimit = Number(limit ?? 20);
+
+    const clerkUsers = await clerkClient.users.getUserList({
+      limit: userLimit,
+      query: query ?? "",
+      orderBy: "created_at",
+    });
+
+    const norms = await getUsersNorm(c.env, clerkUsers.data);
+    const users = clerkUsers.data.map((clerkUser) => {
+      const user = helpers.toAdminUser(clerkUser);
+      const norm = norms.find((item) => item.userId === clerkUser.id);
+      if (!norm) return user;
+      return Object.assign({}, user, {
+        profile: Object.assign({}, user.profile, { norm }),
+      });
+    });
+    const ranking = await getMonthlyRanking(c.env);
+
+    return c.json({ users, query: query ?? "", ranking });
+  })
+
+  // Get single user details
+  .get("/:userId", arktypeValidator("query", helpers.userActivitiesQuerySchema), async (c) => {
+    const userId = c.req.param("userId");
+    const { page: rawPage, limit: rawLimit } = c.req.valid("query");
+    const page = Number(rawPage ?? 1);
+    const limit = Number(rawLimit ?? 10);
+
+    const clerkClient = createClerkClient({
+      secretKey: c.env.CLERK_SECRET_KEY,
+    });
+
+    try {
+      const clerkUser = await clerkClient.users.getUser(userId);
+      const user = helpers.toAdminUser(clerkUser);
+
+      const profileParse = helpers.publicMetadataProfileSchema(
+        helpers.coerceProfileMetadata(clerkUser.publicMetadata),
+      );
+      const profile =
+        profileParse instanceof type.errors ? null : { ...profileParse, id: clerkUser.id };
+
+      const allActivities = await getUserActivitySummary(c.env, userId);
+      const totalActivitiesCount = allActivities.length;
+      const activities = allActivities.slice((page - 1) * limit, page * limit);
+      const totalHours = allActivities.reduce((sum, a) => sum + (a.period || 0), 0);
+      const totalDays = new Set(allActivities.map((a) => a.date)).size;
+      const norm = buildNormSummary(profile, allActivities);
+      const trainCount = Math.floor(
+        allActivities.map((a) => a.period).reduce((sum, val) => sum + val, 0) / 1.5,
+      );
+      const doneTrain = norm.current;
+
+      return c.json({
+        user: Object.assign({}, user, {
+          profile: Object.assign({}, user.profile, { norm }),
+        }),
+        profile,
+        activities,
+        trainCount,
+        doneTrain,
+        page,
+        totalActivitiesCount,
+        limit,
+        totalDays,
+        totalEntries: totalActivitiesCount,
+        totalHours,
+      });
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error(String(e));
+      notify(c, error, { statusCode: 404, userId });
+      return c.json({ error: "User not found" }, 404);
+    }
+  })
+
+  .patch(
+    "/:userId/profile",
+    arktypeValidator("json", helpers.adminProfileUpdateSchema),
+    async (c) => {
+      const auth = getAuth(c);
+      if (!auth.isAuthenticated) return c.json({ error: "認証されていません" }, 401);
+
+      const targetUserId = c.req.param("userId");
+      const parsed = c.req.valid("json");
+      const { year, grade, role, joinedAt, birthday } = parsed;
+
+      const joinedAtError = validateAdminJoinedAt(joinedAt);
+      if (joinedAtError !== null) return c.json({ error: joinedAtError }, 400);
+
+      const clerkClient = createClerkClient({
+        secretKey: c.env.CLERK_SECRET_KEY,
+      });
+
+      const { adminRole, targetCurrentRole } = await resolveManagementRoles(
+        clerkClient,
+        auth.userId,
+        targetUserId,
+      );
+
+      if (adminRole === null) {
+        return c.json({ error: "権限が不足しています" }, 403);
+      }
+
+      if (!adminRole?.isManagement()) {
+        return c.json({ error: "権限が不足しています" }, 403);
+      }
+
+      if (Role.compare(adminRole.role, targetCurrentRole.role) > 0) {
+        return c.json({ error: "現在の権限より上書きできません" }, 403);
+      }
+
+      const requestedRole = Role.fromString(role);
+      if (!requestedRole || Role.compare(adminRole.role, requestedRole.role) > 0) {
+        return c.json({ error: "権限が不足しています" }, 403);
+      }
+
+      const normalizedGetGradeAt = normalizeOptionalDate(parsed.getGradeAt);
+      if (normalizedGetGradeAt && Number.isNaN(normalizedGetGradeAt.getTime())) {
+        return c.json({ error: "級段位取得日の形式が正しくありません" }, 400);
+      }
+
+      const normalizedBirthday = normalizeOptionalDate(birthday);
+      if (normalizedBirthday && Number.isNaN(normalizedBirthday.getTime())) {
+        return c.json({ error: "誕生日の形式が正しくありません" }, 400);
+      }
+
+      const updatedMetadata = {
+        grade,
+        getGradeAt: normalizedGetGradeAt
+          ? helpers.formatDateToJSTString(normalizedGetGradeAt)
+          : null,
+        joinedAt,
+        year,
+        birthday: normalizedBirthday ? helpers.formatDateToJSTString(normalizedBirthday) : null,
+        role,
+      };
+
+      await clerkClient.users.updateUserMetadata(targetUserId, {
+        publicMetadata: updatedMetadata,
+      });
+
+      return c.json({ success: true, updatedMetadata }, 200);
+    },
+  )
+
+  .delete("/:userId", async (c) => {
+    const auth = getAuth(c);
+    if (!auth.isAuthenticated) return c.json({ error: "認証されていません" }, 401);
+
+    const targetUserId = c.req.param("userId");
+
+    if (auth.userId === targetUserId) {
+      return c.json({ error: "自分自身を削除することはできません" }, 400);
+    }
+
+    const clerkClient = createClerkClient({
+      secretKey: c.env.CLERK_SECRET_KEY,
+    });
+
+    const adminUser = await clerkClient.users.getUser(auth.userId);
+    const adminProfileParse = helpers.publicMetadataProfileSchema(
+      helpers.coerceProfileMetadata(adminUser.publicMetadata),
+    );
+    const adminProfile = adminProfileParse instanceof type.errors ? null : adminProfileParse;
+    if (adminProfile === null || adminProfile.role === undefined)
+      return c.json({ error: "権限が不足しています" }, 404);
+    const adminRole = adminProfile?.role ? Role.fromString(adminProfile.role) : null;
+
+    if (adminRole === null || !adminRole?.isManagement()) {
+      return c.json({ error: "権限が不足しています" }, 403);
+    }
+
+    try {
+      const targetUser = await clerkClient.users.getUser(targetUserId);
+      const targetProfileParsed = helpers.publicMetadataProfileSchema(
+        helpers.coerceProfileMetadata(targetUser.publicMetadata),
+      );
+      const targetRole =
+        targetProfileParsed instanceof type.errors
+          ? Role.MEMBER
+          : (Role.fromString(targetProfileParsed.role ?? "member") ?? Role.MEMBER);
+
+      if (Role.compare(adminRole.role, targetRole.role) >= 0) {
+        return c.json({ error: "自分以上の権限を持つユーザーは削除できません" }, 403);
+      }
+
+      try {
+        const db = dbClient(c.env);
+        await db.delete(activity).where(drizzleOrm.eq(activity.userId, targetUserId));
+      } catch (activityDeleteError) {
+        const error =
+          activityDeleteError instanceof Error
+            ? activityDeleteError
+            : new Error(String(activityDeleteError));
+        notify(c, error, {
+          statusCode: 500,
+          targetUserId,
+          activityDeleteFailed: true,
+        });
+        return c.json({ error: "活動記録の削除に失敗しました" }, 500);
+      }
+      await clerkClient.users.deleteUser(targetUserId);
+      return c.json({ success: true }, 200);
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error(String(e));
+      notify(c, error, { statusCode: 500, targetUserId });
+      return c.json({ error: "ユーザーの削除に失敗しました" }, 500);
+    }
+  });
+
+export default app;

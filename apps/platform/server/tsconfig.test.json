@@ -1,0 +1,7 @@
+{
+  "extends": ["./tsconfig.json", "../../../tsconfig.test.json"],
+  "compilerOptions": {
+    "types": ["bun", "node", "./.cloudflare/types"]
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "env.d.ts"]
+}
