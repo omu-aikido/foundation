@@ -35,7 +35,7 @@
         "@vitejs/plugin-vue": "^6.0.9",
         "@vue/tsconfig": "^0.9.1",
         "vite": "catalog:",
-        "vite-plugin-thirparty-licenses": "workspace:*",
+        "vite-plugin-third-party-licenses": "workspace:*",
         "vite-plugin-vue-devtools": "catalog:",
         "vue-tsc": "catalog:",
       },
@@ -85,7 +85,7 @@
         "@types/node": "catalog:",
         "rolldown": "catalog:",
         "typescript": "catalog:",
-        "vite-plugin-thirparty-licenses": "workspace:*",
+        "vite-plugin-third-party-licenses": "workspace:*",
         "vite-plugin-vue-devtools": "catalog:",
         "vue-router": "catalog:",
         "vue-tsc": "catalog:",
@@ -105,8 +105,8 @@
         "@types/bun": "catalog:",
       },
     },
-    "packages/vite-plugin-thirparty-licenses": {
-      "name": "vite-plugin-thirparty-licenses",
+    "packages/vite-plugin-third-party-licenses": {
+      "name": "vite-plugin-third-party-licenses",
       "version": "0.0.0",
       "devDependencies": {
         "@types/node": "catalog:",
@@ -2048,7 +2048,7 @@
 
     "vite-plugin-inspect": ["vite-plugin-inspect@11.4.1", "", { "dependencies": { "ansis": "^4.3.0", "error-stack-parser-es": "^1.0.5", "obug": "^2.1.1", "ohash": "^2.0.11", "open": "^11.0.0", "perfect-debounce": "^2.1.0", "sirv": "^3.0.2", "unplugin-utils": "^0.3.1", "vite-dev-rpc": "^2.0.0" }, "peerDependencies": { "@nuxt/kit": "*", "vite": "^6.0.0 || ^7.0.0-0 || ^8.0.0-0" }, "optionalPeers": ["@nuxt/kit"] }, "sha512-ShOFe2PURXGvRS5OrgmOLZOCwDTD7dEBVt0tMpFPKb9AsvqXKCRGM8QgKrUbRbJYFXScHvDPpGRd28rYidC0tA=="],
 
-    "vite-plugin-thirparty-licenses": ["vite-plugin-thirparty-licenses@workspace:packages/vite-plugin-thirparty-licenses"],
+    "vite-plugin-third-party-licenses": ["vite-plugin-third-party-licenses@workspace:packages/vite-plugin-third-party-licenses"],
 
     "vite-plugin-vue-devtools": ["vite-plugin-vue-devtools@8.2.1", "", { "dependencies": { "@vue/devtools-core": "^8.2.1", "@vue/devtools-kit": "^8.2.1", "@vue/devtools-shared": "^8.2.1", "sirv": "^3.0.2", "vite-plugin-inspect": "^11.3.3", "vite-plugin-vue-inspector": "^6.0.0" }, "peerDependencies": { "vite": "^6.0.0 || ^7.0.0 || ^8.0.0" } }, "sha512-5JLxXWWCo5lJMw16/xVeNvJ8k2zLwZPf1vITLzya/2IePrCBeGe/p/iAokgXHZpEi39fcYtPXmO8SaKeXmqCAA=="],
 

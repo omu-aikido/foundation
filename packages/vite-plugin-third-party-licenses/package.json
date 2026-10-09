@@ -1,5 +1,5 @@
 {
-  "name": "vite-plugin-thirparty-licenses",
+  "name": "vite-plugin-third-party-licenses",
   "version": "0.0.0",
   "type": "module",
   "exports": {

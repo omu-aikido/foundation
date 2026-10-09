@@ -33,7 +33,7 @@
     "@types/node": "catalog:",
     "rolldown": "catalog:",
     "typescript": "catalog:",
-    "vite-plugin-thirparty-licenses": "workspace:*",
+    "vite-plugin-third-party-licenses": "workspace:*",
     "vite-plugin-vue-devtools": "catalog:",
     "vue-router": "catalog:",
     "vue-tsc": "catalog:",

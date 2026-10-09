@@ -30,7 +30,7 @@
     "@vitejs/plugin-vue": "^6.0.9",
     "@vue/tsconfig": "^0.9.1",
     "vite": "catalog:",
-    "vite-plugin-thirparty-licenses": "workspace:*",
+    "vite-plugin-third-party-licenses": "workspace:*",
     "vite-plugin-vue-devtools": "catalog:",
     "vue-tsc": "catalog:"
   }

@@ -1,4 +1,4 @@
-import { bundledLicenseListPlugin } from "vite-plugin-thirparty-licenses";
+import { bundledLicenseListPlugin } from "vite-plugin-third-party-licenses";
 import cloudflareConfig from "./cloudflare.config";
 import vueDevTools from "vite-plugin-vue-devtools";
 import { writeCloudflareBuildOutput } from "./nitro/cloudflare-build-output";

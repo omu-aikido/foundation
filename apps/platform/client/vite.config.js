@@ -1,4 +1,4 @@
-import { bundledLicenseListPlugin } from "vite-plugin-thirparty-licenses";
+import { bundledLicenseListPlugin } from "vite-plugin-third-party-licenses";
 import { defineConfig } from "vite-plus";
 import path from "path"; // pathをインポート
 import UnoCSS from "unocss/vite";
