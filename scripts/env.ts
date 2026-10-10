@@ -7,37 +7,36 @@ import { dirname, join, relative, resolve } from "node:path";
 export type EnvTarget = {
   encrypted: string;
   plaintext: string;
+  recipients: string;
   optional?: boolean;
 };
 
 const root = resolve(import.meta.dir, "..");
-const recipientFile = resolve(root, "secrets/dev.recipients");
+const developmentRecipients = resolve(root, "secrets/development/recipients");
 
-const appTargets: EnvTarget[] = [
+export const platformEnvTargets: readonly EnvTarget[] = [
   {
-    encrypted: resolve(root, "secrets/platform/client.env.age"),
+    encrypted: resolve(root, "secrets/development/platform/client.env.age"),
     plaintext: resolve(root, "apps/platform/client/.env"),
+    recipients: developmentRecipients,
   },
   {
-    encrypted: resolve(root, "secrets/platform/server.env.age"),
+    encrypted: resolve(root, "secrets/development/platform/server.env.age"),
     plaintext: resolve(root, "apps/platform/server/.env"),
+    recipients: developmentRecipients,
   },
-];
-
-const e2eTargets: EnvTarget[] = [
   {
-    encrypted: resolve(root, "secrets/platform/e2e.env.age"),
+    encrypted: resolve(root, "secrets/development/platform/e2e.env.age"),
     plaintext: resolve(root, "apps/platform/e2e/.env"),
+    recipients: developmentRecipients,
   },
 ];
-
-export const platformEnvTargets: readonly EnvTarget[] = [...appTargets, ...e2eTargets];
 
 export const siteEnvTargets: readonly EnvTarget[] = [
   {
-    encrypted: resolve(root, "secrets/site/site.env.age"),
+    encrypted: resolve(root, "secrets/development/site/site.env.age"),
     plaintext: resolve(root, "apps/site/.env"),
-    optional: true,
+    recipients: developmentRecipients,
   },
 ];
 
@@ -128,7 +127,7 @@ async function encryptFile(target: EnvTarget): Promise<void> {
       "age",
       "--encrypt",
       "--recipients-file",
-      recipientFile,
+      target.recipients,
       "--output",
       temporary,
       target.plaintext,
@@ -190,12 +189,14 @@ export async function decryptEnvFiles(
 }
 
 export async function encryptEnvFiles(): Promise<void> {
-  const targets = await selectEnvTargets("encrypt");
-  if (targets.length === 0) return;
-  if (!(await fileExists(recipientFile))) {
-    throw new Error(`Age recipient file not found: ${displayPath(recipientFile)}`);
+  const selected = await selectEnvTargets("encrypt", { targets: envTargets });
+  if (selected.length === 0) return;
+  for (const recipients of new Set(selected.map((target) => target.recipients))) {
+    if (!(await fileExists(recipients))) {
+      throw new Error(`Age recipient file not found: ${displayPath(recipients)}`);
+    }
   }
-  await Promise.all(targets.map((target) => encryptFile(target)));
+  await Promise.all(selected.map((target) => encryptFile(target)));
 }
 
 async function main(): Promise<void> {
