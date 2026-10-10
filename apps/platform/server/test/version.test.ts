@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { getPublicVersion } from "@/src/version";
+import { getPublicVersion } from "../src/version";
 
 describe("getPublicVersion", () => {
   test("returns a short worker ID and deployment tag", () => {

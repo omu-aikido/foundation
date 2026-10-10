@@ -4,9 +4,12 @@ import { beforeEach, describe, expect, mock, test } from "bun:test";
 await mock.module("@clerk/hono", () => ({
   getAuth: (
     c: { req: { header: (key: string) => string | null } },
-    options: { acceptsToken?: string },
+    options?: { acceptsToken?: string },
   ) => {
-    if (c.req.header("x-token-type") !== options.acceptsToken) {
+    if (
+      options?.acceptsToken !== undefined &&
+      c.req.header("x-token-type") !== options.acceptsToken
+    ) {
       return { isAuthenticated: false, userId: null };
     }
     return { isAuthenticated: true, userId: "admin-user" };
@@ -14,7 +17,7 @@ await mock.module("@clerk/hono", () => ({
 }));
 
 const getProfileMock = mock(async () => ({ role: "admin" }));
-await mock.module("@/src/clerk/profile", () => ({
+await mock.module("../src/clerk/profile", () => ({
   getProfile: getProfileMock,
 }));
 

@@ -31,13 +31,13 @@ await mock.module("@clerk/backend", () => ({
   }),
 }));
 
-await mock.module("@/src/db/drizzle", () => ({
+await mock.module("../src/db/drizzle", () => ({
   dbClient: () => ({
     delete: dbDeleteMock,
   }),
 }));
 
-await mock.module("@/src/lib/observability", () => ({
+await mock.module("../src/lib/observability", () => ({
   notify: notifyMock,
 }));
 

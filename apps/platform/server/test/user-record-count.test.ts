@@ -11,13 +11,13 @@ await mock.module("@clerk/hono", () => ({
   }),
 }));
 
-await mock.module("@/src/db/drizzle", () => ({
+await mock.module("../src/db/drizzle", () => ({
   dbClient: () => ({
     select: selectMock,
   }),
 }));
 
-await mock.module("@/src/clerk/profile", () => ({
+await mock.module("../src/clerk/profile", () => ({
   getProfile: async () => ({
     grade: 0,
     getGradeAt: null,

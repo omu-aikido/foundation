@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import app from "@/src/index";
+import app from "../src/index";
 
 describe("GET /api/status", () => {
   test("returns the Worker version before Clerk configuration is evaluated", async () => {

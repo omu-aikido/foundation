@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { getClerkMiddlewareOptions } from "@/src/middleware/clerk";
+import { getClerkMiddlewareOptions } from "../src/middleware/clerk";
 
 describe("getClerkMiddlewareOptions", () => {
   test("requires and normalizes authorized parties", () => {
