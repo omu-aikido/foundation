@@ -1,29 +1,65 @@
 {
   "version": 1,
   "skills": {
+    "better-accessibility": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/better-accessibility/SKILL.md",
+      "computedHash": "b7fffd77b6ac087d72e081c1b0afa312edc7b6c82bb3c863dd454937d4900cb3"
+    },
+    "better-colors": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/better-colors/SKILL.md",
+      "computedHash": "25be5683f90265ae9caad9e0f22c14607b47a0e8cd2481bdb4a498071fb5bd56"
+    },
+    "better-interface": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/better-interface/SKILL.md",
+      "computedHash": "9c73b05d59b188147335eb71308ec7f37237272202fe2298f54c322e6c318b3f"
+    },
+    "better-layout": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/better-layout/SKILL.md",
+      "computedHash": "96568d1af89fd3b0061622b9938ce2855b74c1c11134b63f2aec45961372e7ab"
+    },
+    "better-typography": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/better-typography/SKILL.md",
+      "computedHash": "f959c7e37cc5275dc1737090393998c546355919a14977bbf7d5f70cb6e3106b"
+    },
+    "better-ui": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/better-ui/SKILL.md",
+      "computedHash": "6f69968c0d1ed034753d64aa22f2bf4332f1471164f110db720d05faf76c3551"
+    },
     "cloudflare": {
       "source": "cloudflare/skills",
       "sourceType": "github",
       "skillPath": "skills/cloudflare/SKILL.md",
       "computedHash": "6f0a70840cad114f020e5950874f255b22e669f07036cf4f81d8f733ae0233a0"
     },
-    "custom-apis": {
-      "source": "vercel-labs/emulate",
-      "sourceType": "github",
-      "skillPath": "skills/custom-apis/SKILL.md",
-      "computedHash": "1b2d0fb95db034ff455f3439d87b1d32576445223d8d08eda3d067536bc7e9fe"
-    },
-    "emulate": {
-      "source": "vercel-labs/emulate",
-      "sourceType": "github",
-      "skillPath": "skills/emulate/SKILL.md",
-      "computedHash": "f9f00dad70d82ec377bc6e0faf765b52bcde1784bc89905997a9ecfe553ea358"
-    },
     "h5i": {
       "source": "h5i-dev/h5i",
       "sourceType": "github",
       "skillPath": "skills/h5i/SKILL.md",
       "computedHash": "45f09c6281bf588a8aa2b5d3cfe984cb08ee0628d98909172c579b4f60cd6dfd"
+    },
+    "interface-review": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/interface-review/SKILL.md",
+      "computedHash": "8feb4aa0e2a35b629cdff8121ccbed7ff9bfca83bd245a691d16ca9ccd3e52b5"
+    },
+    "state-machine": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/state-machine/SKILL.md",
+      "computedHash": "d7b3c61ca9e424d42116d8976e8fd9051a9e48f4d69cdd0c206929be578c71b3"
     },
     "turnstile-spin": {
       "source": "cloudflare/skills",
