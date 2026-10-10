@@ -13,12 +13,6 @@
       "skillPath": "skills/custom-apis/SKILL.md",
       "computedHash": "1b2d0fb95db034ff455f3439d87b1d32576445223d8d08eda3d067536bc7e9fe"
     },
-    "durable-objects": {
-      "source": "cloudflare/skills",
-      "sourceType": "github",
-      "skillPath": "skills/durable-objects/SKILL.md",
-      "computedHash": "f328205f9d11381902a160ace4622cd1ac9602acba00b091f6d63f59a6869900"
-    },
     "emulate": {
       "source": "vercel-labs/emulate",
       "sourceType": "github",
