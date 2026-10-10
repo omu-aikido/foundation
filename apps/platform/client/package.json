@@ -7,7 +7,7 @@
     "build": "vp build",
     "dev": "vp dev",
     "preview": "vp preview",
-    "typecheck": "vue-tsc --noEmit -p tsconfig.json && vue-tsc --noEmit -p tsconfig.test.json"
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json && vue-tsc --noEmit -p test/tsconfig.json"
   },
   "dependencies": {
     "@clerk/vue": "^2.5.9",

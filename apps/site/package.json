@@ -11,7 +11,7 @@
     "postinstall": "bun run generate-content && nuxt prepare",
     "preview": "wrangler dev --experimental-new-config --local --ip 127.0.0.1 --assets .output/public",
     "test": "bun test",
-    "typecheck": "nuxt typecheck && tsc --noEmit -p tsconfig.test.json"
+    "typecheck": "nuxt typecheck && tsc --noEmit -p tests/tsconfig.json"
   },
   "dependencies": {
     "@nuxtjs/sitemap": "^8.6.1",

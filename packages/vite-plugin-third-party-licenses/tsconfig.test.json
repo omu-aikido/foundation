@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "lib": ["ES2022"],
-    "types": ["bun", "node"]
-  },
-  "include": ["index.test.ts", "index.ts"],
-  "extends": "../../tsconfig.base.json"
-}

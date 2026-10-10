@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, test } from "bun:test";
 import { build, type Plugin } from "vite";
-import { bundledLicenseListPlugin } from "./index";
+import { bundledLicenseListPlugin } from "../index";
 
 const tempDirs: string[] = [];
 

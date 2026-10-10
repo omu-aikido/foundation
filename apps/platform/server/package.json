@@ -11,7 +11,7 @@
     "db:studio": "drizzle-kit studio",
     "deploy": "cf deploy --dry-run",
     "dev": "cf dev -- --env-file \"$PWD/.env\"",
-    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p test/tsconfig.json"
   },
   "dependencies": {
     "@clerk/backend": "^3.22.0",

@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["ES2022"],
-    "types": []
+    "lib": ["ES2022"]
   },
   "include": ["index.ts", "src/**/*.ts"],
   "extends": "../../tsconfig.base.json"

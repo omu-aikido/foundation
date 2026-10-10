@@ -4,7 +4,7 @@
 
 Bunは依存管理・補助スクリプト・テストに使用します。cf CLIの実行にはNode.js 22以上が必要です。WorkerはCloudflare runtimeで動作し、各`cloudflare.config.ts`の互換日付と`nodejs_compat`に従います。
 
-TypeScriptの共通設定はroot `tsconfig.base.json`、Bunテスト用の共通型設定は`tsconfig.test.json`です。各workspaceの`tsconfig.json`と`tsconfig.test.json`でruntimeとテストの型を分け、`vp run check`でrootの共通lint・format設定を適用します。
+TypeScriptの共通設定はroot `tsconfig.base.json`、テスト用の共通型設定はroot `tsconfig.test.json`です。各workspaceの`tsconfig.json`がruntime用、`test/tsconfig.json`（Siteは`tests/tsconfig.json`）がテスト用の型を定義します。`vp run check`でrootの共通lint・format設定を適用します。
 
 ## セットアップ
 

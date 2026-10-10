@@ -1,8 +1,0 @@
-{
-  "extends": ["./tsconfig.json", "../../tsconfig.test.json"],
-  "include": ["tests/**/*.ts"],
-  "exclude": ["node_modules", "../../node_modules", "dist", ".data"],
-  "compilerOptions": {
-    "types": ["bun", "node", "./.cloudflare/types"]
-  }
-}
