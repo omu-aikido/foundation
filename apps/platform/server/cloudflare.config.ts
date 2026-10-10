@@ -15,6 +15,7 @@ export default defineConfig({
     assets: {
       notFoundHandling: "single-page-application",
     },
+    domains: ["app.omu-aikido.com"],
     env: {
       CLERK_SECRET_KEY: bindings.secret(),
       CLERK_WEBHOOK_SECRET: bindings.secret(),

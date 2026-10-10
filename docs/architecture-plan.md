@@ -28,5 +28,6 @@ SiteはNitroの`cloudflare_module` presetを使い、route renderingはNuxt SSR�
 ## 設定と運用境界
 
 - Worker runtime設定は各アプリの`cloudflare.config.ts`を正本にする。Siteのlocal previewは`wrangler dev --experimental-new-config --local`で同じ設定を読み、remote bindingsを無効にしてWorkerを起動する。Wranglerのasset directoryは`.output/public`をCLI optionで渡すため、Siteに別のWrangler config fileは置かない。Platform serverの`wrangler.config.ts`はclient assets directoryを設定するtooling補助で、cf Build Output生成に必要なため維持する。
+- Site Worker (`page`) は`omu-aikido.com`、Platform Worker (`record`) は`app.omu-aikido.com`を使用する。既存の各Workerにデプロイし、設定済みのcustom domainを維持する。
 - ローカル`.env`とAGE identityはGit管理しない。開発scriptは既存の`.env`を保護し、不足ファイルだけ復号する。
 - build・test・typecheckはローカル検証であり、deploy、Cloudflareリソース操作、DB変更を含めない。
