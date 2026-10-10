@@ -2,7 +2,7 @@
 
 大阪公立大学合氣道部の公式サイトと、活動記録・アカウント管理を担うプラットフォームを管理するモノレポです。Bun workspacesとVite+を共通の開発基盤にしています。
 
-Bunは依存管理・補助スクリプト・テストに使用します。cf CLIの実行にはNode.js 22以上が必要です。WorkerはCloudflare runtimeで動作し、各`cloudflare.config.ts`の互換日付と`nodejs_compat`に従います。
+Bun 1.4.3以上を使用してください。Bunは依存管理・補助スクリプト・テストに使用します。cf CLIの実行にはNode.js 22以上が必要です。WorkerはCloudflare runtimeで動作し、各`cloudflare.config.ts`の互換日付と`nodejs_compat`に従います。
 
 TypeScriptの共通設定はroot `tsconfig.base.json`、テスト用の共通型設定はroot `tsconfig.test.json`です。各workspaceの`tsconfig.json`がruntime用、`test/tsconfig.json`（Siteは`tests/tsconfig.json`）がテスト用の型を定義します。`vp run check`でrootの共通lint・format設定を適用します。
 

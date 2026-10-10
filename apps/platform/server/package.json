@@ -11,18 +11,18 @@
     "db:studio": "drizzle-kit studio",
     "deploy": "cf deploy --dry-run",
     "dev": "cf dev -- --env-file \"$PWD/.env\"",
-    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p test/tsconfig.json"
+    "typecheck": "bun check -p tsconfig.json && bun check -p test/tsconfig.json"
   },
   "dependencies": {
-    "@clerk/backend": "^3.22.0",
-    "@clerk/hono": "0.1.76",
+    "@clerk/backend": "^3.23.2",
+    "@clerk/hono": "0.1.88",
     "@hono/arktype-validator": "^2.0.1",
     "@libsql/client": "^0.18.0",
     "arktype": "catalog:",
     "drizzle-orm": "^1.0.0-rc.5-ab785fc",
     "hono": "catalog:",
     "record-domain": "workspace:*",
-    "svix": "^2.6.1"
+    "svix": "^2.8.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",

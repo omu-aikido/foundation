@@ -11,18 +11,18 @@
     "postinstall": "bun run generate-content && nuxt prepare",
     "preview": "wrangler dev --experimental-new-config --local --ip 127.0.0.1 --assets .output/public",
     "test": "bun test",
-    "typecheck": "nuxt typecheck && tsc --noEmit -p tests/tsconfig.json"
+    "typecheck": "nuxt typecheck && bun check -p tests/tsconfig.json"
   },
   "dependencies": {
     "@nuxtjs/sitemap": "^8.6.1",
     "@unocss/nuxt": "^66.10.5",
     "@unocss/preset-attributify": "^66.10.5",
     "arktype": "catalog:",
-    "h3": "^1.15.11",
+    "h3": "^2.0.2",
     "hono": "catalog:",
     "lot-aikido": "workspace:*",
     "marked": "^18.1.0",
-    "nuxt": "^4.5.2",
+    "nuxt": "^4.6.1",
     "randori-timer": "workspace:*",
     "ts-ics": "^2.4.7",
     "unocss": "catalog:",

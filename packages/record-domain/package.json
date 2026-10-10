@@ -9,7 +9,7 @@
     }
   },
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p test/tsconfig.json"
+    "typecheck": "bun check -p tsconfig.json && bun check -p test/tsconfig.json"
   },
   "dependencies": {
     "arktype": "catalog:"
