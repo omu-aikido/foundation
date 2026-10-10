@@ -2,7 +2,7 @@ import { bindings, defineConfig } from "cf/config";
 
 export default defineConfig({
   worker: {
-    name: "page",
+    name: "site",
     compatibilityDate: "2026-07-19",
     compatibilityFlags: ["global_fetch_strictly_public", "nodejs_compat"],
     entrypoint: ".output/server/index.mjs",

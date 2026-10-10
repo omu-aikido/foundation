@@ -1,6 +1,6 @@
 {
-  "name": "page",
-  "version": "3.0.0",
+  "name": "official-site",
+  "version": "4.0.0",
   "type": "module",
   "scripts": {
     "build": "bun run generate-content && nuxt build",
