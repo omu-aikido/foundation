@@ -5,6 +5,7 @@
     "": {
       "name": "foundation",
       "devDependencies": {
+        "@types/bun": "catalog:",
         "cf": "catalog:",
         "typescript": "catalog:",
         "vite": "catalog:",
