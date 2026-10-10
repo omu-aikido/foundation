@@ -70,6 +70,10 @@ export default defineConfig({
       "typecheck:platform":
         "cd apps/platform/server && bun run typecheck && cd ../client && bun run typecheck && cd ../../../packages/record-domain && bun run typecheck",
       "typecheck:site": "cd apps/site && bun run typecheck",
+      "deploy:site":
+        "vp run build:site && (cd apps/site && bunx --no-install cf deploy --prebuilt --dry-run)",
+      "deploy:platform":
+        "vp run build:platform && (cd apps/platform/server && bunx --no-install cf deploy --prebuilt --dry-run)",
     },
   },
 });
