@@ -41,5 +41,5 @@
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0"
   },
-  "packageManager": "bun"
+  "packageManager": "bun@1.4.3"
 }
