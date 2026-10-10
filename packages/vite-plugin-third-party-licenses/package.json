@@ -6,9 +6,11 @@
     ".": "./index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json"
   },
   "devDependencies": {
-    "@types/node": "catalog:"
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "vite": "catalog:"
   }
 }

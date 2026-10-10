@@ -109,7 +109,9 @@
       "name": "vite-plugin-third-party-licenses",
       "version": "0.0.0",
       "devDependencies": {
+        "@types/bun": "catalog:",
         "@types/node": "catalog:",
+        "vite": "catalog:",
       },
     },
   },

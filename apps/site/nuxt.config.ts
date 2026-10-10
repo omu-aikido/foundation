@@ -127,12 +127,6 @@ export default defineNuxtConfig({
     viewTransition: true,
   },
   vite: {
-    $client: {
-      build: { license: { fileName: ".license-report.json" } },
-    },
-    $server: {
-      build: { license: { fileName: ".license-report.json" } },
-    },
     plugins: [
       bundledLicenseListPlugin(),
       vueDevTools({
