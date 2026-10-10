@@ -1,9 +1,14 @@
-import { getRandoriTimelineState } from "~/utils/randoriTimer/randoriTimeline";
-import type { RandoriPreset } from "~/utils/randoriTimer/randoriTimer";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useRandoriBackgroundPlayer } from "./useRandoriBackgroundPlayer";
+import { useRandoriBell } from "./useRandoriBell";
+import { useScreenWakeLock } from "./useScreenWakeLock";
+
+import { getRandoriTimelineState } from "../utils/randoriTimer/randoriTimeline";
+import type { RandoriPreset } from "../utils/randoriTimer/randoriTimer";
 import {
   BACKGROUND_AUDIO_MAX_SECONDS,
   renderRandoriWav,
-} from "~/utils/randoriTimer/randoriBackgroundAudio";
+} from "../utils/randoriTimer/randoriBackgroundAudio";
 
 export type RandoriPlaybackMode = "normal" | "background";
 export type RandoriTimerStatus =
@@ -191,7 +196,7 @@ export function useRandoriTimer() {
     status.value = "idle";
     preparationError.value = undefined;
     playbackError.value = undefined;
-    if (import.meta.client) {
+    if (typeof window !== "undefined") {
       localStorage.setItem(PLAYBACK_MODE_STORAGE_KEY, mode);
     }
     if (mode === "background") schedulePreparation();
@@ -270,7 +275,7 @@ export function useRandoriTimer() {
   watch(
     customPresets,
     (presets) => {
-      if (import.meta.client) {
+      if (typeof window !== "undefined") {
         localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(presets));
       }
     },

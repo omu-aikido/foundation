@@ -1,10 +1,12 @@
+import { onBeforeUnmount, onMounted, watch, type Ref } from "vue";
+
 export function useScreenWakeLock(active: Readonly<Ref<boolean>>) {
   let sentinel: WakeLockSentinel | undefined;
   let requestVersion = 0;
 
   async function acquire() {
     if (
-      !import.meta.client ||
+      typeof window === "undefined" ||
       !active.value ||
       document.visibilityState !== "visible" ||
       sentinel ||

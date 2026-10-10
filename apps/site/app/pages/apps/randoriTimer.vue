@@ -4,8 +4,9 @@
     description: "乱取り特化のタイマー",
   });
 
-  import TimerPanel from "~/components/randoriTimer/TimerPanel.vue";
-  import SettingsPanel from "~/components/randoriTimer/SettingsPanel.vue";
+  import { useRandoriTimer } from "randori-timer";
+  import SettingsPanel from "randori-timer/components/SettingsPanel.vue";
+  import TimerPanel from "randori-timer/components/TimerPanel.vue";
 
   const timer = useRandoriTimer();
 </script>

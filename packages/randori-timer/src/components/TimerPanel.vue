@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import type { RandoriTimerStatus } from "~/composables/useRandoriTimer";
+  import { computed } from "vue";
+  import type { RandoriTimerStatus } from "../composables/useRandoriTimer";
 
   const props = defineProps<{
     activeRound: number;

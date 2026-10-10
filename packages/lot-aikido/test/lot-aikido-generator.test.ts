@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
-import { generateTechniques } from "../app/utils/lotAikido/generate";
-import type { WazaType } from "../app/utils/lotAikido/types";
+import { generateTechniques } from "../src/utils/lotAikido/generate";
+import type { WazaType } from "../src/utils/lotAikido/types";
 
 const source: WazaType[] = [
   { id: 1, waza_in: "正面打ち", waza_out: "一教", rank: 5 },

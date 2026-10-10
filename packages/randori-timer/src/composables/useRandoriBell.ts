@@ -1,4 +1,6 @@
-import { type BellCue, scheduleRandoriBell } from "~/utils/randoriTimer/randoriBellAudio";
+import { onBeforeUnmount, onMounted } from "vue";
+
+import { type BellCue, scheduleRandoriBell } from "../utils/randoriTimer/randoriBellAudio";
 
 export function useRandoriBell() {
   let audioContext: AudioContext | undefined;
@@ -10,7 +12,7 @@ export function useRandoriBell() {
   }
 
   async function resumeAudioContext() {
-    if (!import.meta.client) return;
+    if (typeof window === "undefined") return;
     const AudioContextClass =
       window.AudioContext ||
       (

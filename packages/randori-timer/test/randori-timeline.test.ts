@@ -3,7 +3,7 @@ import { describe, expect, it } from "bun:test";
 import {
   createRoundBoundaries,
   getRandoriTimelineState,
-} from "../app/utils/randoriTimer/randoriTimeline";
+} from "../src/utils/randoriTimer/randoriTimeline";
 
 const durations = [30, 30, 30, 60];
 

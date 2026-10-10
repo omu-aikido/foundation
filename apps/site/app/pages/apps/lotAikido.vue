@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import { ref } from "vue";
-
-  import GeneratorForm from "~/components/lotAikido/GeneratorForm.vue";
-  import TagInput from "~/components/lotAikido/TagInput.vue";
-  import WazaTable from "~/components/lotAikido/WazaTable.vue";
+  import { useGenerator } from "lot-aikido";
+  import GeneratorForm from "lot-aikido/components/GeneratorForm.vue";
+  import TagInput from "lot-aikido/components/TagInput.vue";
+  import WazaTable from "lot-aikido/components/WazaTable.vue";
 
   definePageMeta({
     title: "lotAikido",

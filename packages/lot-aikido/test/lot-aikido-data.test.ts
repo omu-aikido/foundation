@@ -1,8 +1,8 @@
 import { describe, expect, it } from "bun:test";
 
-import { wazadata } from "../app/utils/lotAikido/data";
-import { expandWazaRules } from "../app/utils/lotAikido/expand";
-import { 体勢, 技, 攻め } from "../app/utils/lotAikido/types";
+import { wazadata } from "../src/utils/lotAikido/data";
+import { expandWazaRules } from "../src/utils/lotAikido/expand";
+import { 体勢, 技, 攻め } from "../src/utils/lotAikido/types";
 
 describe("lotAikido rule expansion #1", () => {
   it("直積は攻め・体勢・技の組み合わせを展開する", () => {

@@ -27,7 +27,7 @@ const appTargets: EnvTarget[] = [
 const e2eTargets: EnvTarget[] = [
   {
     encrypted: resolve(root, "secrets/platform/e2e.env.age"),
-    plaintext: resolve(root, "e2e/.env"),
+    plaintext: resolve(root, "apps/platform/e2e/.env"),
   },
 ];
 

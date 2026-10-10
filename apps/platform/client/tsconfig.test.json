@@ -1,4 +1,7 @@
 {
   "extends": ["./tsconfig.json", "../../../tsconfig.test.json"],
+  "compilerOptions": {
+    "types": ["./.cloudflare/types"]
+  },
   "include": ["src/**/*.ts", "src/**/*.vue", "env.d.ts", "test/**/*.ts"]
 }

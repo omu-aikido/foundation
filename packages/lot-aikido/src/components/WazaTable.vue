@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { WazaType } from "~/utils/lotAikido/types";
+  import type { WazaType } from "../utils/lotAikido/types";
 
   defineProps<{ techniques: WazaType[] }>();
 

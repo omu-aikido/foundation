@@ -1,3 +1,5 @@
+import { onBeforeUnmount, onMounted, readonly, ref } from "vue";
+
 // oxlint-disable-next-line max-lines-per-function
 export function useRandoriBackgroundPlayer() {
   const elapsedSeconds = ref(0);
@@ -9,7 +11,7 @@ export function useRandoriBackgroundPlayer() {
   let animationFrame: number | undefined;
 
   function ensureAudio() {
-    if (!import.meta.client) return;
+    if (typeof window === "undefined") return;
     if (audio) return audio;
     audio = new Audio();
     audio.preload = "auto";

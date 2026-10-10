@@ -20,8 +20,10 @@
     "arktype": "catalog:",
     "h3": "^1.15.11",
     "hono": "catalog:",
+    "lot-aikido": "workspace:*",
     "marked": "^18.1.0",
     "nuxt": "^4.5.2",
+    "randori-timer": "workspace:*",
     "ts-ics": "^2.4.7",
     "unocss": "catalog:",
     "vue": "catalog:"

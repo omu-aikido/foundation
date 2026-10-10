@@ -66,10 +66,12 @@ export default defineConfig({
       knip: "knip --workspace apps/platform/client --workspace apps/platform/server --workspace packages/record-domain",
       "test:platform":
         "bun test --isolate apps/platform/server/test apps/platform/client/test packages/record-domain/test scripts/platform scripts/env.test.ts",
-      "test:site": "bun test --isolate apps/site/tests scripts/env.test.ts",
+      "test:site":
+        "bun test --isolate apps/site/tests packages/lot-aikido/test packages/randori-timer/test scripts/env.test.ts",
       "typecheck:platform":
         "cd apps/platform/server && bun run typecheck && cd ../client && bun run typecheck && cd ../../../packages/record-domain && bun run typecheck",
-      "typecheck:site": "cd apps/site && bun run typecheck",
+      "typecheck:site":
+        "cd apps/site && bun run typecheck && cd ../../packages/lot-aikido && bun run typecheck && cd ../randori-timer && bun run typecheck",
       "deploy:site":
         "vp run build:site && (cd apps/site && bunx --no-install cf deploy --prebuilt --dry-run)",
       "deploy:platform":

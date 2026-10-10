@@ -1,11 +1,11 @@
 import { describe, expect, it } from "bun:test";
 
-import { createRandoriBellPcm } from "../app/utils/randoriTimer/randoriPcmWav";
+import { createRandoriBellPcm } from "../src/utils/randoriTimer/randoriPcmWav";
 import {
   BACKGROUND_AUDIO_MAX_SECONDS,
   RANDORI_AUDIO_SAMPLE_RATE,
   renderRandoriWav,
-} from "../app/utils/randoriTimer/randoriBackgroundAudio";
+} from "../src/utils/randoriTimer/randoriBackgroundAudio";
 
 describe("renderRandoriWav", () => {
   it("Web Audioを使わず、開始音・無音・終了音を含むPCM16 WAVを生成する", async () => {

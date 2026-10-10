@@ -1,10 +1,11 @@
 <script setup lang="ts">
+  import { ref } from "vue";
   import {
     builtInRandoriPresets,
     formatDurations,
     type RandoriPreset,
-  } from "~/utils/randoriTimer/randoriTimer";
-  import type { RandoriPlaybackMode, RandoriTimerStatus } from "~/composables/useRandoriTimer";
+  } from "../utils/randoriTimer/randoriTimer";
+  import type { RandoriPlaybackMode, RandoriTimerStatus } from "../composables/useRandoriTimer";
 
   const props = defineProps<{
     customPresets: RandoriPreset[];

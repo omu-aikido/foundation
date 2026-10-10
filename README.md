@@ -18,7 +18,7 @@ vp install
 | --------------------------------- | --------------------------- | ---- |
 | `secrets/platform/client.env.age` | `apps/platform/client/.env` | 必須 |
 | `secrets/platform/server.env.age` | `apps/platform/server/.env` | 必須 |
-| `secrets/platform/e2e.env.age`    | `e2e/.env`                  | 必須 |
+| `secrets/platform/e2e.env.age`    | `apps/platform/e2e/.env`    | 必須 |
 | `secrets/site/site.env.age`       | `apps/site/.env`            | 任意 |
 
 - `vp run dev:platform`：Client・Server・E2Eの不足している`.env`だけ復号して起動し、既存の平文ファイルはそのまま使います。
@@ -51,6 +51,9 @@ SiteのWorker local previewは`vp run build:site`後に`cd apps/site && bun run 
 - `apps/platform/server/`: Hono API / Cloudflare Worker
 - `packages/database/`: Tursoローカル開発とDrizzle migrations
 - `packages/record-domain/`: Recordの共有domain型・schema・ロジック
+- `packages/lot-aikido/`: lotAikido抽選機能のUI・composable・技データ
+- `packages/randori-timer/`: 乱取りタイマーのUI・composable・音声処理
+- `apps/platform/e2e/`: PlatformのE2E用環境ファイル
 - `scripts/platform/`: Recordの開発起動、環境ファイル、release-note補助
 
 アプリごとのCloudflare設定は各アプリの`cloudflare.config.ts`です。SiteはstableなページをSSR prerenderし、予定表はruntime SSRします。Nitro hookがWorker設定とNitro生成物からcf CLI用manifestを構成します。Vite+ toolchain設定はroot `vite.config.ts`に集約し、app側のVite設定はbuild/dev-server設定に限ります。詳細は[構成方針](docs/architecture-plan.md)を参照してください。
