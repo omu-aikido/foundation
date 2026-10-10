@@ -1,46 +1,17 @@
-/// <reference types="bun" />
-
+import { chmod, mkdir, readFile, rename, rm, stat } from "node:fs/promises";
 import { homedir } from "node:os";
-import { chmod, mkdir, rename, rm, stat } from "node:fs/promises";
+import { parseEnv } from "node:util";
 import { dirname, join, relative, resolve } from "node:path";
 
 export type EnvTarget = {
   encrypted: string;
   plaintext: string;
   recipients: string;
+  expectedVariables: readonly string[];
   optional?: boolean;
 };
 
 const root = resolve(import.meta.dir, "..");
-const developmentRecipients = resolve(root, "secrets/development/recipients");
-
-export const platformEnvTargets: readonly EnvTarget[] = [
-  {
-    encrypted: resolve(root, "secrets/development/platform/client.env.age"),
-    plaintext: resolve(root, "apps/platform/client/.env"),
-    recipients: developmentRecipients,
-  },
-  {
-    encrypted: resolve(root, "secrets/development/platform/server.env.age"),
-    plaintext: resolve(root, "apps/platform/server/.env"),
-    recipients: developmentRecipients,
-  },
-  {
-    encrypted: resolve(root, "secrets/development/platform/e2e.env.age"),
-    plaintext: resolve(root, "apps/platform/e2e/.env"),
-    recipients: developmentRecipients,
-  },
-];
-
-export const siteEnvTargets: readonly EnvTarget[] = [
-  {
-    encrypted: resolve(root, "secrets/development/site/site.env.age"),
-    plaintext: resolve(root, "apps/site/.env"),
-    recipients: developmentRecipients,
-  },
-];
-
-const envTargets: readonly EnvTarget[] = [...platformEnvTargets, ...siteEnvTargets];
 
 function displayPath(path: string): string {
   return relative(root, path) || ".";
@@ -93,6 +64,22 @@ async function writeAtomically(path: string, contents: ArrayBuffer): Promise<voi
   }
 }
 
+export function validateEnv(target: EnvTarget, contents: string): void {
+  const actual = new Set(Object.keys(parseEnv(contents)));
+  const expected = new Set(target.expectedVariables);
+  const missing = [...expected].filter((key) => !actual.has(key)).sort();
+  const unexpected = [...actual].filter((key) => !expected.has(key)).sort();
+  if (missing.length > 0 || unexpected.length > 0) {
+    const details = [
+      ...(missing.length > 0 ? [`missing: ${missing.join(", ")}`] : []),
+      ...(unexpected.length > 0 ? [`unexpected: ${unexpected.join(", ")}`] : []),
+    ];
+    throw new Error(
+      `Environment variables in ${displayPath(target.plaintext)} do not match expected keys (${details.join("; ")})`,
+    );
+  }
+}
+
 async function decryptFile(target: EnvTarget, identity: string): Promise<void> {
   const ageProcess = Bun.spawn(["age", "--decrypt", "--identity", identity, target.encrypted], {
     cwd: root,
@@ -114,7 +101,9 @@ async function decryptFile(target: EnvTarget, identity: string): Promise<void> {
     );
   }
 
-  await writeAtomically(target.plaintext, await contents);
+  const plaintext = await contents;
+  validateEnv(target, new TextDecoder().decode(plaintext));
+  await writeAtomically(target.plaintext, plaintext);
   console.log(`Decrypted ${displayPath(target.plaintext)}`);
 }
 
@@ -160,10 +149,11 @@ async function encryptFile(target: EnvTarget): Promise<void> {
 // Select using filesystem metadata only; validate every input before invoking age.
 export async function selectEnvTargets(
   command: "encrypt" | "decrypt",
-  options: { onlyMissing?: boolean; targets?: readonly EnvTarget[] } = {},
+  targets: readonly EnvTarget[],
+  options: { onlyMissing?: boolean } = {},
 ): Promise<EnvTarget[]> {
   const selected: EnvTarget[] = [];
-  for (const target of options.targets ?? envTargets) {
+  for (const target of targets) {
     if (command === "decrypt" && options.onlyMissing && (await fileExists(target.plaintext))) {
       continue;
     }
@@ -179,40 +169,26 @@ export async function selectEnvTargets(
 }
 
 export async function decryptEnvFiles(
-  options: { onlyMissing?: boolean; targets?: readonly EnvTarget[] } = {},
+  targets: readonly EnvTarget[],
+  options: { onlyMissing?: boolean } = {},
 ): Promise<void> {
-  const targets = await selectEnvTargets("decrypt", options);
-  if (targets.length === 0) return;
+  const selected = await selectEnvTargets("decrypt", targets, options);
+  if (selected.length === 0) return;
 
   const identity = identityPath();
-  await Promise.all(targets.map((target) => decryptFile(target, identity)));
+  await Promise.all(selected.map((target) => decryptFile(target, identity)));
 }
 
-export async function encryptEnvFiles(): Promise<void> {
-  const selected = await selectEnvTargets("encrypt", { targets: envTargets });
+export async function encryptEnvFiles(targets: readonly EnvTarget[]): Promise<void> {
+  const selected = await selectEnvTargets("encrypt", targets);
   if (selected.length === 0) return;
+  for (const target of selected) {
+    validateEnv(target, await readFile(target.plaintext, "utf8"));
+  }
   for (const recipients of new Set(selected.map((target) => target.recipients))) {
     if (!(await fileExists(recipients))) {
       throw new Error(`Age recipient file not found: ${displayPath(recipients)}`);
     }
   }
   await Promise.all(selected.map((target) => encryptFile(target)));
-}
-
-async function main(): Promise<void> {
-  const command = process.argv[2];
-  if (command === "decrypt") {
-    await decryptEnvFiles();
-    return;
-  }
-  if (command === "encrypt") {
-    await encryptEnvFiles();
-    return;
-  }
-
-  throw new Error("Usage: bun scripts/env.ts <encrypt|decrypt>");
-}
-
-if (import.meta.main) {
-  await main();
 }

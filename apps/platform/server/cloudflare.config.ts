@@ -7,11 +7,18 @@ export default defineConfig({
     compatibilityFlags: ["nodejs_compat"],
     entrypoint: "src/index.ts",
     observability: {
-      enabled: true,
+      logs: {
+        enabled: true,
+        invocationLogs: false,
+      },
       traces: {
         enabled: true,
       },
+      issues: {
+        enabled: true,
+      },
     },
+    placement: { mode: "smart" },
     assets: {
       notFoundHandling: "single-page-application",
     },

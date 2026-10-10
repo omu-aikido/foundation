@@ -65,7 +65,7 @@ export default defineConfig({
       "generate-types:site": "cd apps/site && bun run generate-types",
       knip: "vpx knip --workspace apps/platform/client --workspace apps/platform/server --workspace packages/record-domain",
       "test:platform":
-        "bun test --isolate apps/platform/server/test apps/platform/client/test packages/record-domain/test scripts/platform scripts/env.test.ts",
+        "bun test --isolate apps/platform/server/test apps/platform/client/test packages/record-domain/test scripts/platform",
       "test:site":
         "bun test --isolate apps/site/tests packages/lot-aikido/test packages/randori-timer/test",
       "typecheck:platform":

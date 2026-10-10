@@ -1,9 +1,10 @@
 /// <reference types="bun" />
 
 import { resolve } from "node:path";
-import { decryptEnvFiles, siteEnvTargets } from "../env";
+import { decryptEnvFiles } from "../env";
+import { siteEnvTargets } from "../../secrets/development/targets";
 
-await decryptEnvFiles({ onlyMissing: true, targets: siteEnvTargets });
+await decryptEnvFiles(siteEnvTargets, { onlyMissing: true });
 
 const child = Bun.spawn(["bun", "run", "dev", ...process.argv.slice(2)], {
   cwd: resolve(import.meta.dir, "../../apps/site"),

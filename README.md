@@ -12,19 +12,19 @@ TypeScriptの共通設定はroot `tsconfig.base.json`、テスト用の共通型
 vp install
 ```
 
-平文の環境ファイルはGit管理せず、SiteとPlatformの暗号化済み環境ファイルは`secrets/`に置きます。共通の処理は`scripts/env.ts`です。AGE identityはリポジトリ外に置き、必要に応じて`AGE_IDENTITY_FILE`で指定してください。
+平文の環境ファイルはGit管理せず、SiteとPlatformの暗号化済み環境ファイルは`secrets/`に置きます。対象ファイルとrecipientの定義、および暗号化・復号の入口は`secrets/development/targets.ts`です。共通処理は`scripts/env.ts`が行います。AGE identityはリポジトリ外に置き、必要に応じて`AGE_IDENTITY_FILE`で指定してください。
 
 | 暗号化ファイル                                | ローカルの平文ファイル      | 扱い |
 | --------------------------------------------- | --------------------------- | ---- |
 | `secrets/development/platform/client.env.age` | `apps/platform/client/.env` | 必須 |
 | `secrets/development/platform/server.env.age` | `apps/platform/server/.env` | 必須 |
 | `secrets/development/platform/e2e.env.age`    | `apps/platform/e2e/.env`    | 必須 |
-| `secrets/development/site/site.env.age`       | `apps/site/.env`            | 任意 |
+| `secrets/development/site/site.env.age`       | `apps/site/.env`            | 必須 |
 
 - `vp run dev:platform`：Client・Server・E2Eの不足している`.env`だけ復号して起動し、既存の平文ファイルはそのまま使います。
-- `vp run dev:site`：`apps/site/.env`がない場合だけ、`secrets/development/site/site.env.age`から復号して起動します。既存の平文ファイルはそのまま使い、暗号化ファイルもない場合は復号せずに起動します。
+- `vp run dev:site`：`apps/site/.env`がない場合、`secrets/development/site/site.env.age`から復号して起動します。既存の平文ファイルはそのまま使います。
 
-明示的な復号は`bun scripts/env.ts decrypt`、暗号化は`bun scripts/env.ts encrypt`です。明示的な復号はClient・Server・E2E、Siteも対象とし、既存の平文ファイルも置き換えます。暗号化は各対象のrecipient設定（現在はすべて`secrets/development/recipients`）を使用し、Siteは`apps/site/.env`がある場合だけ対象になります。必須入力が不足している場合は、ageの実行前に停止します。これらのコマンドはCloudflareへのsecret登録やdeployを行いません。Workerのsecret宣言は各アプリの`cloudflare.config.ts`で管理し、公開用の環境変数にsecretを入れないでください。
+明示的な復号は`bun secrets/development/targets.ts decrypt`、暗号化は`bun secrets/development/targets.ts encrypt`です。明示的な復号はClient・Server・E2E、Siteも対象とし、既存の平文ファイルも置き換えます。暗号化は`secrets/development/targets.ts`に定義された各対象のrecipient設定（現在はすべて`secrets/development/recipients`）を使用し、Siteを含む全対象の平文ファイルが必要です。必須入力が不足している場合や、`.env`のキーが対象ごとに定義されたキーと一致しない場合は、ageの実行前に停止します。復号でもキーを検証し、不一致の平文は書き込みません。これらのコマンドはCloudflareへのsecret登録やdeployを行いません。Workerのsecret宣言は各アプリの`cloudflare.config.ts`で管理し、公開用の環境変数にsecretを入れないでください。
 
 ## よく使うコマンド
 

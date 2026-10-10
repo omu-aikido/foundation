@@ -20,6 +20,9 @@ export default defineConfig({
       traces: {
         enabled: true,
       },
+      issues: {
+        enabled: true,
+      },
     },
     assets: {
       htmlHandling: "drop-trailing-slash",

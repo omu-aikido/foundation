@@ -1,6 +1,7 @@
 /// <reference types="bun" />
 
-import { decryptEnvFiles, platformEnvTargets } from "../env";
+import { decryptEnvFiles } from "../env";
+import { platformEnvTargets } from "../../secrets/development/targets";
 
 type DevChildProcess = ReturnType<typeof Bun.spawn>;
 
@@ -31,7 +32,7 @@ process.once("SIGTERM", () => {
 });
 
 async function main(): Promise<void> {
-  await decryptEnvFiles({ onlyMissing: true, targets: platformEnvTargets });
+  await decryptEnvFiles(platformEnvTargets, { onlyMissing: true });
 
   console.log("Starting database...");
   const database = Bun.spawn({
