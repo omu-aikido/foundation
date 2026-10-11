@@ -20,7 +20,7 @@ jobs:
           bun-version: "1.4.3"
       - uses: voidzero-dev/setup-vp@v1
         with:
-          node-version-file: package.json
+          node-version: "24"
           cache: true
       - run: vp install --frozen-lockfile
       - run: vp check
