@@ -3,7 +3,7 @@ import { bindings, defineConfig } from "cf/config";
 export default defineConfig({
   worker: {
     name: "platform",
-    compatibilityDate: "2026-03-30",
+    compatibilityDate: "2026-07-19",
     compatibilityFlags: ["nodejs_compat"],
     entrypoint: "src/index.ts",
     observability: {
