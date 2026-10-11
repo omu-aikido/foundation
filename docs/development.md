@@ -37,7 +37,7 @@ cd apps/site && bun run preview
 
 ## GitHub PR とリリース
 
-- 通常の作業ブランチから `dev` をbaseとするPRを作成します。CIの検証は `dev` と `main` 宛てのPRで実行し、release-note checkはリリース用の `main` 宛てPRでのみ実行します。
+- 通常の作業ブランチから `dev` をbaseとするPRを作成します。`ci.yml` は `dev` / `main` 宛てPRを検証し、`release-note.yml` は `main` 宛てPRのみrelease-note checkを実行します。
 - `dev` が変更を統合するブランチです。`main` へ直接通常変更を取り込まず、リリース時に `dev` から `main` へのPRを作成します。
 - リリース時期は別途決定します。`main` へのマージは直ちにデプロイを開始するため、明示的なリリース許可を得るまでエージェントは `main` をマージまたはpushしてはいけません。
 - CIのbuild/testはローカル検証であり、deployを実行しません。
