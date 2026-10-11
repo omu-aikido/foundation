@@ -3,7 +3,7 @@ import { bindings, defineConfig } from "cf/config";
 export default defineConfig({
   worker: {
     name: "site",
-    compatibilityDate: "2026-07-19",
+    compatibilityDate: "2026-10-01",
     compatibilityFlags: ["global_fetch_strictly_public", "nodejs_compat"],
     entrypoint: ".output/server/index.mjs",
     placement: {
@@ -23,6 +23,7 @@ export default defineConfig({
       issues: {
         enabled: true,
       },
+      enabled: true,
     },
     assets: {
       htmlHandling: "drop-trailing-slash",
