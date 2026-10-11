@@ -2,7 +2,7 @@ import { bindings, defineConfig } from "cf/config";
 
 export default defineConfig({
   worker: {
-    name: "record",
+    name: "platform",
     compatibilityDate: "2026-03-30",
     compatibilityFlags: ["nodejs_compat"],
     entrypoint: "src/index.ts",
@@ -27,8 +27,12 @@ export default defineConfig({
       CLERK_SECRET_KEY: bindings.secret(),
       CLERK_WEBHOOK_SECRET: bindings.secret(),
       TURSO_AUTH_TOKEN: bindings.secret(),
+      CLERK_AUTHORIZED_PARTIES: bindings.secret(),
+      CLERK_FRONTEND_API_URL: bindings.secret(),
+      CLERK_PUBLISHABLE_KEY: bindings.secret(),
+      TURSO_DATABASE_URL: bindings.secret(),
       ANALYTICS: bindings.analyticsEngineDataset({
-        name: "record_analytics",
+        name: "platform_analytics",
       }),
       CF_VERSION_METADATA: bindings.versionMetadata(),
       ACCOUNT_MUTATION_RATE_LIMIT: bindings.rateLimit({
@@ -53,6 +57,8 @@ export default defineConfig({
         },
       }),
       ASSETS: bindings.assets(),
+      // delete
+      VITE_CLERK_PUBLISHABLE_KEY: bindings.secret(),
     },
   },
 });
