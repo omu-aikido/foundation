@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import cloudflareConfig from "../cloudflare.config";
-import { writeCloudflareBuildOutput } from "../nitro/cloudflare-build-output";
+import { writeCloudflareBuildOutput } from "../build/cloudflare-build-output";
 
 const temporaryDirectories: string[] = [];
 const assetHeaders = {

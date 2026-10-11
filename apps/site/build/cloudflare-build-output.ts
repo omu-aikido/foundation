@@ -62,11 +62,19 @@ export async function writeCloudflareBuildOutput({
 
   await rm(outputDir, { recursive: true, force: true });
   await Promise.all([mkdir(bundleDir, { recursive: true }), mkdir(assetsDir, { recursive: true })]);
+
   const headersFile = [
     "/*",
     ...Object.entries(assetHeaders).map(([name, value]) => `  ${name}: ${value}`),
     "",
+    "/llms*.txt",
+    "  Content-Type: text/plain; charset=utf-8",
+    "",
+    "/licenses.txt",
+    "  Content-Type: text/plain; charset=utf-8",
+    "",
   ].join("\n");
+
   await writeFile(join(absolutePublicDir, "_headers"), headersFile);
 
   await Promise.all([

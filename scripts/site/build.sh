@@ -12,16 +12,29 @@ export PATH="$VP_HOME/bin:$PATH"
 vp install --frozen-lockfile
 vp run build:site
 
-echo "=== License artifact diagnostics ==="
+site="apps/site"
 
-for file in \
-  apps/site/.output/public/licenses.txt \
-  apps/site/.cloudflare/output/v0/workers/default/assets/licenses.txt \
-  apps/site/.cloudflare/output/v0/workers/default/assets/llms.txt
+license="$site/node_modules/.cache/nuxt/.nuxt/dist/client/licenses.txt"
+
+if [[ ! -s "$license" ]]; then
+  license="$site/.nuxt/dist/client/licenses.txt"
+fi
+
+if [[ ! -s "$license" ]]; then
+  echo "Error: Client license report not found" >&2
+  exit 1
+fi
+
+for dir in \
+  "$site/.output/public" \
+  "$site/.cloudflare/output/v0/workers/default/assets"
 do
-  if test -f "$file"; then
-    ls -lh "$file"
-  else
-    echo "MISSING: $file"
+  if [[ ! -d "$dir" ]]; then
+    echo "Error: Missing output directory: $dir" >&2
+    exit 1
   fi
+
+  cp "$license" "$dir/licenses.txt"
 done
+
+echo "Published licenses.txt"

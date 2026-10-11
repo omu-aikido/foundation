@@ -6,7 +6,7 @@
     "build": "bun run generate-content && nuxt build",
     "cf-build": "bun run generate-content && cf build",
     "dev": "nuxt dev",
-    "generate-content": "bun scripts/generate-site-content.ts",
+    "generate-content": "bun build/generate-site-content.ts",
     "generate-types": "cf workers types",
     "postinstall": "bun run generate-content && nuxt prepare",
     "preview": "wrangler dev --experimental-new-config --local --ip 127.0.0.1 --assets .output/public",

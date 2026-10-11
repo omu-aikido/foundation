@@ -1,7 +1,7 @@
 import { bundledLicenseListPlugin } from "vite-plugin-third-party-licenses";
 import cloudflareConfig from "./cloudflare.config";
 import vueDevTools from "vite-plugin-vue-devtools";
-import { writeCloudflareBuildOutput } from "./nitro/cloudflare-build-output";
+import { writeCloudflareBuildOutput } from "./build/cloudflare-build-output";
 
 // Keep stable content cached as assets; calendar pages render at request time.
 const prerenderRoutes = [
