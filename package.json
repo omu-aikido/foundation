@@ -39,6 +39,7 @@
   },
   "peerDependencies": {},
   "overrides": {
+    "simple-git": "4.0.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0"
   },
   "devEngines": {
@@ -47,5 +48,8 @@
       "version": "^1.4.3",
       "onFail": "download"
     }
+  },
+  "patchedDependencies": {
+    "@nuxt/devtools@3.4.2": "patches/@nuxt%2Fdevtools@3.4.2.patch"
   }
 }

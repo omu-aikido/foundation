@@ -25,6 +25,8 @@ vp run build:platform
 
 `dev:site` と `dev:platform` は、必要な `.env` がない場合だけ暗号化ファイルから復号し、既存の平文ファイルを保護して起動します。
 
+ルートの `package.json` で `simple-git` のセキュリティ修正版を override し、ルートの `patchedDependencies` が適用する `patches/` 内の追跡対象パッチで Nuxt DevTools のESM named export importを互換化しています。上流 DevTools が修正版の named export に対応したら、override とパッチを合わせて見直してください。
+
 `build:site` はコンテンツ生成後に `cf build` を実行し、Nuxt/Nitro の出力を Cloudflare Build Output Specification v0 (`apps/site/.cloudflare/output/v0`) に構成します。`build:platform` はClient SPAとServer Workerをローカルでbuildします。どちらもdeployやCloudflareリソース変更は行いません。`test:*`、`typecheck:*` もローカル検証です。
 
 SiteのWorker previewはSite build後に実行します。
