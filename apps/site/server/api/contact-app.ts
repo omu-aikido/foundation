@@ -76,6 +76,44 @@ function requestOrigin(request: Request): string | null {
   }
 }
 
+async function readContactBody(request: Request): Promise<Uint8Array<ArrayBuffer> | Response> {
+  const declaredLength = Number(request.headers.get("Content-Length"));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
+    if (request.body) void request.body.cancel().catch(() => undefined);
+    return errorResponse("PAYLOAD_TOO_LARGE", "送信内容が大きすぎます。", 413);
+  }
+
+  const reader = request.body?.getReader();
+  if (!reader) return new Uint8Array();
+
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > MAX_BODY_BYTES) {
+        void reader.cancel().catch(() => undefined);
+        return errorResponse("PAYLOAD_TOO_LARGE", "送信内容が大きすぎます。", 413);
+      }
+      chunks.push(value);
+    }
+  } catch {
+    return errorResponse("INVALID_FORM", "フォームを読み取れません。", 400);
+  } finally {
+    reader.releaseLock();
+  }
+
+  const body = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return body;
+}
+
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
@@ -193,14 +231,9 @@ async function handleContact(
   if (!contentType.toLowerCase().startsWith("multipart/form-data;")) {
     return errorResponse("INVALID_CONTENT_TYPE", "フォーム形式が不正です。", 400);
   }
-  const declaredLength = Number(request.headers.get("Content-Length") ?? 0);
-  if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
-    return errorResponse("PAYLOAD_TOO_LARGE", "送信内容が大きすぎます。", 413);
-  }
-  const bytes = await request.arrayBuffer();
-  if (bytes.byteLength > MAX_BODY_BYTES) {
-    return errorResponse("PAYLOAD_TOO_LARGE", "送信内容が大きすぎます。", 413);
-  }
+  const body = await readContactBody(request);
+  if (body instanceof Response) return body;
+  const bytes = body;
 
   const clientIp = request.headers.get("CF-Connecting-IP")?.trim();
   const rate = await env.CONTACT_RATE_LIMITER.limit({

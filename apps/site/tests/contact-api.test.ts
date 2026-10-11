@@ -104,7 +104,98 @@ describe("POST /api/contact validation and security", () => {
     const largeResponse = await app.fetch(contactRequest({ body: "a".repeat(17 * 1024) }), env);
     expect(largeResponse.status).toBe(413);
   });
+});
 
+describe("POST /api/contact streaming body limit", () => {
+  it("Content-Length がない、または過少でもストリーム上限を適用して超過時に cancel する", async () => {
+    for (const declaredLength of [undefined, "1"]) {
+      let cancelled = false;
+      const headers = new Headers({
+        Origin: "https://omu-aikido.com",
+        "Content-Type": "multipart/form-data; boundary=x",
+      });
+      if (declaredLength) headers.set("Content-Length", declaredLength);
+      const body = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new Uint8Array(16 * 1024));
+          controller.enqueue(new Uint8Array([1]));
+        },
+        cancel() {
+          cancelled = true;
+        },
+      });
+      const request = new Request("https://omu-aikido.com/api/contact", {
+        method: "POST",
+        headers,
+        body,
+      });
+      const limit = mock().mockResolvedValue({ success: true });
+      const fetch = externalFetch();
+      const response = await createContactApp({ fetch }).fetch(
+        request,
+        fakeEnv({ CONTACT_RATE_LIMITER: { limit } }),
+      );
+      expect(response.status).toBe(413);
+      expect(cancelled).toBe(true);
+      expect(limit).not.toHaveBeenCalled();
+      expect(fetch).not.toHaveBeenCalled();
+    }
+  });
+
+  it("応答しない cancel を待たず、読み取りエラーは 400 とする", async () => {
+    const neverSettles = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array(16 * 1024 + 1));
+      },
+      cancel() {
+        return new Promise<void>(() => {});
+      },
+    });
+    const tooLarge = new Request("https://omu-aikido.com/api/contact", {
+      method: "POST",
+      headers: {
+        Origin: "https://omu-aikido.com",
+        "Content-Type": "multipart/form-data; boundary=x",
+      },
+      body: neverSettles,
+    });
+    const tooLargeResponse = await createContactApp().fetch(tooLarge, fakeEnv());
+    expect(tooLargeResponse.status).toBe(413);
+
+    const broken = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.error(new Error("broken request stream"));
+      },
+    });
+    const brokenRequest = new Request("https://omu-aikido.com/api/contact", {
+      method: "POST",
+      headers: {
+        Origin: "https://omu-aikido.com",
+        "Content-Type": "multipart/form-data; boundary=x",
+      },
+      body: broken,
+    });
+    expect((await createContactApp().fetch(brokenRequest, fakeEnv())).status).toBe(400);
+  });
+
+  it("16 KiB ちょうどの body はサイズ超過として扱わない", async () => {
+    const bytes = new Uint8Array(16 * 1024);
+    const response = await createContactApp({ fetch: externalFetch() }).fetch(
+      new Request("https://omu-aikido.com/api/contact", {
+        method: "POST",
+        headers: {
+          Origin: "https://omu-aikido.com",
+          "Content-Type": "multipart/form-data; boundary=x",
+        },
+        body: bytes,
+      }),
+      fakeEnv(),
+    );
+    expect(response.status).toBe(400);
+  });
+});
+
+describe("POST /api/contact validation and security", () => {
   it("rate limit は Turnstile と配送より前に 429 を返す", async () => {
     const fetch = externalFetch();
     const env = fakeEnv({

@@ -56,7 +56,7 @@ describe("Cloudflare Build Output", () => {
     );
 
     expect(rootConfig.buildContext).toEqual({ isPreview: false });
-    expect(workerConfig.name).toBe("page");
+    expect(workerConfig.name).toBe(cloudflareConfig.worker.name);
     expect(workerConfig.domains).toEqual(["omu-aikido.com"]);
     expect(workerConfig.entrypoint).toBeUndefined();
     expect(workerConfig.manifest).toEqual({

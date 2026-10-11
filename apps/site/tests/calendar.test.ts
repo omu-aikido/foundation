@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "bun:test";
@@ -17,7 +18,7 @@ import {
   CALENDAR_EDGE_CACHE_CONTROL,
   parseCalendarRequestUrl,
 } from "../server/services/calendar-policy";
-import { parseCalendarEvents } from "../server/services/calendar";
+import { fetchCalendarIcsText, parseCalendarEvents } from "../server/services/calendar";
 
 const JULY_2026 = new Date("2026-07-19T12:00:00+09:00");
 
@@ -99,6 +100,98 @@ describe("calendar request policy", () => {
       `public, max-age=${CALENDAR_CACHE_FRESH_SECONDS}, stale-while-revalidate=${staleSeconds}, stale-if-error=${staleSeconds}`,
     );
     expect(CALENDAR_EDGE_CACHE_CONTROL).not.toContain("s-maxage");
+  });
+});
+
+describe("calendar ICS fetching", () => {
+  it("timeout before response headers aborts fetch and rejects", async () => {
+    let signal: AbortSignal | undefined;
+    const fetcher = (_input: RequestInfo | URL, init?: RequestInit) => {
+      signal = init?.signal ?? undefined;
+      return new Promise<Response>(() => {});
+    };
+
+    await assert.rejects(fetchCalendarIcsText(fetcher, 5), /timed out/);
+    expect(signal?.aborted).toBe(true);
+  });
+
+  it("cancels a response that arrives after the fetch timed out", async () => {
+    let cancelled = false;
+    const lateFetch = () =>
+      new Promise<Response>((resolve) => {
+        setTimeout(
+          () =>
+            resolve(
+              new Response(
+                new ReadableStream<Uint8Array>({
+                  start(controller) {
+                    controller.enqueue(new Uint8Array([65]));
+                  },
+                  cancel() {
+                    cancelled = true;
+                  },
+                }),
+              ),
+            ),
+          20,
+        );
+      });
+
+    await assert.rejects(fetchCalendarIcsText(lateFetch, 5), /timed out/);
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    expect(cancelled).toBe(true);
+  });
+
+  it("stalled response body times out, cancels, and a later fetch can succeed", async () => {
+    let cancelled = false;
+    const stalledFetch = async () =>
+      new Response(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(new Uint8Array([65]));
+          },
+          cancel() {
+            cancelled = true;
+          },
+        }),
+      );
+
+    await assert.rejects(fetchCalendarIcsText(stalledFetch, 5), /timed out/);
+    expect(cancelled).toBe(true);
+    const retry = async () => new Response("retry ok");
+    expect(await fetchCalendarIcsText(retry, 100)).toBe("retry ok");
+  });
+
+  it("bounds cumulative bytes across chunks and accepts the exact limit", async () => {
+    let cancelled = false;
+    const oversized = async () =>
+      new Response(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(new Uint8Array(1024 * 1024));
+            controller.enqueue(new Uint8Array([1]));
+          },
+          cancel() {
+            cancelled = true;
+          },
+        }),
+      );
+    await assert.rejects(fetchCalendarIcsText(oversized, 100, 1024 * 1024), /too large/);
+    expect(cancelled).toBe(true);
+
+    const chunks = [new Uint8Array(1024 * 1024 - 2), new TextEncoder().encode("é")];
+    const exact = async () =>
+      new Response(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            for (const chunk of chunks) controller.enqueue(chunk);
+            controller.close();
+          },
+        }),
+      );
+    const text = await fetchCalendarIcsText(exact, 100, 1024 * 1024);
+    expect(new TextEncoder().encode(text)).toHaveLength(1024 * 1024);
+    expect(text.endsWith("é")).toBe(true);
   });
 });
 

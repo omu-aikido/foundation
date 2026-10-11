@@ -2,6 +2,7 @@ import { bundledLicenseListPlugin } from "vite-plugin-third-party-licenses";
 import cloudflareConfig from "./cloudflare.config";
 import vueDevTools from "vite-plugin-vue-devtools";
 import { writeCloudflareBuildOutput } from "./build/cloudflare-build-output";
+import { securityHeaders } from "./security-headers";
 
 // Keep stable content cached as assets; calendar pages render at request time.
 const prerenderRoutes = [
@@ -20,27 +21,6 @@ const prerenderRoutes = [
   "/support",
   "/terms-of-service",
 ];
-
-const securityHeaders = {
-  "Content-Security-Policy": [
-    "default-src 'self'",
-    "media-src 'self' blob:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
-    "worker-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
-    "connect-src 'self' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
-    "frame-src https://challenges.cloudflare.com https://www.google.com",
-    "img-src 'self' data: https:",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-    "frame-ancestors 'none'",
-  ].join("; "),
-  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
-  "Referrer-Policy": "strict-origin-when-cross-origin",
-  "X-Content-Type-Options": "nosniff",
-};
 
 export default defineNuxtConfig({
   compatibilityDate: "2026-07-19",
