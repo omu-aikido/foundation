@@ -23,9 +23,9 @@ jobs:
           node-version: "24"
           cache: true
       - run: vp install --frozen-lockfile
-      - run: vp check
       - run: vp run generate-types:site
       - run: vp run generate-types:server
+      - run: vp check
       - run: vp run typecheck:site
       - run: vp run typecheck:platform
       - run: vp run test:site
