@@ -31,6 +31,7 @@
     "prepare": "vp config"
   },
   "devDependencies": {
+    "@iconify-json/ri": "catalog:",
     "@types/bun": "catalog:",
     "cf": "catalog:",
     "typescript": "catalog:",
