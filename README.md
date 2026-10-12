@@ -1,59 +1,22 @@
 # foundation
 
-大阪公立大学合氣道部の公式サイトと、活動記録・アカウント管理を担うプラットフォームを管理するモノレポです。Bun workspacesとVite+を共通の開発基盤にしています。
+大阪公立大学合氣道部の公式サイトと、活動記録・アカウント管理を担うプラットフォームのモノレポです。Bun workspaces と Vite+ を共通の開発基盤とし、各アプリを独立した Cloudflare Worker として管理します。
 
-Bun 1.4.3以上を使用してください。Bunは依存管理・補助スクリプト・テストに使用します。cf CLIの実行にはNode.js 22以上が必要です。WorkerはCloudflare runtimeで動作し、各`cloudflare.config.ts`の互換日付と`nodejs_compat`に従います。
+## 開発を始める
 
-TypeScriptの共通設定はroot `tsconfig.base.json`、テスト用の共通型設定はroot `tsconfig.test.json`です。各workspaceの`tsconfig.json`がruntime用、`test/tsconfig.json`（Siteは`tests/tsconfig.json`）がテスト用の型を定義します。`vp run check`でrootの共通lint・format設定を適用します。
-
-## セットアップ
-
-```sh
-vp install
-```
-
-平文の環境ファイルはGit管理せず、SiteとPlatformの暗号化済み環境ファイルは`secrets/`に置きます。対象ファイルとrecipientの定義、および暗号化・復号の入口は`secrets/development/targets.ts`です。共通処理は`scripts/env.ts`が行います。AGE identityはリポジトリ外に置き、必要に応じて`AGE_IDENTITY_FILE`で指定してください。
-
-| 暗号化ファイル                                | ローカルの平文ファイル      | 扱い |
-| --------------------------------------------- | --------------------------- | ---- |
-| `secrets/development/platform/client.env.age` | `apps/platform/client/.env` | 必須 |
-| `secrets/development/platform/server.env.age` | `apps/platform/server/.env` | 必須 |
-| `secrets/development/platform/e2e.env.age`    | `apps/platform/e2e/.env`    | 必須 |
-| `secrets/development/site/site.env.age`       | `apps/site/.env`            | 必須 |
-
-- `vp run dev:platform`：Client・Server・E2Eの不足している`.env`だけ復号して起動し、既存の平文ファイルはそのまま使います。
-- `vp run dev:site`：`apps/site/.env`がない場合、`secrets/development/site/site.env.age`から復号して起動します。既存の平文ファイルはそのまま使います。
-
-明示的な復号は`bun secrets/development/targets.ts decrypt`、暗号化は`bun secrets/development/targets.ts encrypt`です。明示的な復号はClient・Server・E2E、Siteも対象とし、既存の平文ファイルも置き換えます。暗号化は`secrets/development/targets.ts`に定義された各対象のrecipient設定（現在はすべて`secrets/development/recipients`）を使用し、Siteを含む全対象の平文ファイルが必要です。必須入力が不足している場合や、`.env`のキーが対象ごとに定義されたキーと一致しない場合は、ageの実行前に停止します。復号でもキーを検証し、不一致の平文は書き込みません。これらのコマンドはCloudflareへのsecret登録やdeployを行いません。Workerのsecret宣言は各アプリの`cloudflare.config.ts`で管理し、公開用の環境変数にsecretを入れないでください。
-
-## よく使うコマンド
+必要環境は Bun 1.4.3 以上、Cloudflare CLI 用の Node.js 22 以上です。依存関係を導入するには `vp install` を実行します。開発用環境変数の準備は [`docs/environment.md`](docs/environment.md)、起動・検証・PRの手順は [`docs/development.md`](docs/development.md) を参照してください。
 
 ```sh
 vp run dev:site
 vp run dev:platform
-vp run check
-vp run typecheck:site
-vp run typecheck:platform
-vp run test:site
-vp run test:platform
-vp run build:site
-vp run build:platform
 ```
 
-`build:*`はローカルbuildのみで、deployやCloudflareリソース変更はしません。Siteの`build:site`はNuxt/Nitro build後に`.cloudflare/output/v0`のBuild Outputを生成します。`build:platform`はSPAとWorkerのcf buildを実行します。
+## ブランチとリリース
 
-SiteのWorker local previewは`vp run build:site`後に`cd apps/site && bun run preview`で起動します。Wranglerは`--experimental-new-config`で`cloudflare.config.ts`を読み、`--local`でremote bindingsを無効にします。`build:site`はNitro Build Outputを生成しますが、deployはしません。
+通常の変更は `dev` を base とする GitHub PR で取り込みます。`dev` が統合ブランチです。リリース時は `dev` から `main` へのPRを作成し、release-note checkを含むCIで検証します。`main` へのマージは直ちにデプロイを開始するため、明示的なリリース許可なしにエージェントが `main` をマージまたはpushしてはいけません。
 
-## 構成
+## ドキュメント
 
-- `apps/site/`: Nuxt 4 / Nitroの公式サイト
-- `apps/platform/client/`: Vue SPA
-- `apps/platform/server/`: Hono API / Cloudflare Worker
-- `packages/database/`: Tursoローカル開発とDrizzle migrations
-- `packages/record-domain/`: Recordの共有domain型・schema・ロジック
-- `packages/lot-aikido/`: lotAikido抽選機能のUI・composable・技データ
-- `packages/randori-timer/`: 乱取りタイマーのUI・composable・音声処理
-- `apps/platform/e2e/`: PlatformのE2E用環境ファイル
-- `scripts/platform/`: Recordの開発起動、環境ファイル、release-note補助
-
-アプリごとのCloudflare設定は各アプリの`cloudflare.config.ts`です。SiteはstableなページをSSR prerenderし、予定表はruntime SSRします。Nitro hookがWorker設定とNitro生成物からcf CLI用manifestを構成します。Vite+ toolchain設定はroot `vite.config.ts`に集約し、app側のVite設定はbuild/dev-server設定に限ります。詳細は[構成方針](docs/architecture-plan.md)を参照してください。
+- [開発・検証・ブランチ運用](docs/development.md)
+- [環境変数と秘密情報](docs/environment.md)
+- [アーキテクチャ方針](docs/architecture-plan.md)

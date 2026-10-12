@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    "apps/platform/server": {
+      "entry": ["src/index.ts", "cloudflare.config.ts", "wrangler.config.ts", "test/**/*.test.ts"],
+      "ignoreBinaries": ["check"]
+    },
+    "packages/record-domain": {
+      "ignoreBinaries": ["check"]
+    }
+  }
+}
