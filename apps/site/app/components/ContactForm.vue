@@ -24,12 +24,14 @@
   const turnstileToken = ref("");
   const widget = ref<{ reset(): void }>();
   const siteKey = String(config.public.turnstileSiteKey ?? "");
-  const ready = computed(
-    () =>
-      Object.values(form).every((value) => value.trim()) &&
-      turnstileStatus.value === "verified" &&
-      status.value !== "submitting",
+  const pending = computed(
+    () => status.value === "submitting" || turnstileStatus.value === "checking",
   );
+
+  function focusFirstInvalid() {
+    const field = (Object.keys(fieldErrors) as FieldName[]).find((key) => fieldErrors[key]);
+    if (field) document.getElementById(`cf-${field}`)?.focus();
+  }
 
   function validate() {
     Object.keys(fieldErrors).forEach((key) => (fieldErrors[key as FieldName] = ""));
@@ -43,11 +45,14 @@
   }
 
   async function submit() {
+    if (status.value === "submitting") return;
     if (!validate()) {
       status.value = "error";
+      await nextTick();
+      focusFirstInvalid();
       return;
     }
-    if (!turnstileToken.value) {
+    if (turnstileStatus.value !== "verified" || !turnstileToken.value) {
       status.value = "error";
       errorMessage.value = "チャレンジを完了してから送信してください。";
       return;
@@ -74,6 +79,8 @@
         fieldErrors[key] = data?.fields?.[key]?.[0] ?? "";
       }
       widget.value?.reset();
+      await nextTick();
+      focusFirstInvalid();
     }
   }
 </script>
@@ -139,7 +146,22 @@
         ><p class="text-sm fg-muted">セキュリティ確認を読み込んでいます...</p></template
       >
     </ClientOnly>
-    <button type="submit" :disabled="!ready" class="button accent ml-auto w-fit px-4 py-2">
+    <p v-if="pending" role="status" class="text-sm fg-muted">
+      {{
+        status === "submitting"
+          ? "お問い合わせを送信しています..."
+          : "セキュリティ確認中です。完了後に送信できます。"
+      }}
+    </p>
+    <p v-else-if="turnstileStatus !== 'verified'" class="text-sm fg-muted">
+      セキュリティ確認を完了すると送信できます。
+    </p>
+    <button
+      type="submit"
+      :aria-disabled="status === 'submitting'"
+      :aria-busy="status === 'submitting'"
+      class="button accent ml-auto w-fit px-4 py-2"
+    >
       {{ status === "submitting" ? "送信中..." : "送信する" }}
     </button>
   </form>

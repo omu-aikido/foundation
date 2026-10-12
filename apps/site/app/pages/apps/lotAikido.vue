@@ -40,12 +40,14 @@
       />
       <section class="grid gap-2 md:grid-cols-2">
         <TagInput
+          label="含める技"
           placeholder="含める技名を入力"
           type="positive"
           :model-value="gen.positive.value"
           @update:model-value="gen.positive.value = $event"
         />
         <TagInput
+          label="除外する技"
           placeholder="除外する技名を入力"
           type="negative"
           :model-value="gen.negative.value"

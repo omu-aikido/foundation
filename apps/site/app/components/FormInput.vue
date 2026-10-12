@@ -33,6 +33,8 @@
       :required="required"
       :disabled="disabled"
       :autocomplete="autocomplete"
+      :aria-invalid="error ? 'true' : undefined"
+      :aria-describedby="error ? `${id}-error` : undefined"
       class="control"
       @input="update"
     />
@@ -43,9 +45,11 @@
       :required="required"
       :disabled="disabled"
       :rows="rows"
+      :aria-invalid="error ? 'true' : undefined"
+      :aria-describedby="error ? `${id}-error` : undefined"
       class="control resize-y"
       @input="update"
     />
-    <p v-if="error" class="mt-1 text-xs text-error">{{ error }}</p>
+    <p v-if="error" :id="`${id}-error`" class="mt-1 text-xs text-error">{{ error }}</p>
   </div>
 </template>

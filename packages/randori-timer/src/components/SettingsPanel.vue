@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from "vue";
+  import { ref, useId } from "vue";
   import {
     builtInRandoriPresets,
     formatDurations,
@@ -31,6 +31,7 @@
   const bulkCount = ref(3);
   const bulkSeconds = ref(30);
   const presetName = ref("");
+  const presetNameId = useId();
 
   function applyBulkEdit() {
     const count = Math.max(1, Math.min(20, Math.round(bulkCount.value || 1)));
@@ -194,8 +195,10 @@
       </div>
     </details>
 
-    <div class="mt-5 flex gap-2">
+    <div class="mt-5 flex flex-wrap items-center gap-2">
+      <label class="text-sm" :for="presetNameId">プリセット名</label>
       <input
+        :id="presetNameId"
         v-model="presetName"
         class="control min-w-0 flex-1"
         type="text"

@@ -7,7 +7,12 @@
   }>();
   const start = createJstDate(props.year, props.month, 1);
   const end = createJstDate(props.year, props.month + 1, 0);
-  const { data: events, error } = await useFetch<CalendarEvent[]>("/__calendar", {
+  const {
+    data: events,
+    error,
+    pending,
+    refresh,
+  } = await useFetch<CalendarEvent[]>("/__calendar", {
     key: `calendar-grid:${props.year}-${props.month}`,
     query: {
       start: formatLocalDate(start),
@@ -43,7 +48,12 @@
 </script>
 
 <template>
-  <p v-if="error" class="text-error">稽古予定を取得できませんでした。</p>
+  <div v-if="error" class="mb-3 text-error" role="alert">
+    <p>稽古予定を取得できませんでした。再読み込みしてください。</p>
+    <button type="button" class="button mt-2" :disabled="pending" @click="refresh()">
+      {{ pending ? "再読み込み中..." : "予定を再読み込み" }}
+    </button>
+  </div>
   <div class="overflow-hidden" role="grid" aria-labelledby="calendar-title">
     <h2 id="calendar-title" class="h2 mb-4 flex items-center justify-between">
       <NuxtLink
