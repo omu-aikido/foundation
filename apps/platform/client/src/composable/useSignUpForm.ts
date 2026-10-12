@@ -29,7 +29,7 @@ const getValidationSchema = (currentStep: SignUpStep) => {
       return type({
         email: /.+@.+\..+/u,
         newPassword: "10<=string<=100",
-        passwordConfirm: "string",
+        passwordConfirm: "1<=string<=100",
       });
     case "personal":
       return type({
@@ -81,6 +81,10 @@ const validateStep = (
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       formErrors[error.path[0] as keyof FormErrors] = error.message;
     }
+    return false;
+  }
+  if (currentStep === "basic" && formValues.passwordConfirm !== formValues.newPassword) {
+    formErrors.passwordConfirm = "パスワードが一致しません";
     return false;
   }
   return true;

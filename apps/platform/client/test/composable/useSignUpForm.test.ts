@@ -37,6 +37,35 @@ describe("useSignUpForm", () => {
     expect(prepareEmailAddressVerification).toHaveBeenCalledTimes(1);
   });
 
+  test("rejects an empty password confirmation", () => {
+    const form = useSignUpForm(2026);
+    form.setFormValue("email", "member@example.com");
+    form.setFormValue("newPassword", "long-password");
+
+    expect(form.validateStep("basic")).toBe(false);
+    expect(form.formErrors.passwordConfirm).toBeDefined();
+  });
+
+  test("rejects a mismatched password confirmation", () => {
+    const form = useSignUpForm(2026);
+    form.setFormValue("email", "member@example.com");
+    form.setFormValue("newPassword", "long-password");
+    form.setFormValue("passwordConfirm", "different-password");
+
+    expect(form.validateStep("basic")).toBe(false);
+    expect(form.formErrors.passwordConfirm).toBe("パスワードが一致しません");
+  });
+
+  test("accepts matching passwords", () => {
+    const form = useSignUpForm(2026);
+    form.setFormValue("email", "member@example.com");
+    form.setFormValue("newPassword", "long-password");
+    form.setFormValue("passwordConfirm", "long-password");
+
+    expect(form.validateStep("basic")).toBe(true);
+    expect(form.formErrors.passwordConfirm).toBeUndefined();
+  });
+
   test("rejects an empty required joined year before signup", () => {
     const form = useSignUpForm(2026);
     form.setFormValue("joinedAt", null);

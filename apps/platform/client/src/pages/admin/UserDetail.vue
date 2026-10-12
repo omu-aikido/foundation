@@ -230,7 +230,9 @@
               <strong>{{ user?.lastName }}{{ user?.firstName }}</strong>
               と入力してください：
             </p>
+            <label for="delete-confirm-name" class="sr-only">削除するユーザー名</label>
             <input
+              id="delete-confirm-name"
               v-model="deleteConfirmName"
               type="text"
               placeholder="ユーザー名を入力"

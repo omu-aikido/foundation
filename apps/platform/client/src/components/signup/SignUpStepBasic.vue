@@ -1,5 +1,5 @@
 <template>
-  <div class="stack">
+  <div ref="root" class="stack">
     <Input
       id="email"
       name="email"
@@ -39,7 +39,7 @@
         required
         placeholder="パスワードを再入力"
         :disabled="isSignUpCreated"
-        :error="passwordConfirmError"
+        :error="formErrors.passwordConfirm"
         @update:model-value="onUpdate('passwordConfirm', $event ?? '')"
       />
     </div>
@@ -48,7 +48,7 @@
       <button
         type="button"
         class="btn-primary"
-        :disabled="isSignUpCreated || !canProceed"
+        :disabled="isSignUpCreated"
         @click="handleNextClick"
       >
         次へ
@@ -60,7 +60,7 @@
 <script setup lang="ts">
   import Input from "@/components/ui/UiInput.vue";
   import PasswordInput from "@/components/ui/UiPasswordInput.vue";
-  import { computed, ref, watch } from "vue";
+  import { nextTick, ref } from "vue";
   import type * as useSignUpForm from "@/composable/useSignUpForm";
 
   const props = defineProps<{
@@ -72,38 +72,13 @@
   const emit = defineEmits<{
     (e: "update:formValue", key: keyof useSignUpForm.SignUpFormData, value: string | number): void;
   }>();
-  const passwordConfirmError = ref("");
+  const root = ref<HTMLElement | null>(null);
   const onUpdate = (key: keyof useSignUpForm.SignUpFormData, value: string | number) => {
     emit("update:formValue", key, value);
   };
-  const validatePasswordMatch = () => {
-    if (
-      props.formValues.passwordConfirm &&
-      props.formValues.passwordConfirm !== props.formValues.newPassword
-    ) {
-      passwordConfirmError.value = "パスワードが一致しません";
-    } else {
-      passwordConfirmError.value = "";
-    }
+  const handleNextClick = async () => {
+    props.handleNext();
+    await nextTick();
+    root.value?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
   };
-  const canProceed = computed(() => {
-    return (
-      props.formValues.email &&
-      props.formValues.newPassword &&
-      props.formValues.newPassword.length >= 10 &&
-      props.formValues.passwordConfirm &&
-      props.formValues.passwordConfirm === props.formValues.newPassword
-    );
-  });
-  const handleNextClick = () => {
-    if (canProceed.value) {
-      props.handleNext();
-    }
-  };
-  watch(
-    () => props.formValues.newPassword,
-    () => {
-      validatePasswordMatch();
-    },
-  );
 </script>

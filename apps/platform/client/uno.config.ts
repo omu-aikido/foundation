@@ -72,7 +72,7 @@ export default defineConfig({
       "filter-btn-active": "bg-surface1 text shadow-sm",
       "tab-list": "flex gap-1 border-b border-overlay1",
       "tab-item":
-        "px-4 py-2.5 text-sm font-medium bg-transparent border-none border-b-2 cursor-pointer transition-colors outline-none text-subtext hover:text-blue-500 border-transparent aria-selected:(border-blue-500 text-blue-500)",
+        "px-4 py-2.5 text-sm font-medium bg-transparent border-none border-b-2 cursor-pointer transition-colors text-subtext hover:text-blue-500 border-transparent aria-selected:(border-blue-500 text-blue-500)",
     },
 
     // --- Form Controls ---
@@ -131,7 +131,7 @@ export default defineConfig({
       ([, c]: RegExpMatchArray) => {
         const base = "btn";
         if (c === "primary")
-          return `${base} bg-blue-500 text-white hover:bg-blue-600 focus-visible:(outline-none ring-2 ring-blue-500)`;
+          return `${base} bg-blue-600 text-white hover:bg-blue-700 focus-visible:(outline-none ring-2 ring-blue-500)`;
         if (c === "secondary")
           return `${base} bg-surface0 text-subtext border border-overlay1 hover:bg-overlay0`;
         if (c === "danger") return `${base} bg-red-500 text-white hover:bg-red-600 border-none`;

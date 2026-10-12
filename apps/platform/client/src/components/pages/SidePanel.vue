@@ -103,11 +103,16 @@
     background: rgb(0 0 0 / 50%);
     backdrop-filter: blur(4px);
     z-index: 100;
-    animation: backdrop-enter 300ms ease-out;
   }
 
-  .backdrop[data-state="closed"] {
-    animation: backdrop-leave 200ms ease-in;
+  @media (prefers-reduced-motion: no-preference) {
+    .backdrop {
+      animation: backdrop-enter 300ms ease-out;
+    }
+
+    .backdrop[data-state="closed"] {
+      animation: backdrop-leave 200ms ease-in;
+    }
   }
 
   @keyframes backdrop-enter {
@@ -135,11 +140,16 @@
     max-width: 20rem;
     z-index: 101;
     --at-apply: top-0 right-0 bg-base opacity-90;
-    animation: drawer-enter 300ms ease-out;
   }
 
-  .drawer[data-state="closed"] {
-    animation: drawer-leave 200ms ease-in;
+  @media (prefers-reduced-motion: no-preference) {
+    .drawer {
+      animation: drawer-enter 300ms ease-out;
+    }
+
+    .drawer[data-state="closed"] {
+      animation: drawer-leave 200ms ease-in;
+    }
   }
 
   @keyframes drawer-enter {

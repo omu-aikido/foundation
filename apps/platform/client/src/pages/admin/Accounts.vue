@@ -33,12 +33,15 @@
           </button>
         </div>
 
-        <select v-model.number="gradeFilter" class="input-base w-fit">
-          <option :value="ALL_GRADES">全級段位</option>
-          <option v-for="option in gradeOptions" :key="option.grade" :value="option.grade">
-            {{ option.name }}
-          </option>
-        </select>
+        <div class="flex flex-col gap-1">
+          <label for="grade-filter" class="form-label">級段位</label>
+          <select id="grade-filter" v-model.number="gradeFilter" class="input-base w-fit">
+            <option :value="ALL_GRADES">全級段位</option>
+            <option v-for="option in gradeOptions" :key="option.grade" :value="option.grade">
+              {{ option.name }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -51,7 +54,10 @@
       v-else-if="error"
       class="p-4 bg-red-500/10 text-red-500 rounded-md border-red-500/20 border"
     >
-      {{ error }}
+      <p>アカウント一覧を読み込めませんでした。検索語や絞り込み条件はそのままで再試行できます。</p>
+      <button type="button" class="btn-secondary mt-3" :disabled="isFetching" @click="refetch()">
+        {{ isFetching ? "再取得中..." : "再試行" }}
+      </button>
     </div>
 
     <div v-else class="w-full">
@@ -276,7 +282,9 @@
   const {
     data,
     isLoading: loading,
+    isFetching,
     error: queryError,
+    refetch,
   } = useQuery({
     queryKey: computed(() =>
       queryKeys.admin.accounts({ query: { query: debouncedSearchQuery.value, limit: 100 } }),
