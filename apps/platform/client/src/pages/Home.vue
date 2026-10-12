@@ -222,7 +222,7 @@
           >
             <div
               :class="[
-                'h-12 w-12 p-3 rounded-full transition-transform group-hover:scale-110',
+                'h-12 w-12 p-3 rounded-full transition-transform motion-safe:group-hover:scale-110',
                 getNavIconClass(item.theme),
               ]"
             >

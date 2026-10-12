@@ -1,12 +1,12 @@
 ---
 name: release-note
-description: Use this skill when a branch or pull request needs a clear, user-facing Japanese release-note entry derived from its code changes and added to apps/client/src/lib/releases.ts. Do not use it for commit messages, internal changelogs, or unrelated documentation.
+description: Use this skill when a branch or pull request needs a clear, user-facing Japanese release-note entry derived from its code changes and added to apps/platform/client/src/lib/releases.ts. Do not use it for commit messages, internal changelogs, or unrelated documentation.
 disable-model-invocation: true
 ---
 
 # リリースノートを書く
 
-現在のブランチの変更を事実確認し、実装の話ではなく「利用者に何がよくなったか」が伝わる日本語にして、`apps/client/src/lib/releases.ts` に反映する。チャット上の案だけで終わらせず、ファイルを編集する。
+現在のブランチの変更を事実確認し、platformアプリについて、実装の話ではなく「利用者に何がよくなったか」が伝わる日本語にして、`apps/platform/client/src/lib/releases.ts` に反映する。チャット上の案だけで終わらせず、ファイルを編集する。
 
 ## 進める前に
 

@@ -1,13 +1,15 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
+  import { computed, ref, useId } from "vue";
 
   const props = defineProps<{
     modelValue: string[];
     type: "positive" | "negative";
+    label: string;
     placeholder?: string;
   }>();
 
   const emit = defineEmits<{ "update:modelValue": [value: string[]] }>();
+  const inputId = useId();
   const inputText = ref("");
   const tone = computed(() =>
     props.type === "positive"
@@ -38,7 +40,9 @@
 
 <template>
   <div class="min-w-0">
+    <label class="mb-1 block text-sm" :for="inputId">{{ label }}</label>
     <input
+      :id="inputId"
       v-model="inputText"
       class="control w-full rounded-sm text-base"
       type="text"

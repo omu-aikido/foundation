@@ -16,6 +16,8 @@ const CALENDAR_BASE_URL = "https://calendar.google.com/calendar/ical/";
 const CALENDAR_ID = "aikido.omu";
 const CALENDAR_DEFAULT_PATH = "%40gmail.com/public/basic.ics";
 const CALENDAR_ICS_URL = `${CALENDAR_BASE_URL}${CALENDAR_ID}${CALENDAR_DEFAULT_PATH}`;
+const CALENDAR_FETCH_TIMEOUT_MS = 5_000;
+const MAX_CALENDAR_BYTES = 1024 * 1024;
 
 /**
  * Cache for parsed events (Layer 2)
@@ -24,10 +26,58 @@ let cachedEvents: { events: IcsEvent[]; fetchedAt: number } | null = null;
 let inFlight: Promise<IcsEvent[]> | null = null;
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
-async function fetchIcsText(): Promise<string> {
-  const res = await fetch(CALENDAR_ICS_URL);
-  if (!res.ok) throw new Error(`Failed to fetch ICS (${res.status})`);
-  return res.text();
+export async function fetchCalendarIcsText(
+  fetcher: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> = fetch,
+  timeoutMs = CALENDAR_FETCH_TIMEOUT_MS,
+  maxBytes = MAX_CALENDAR_BYTES,
+): Promise<string> {
+  const controller = new AbortController();
+  let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  let rejectTimeout!: (error: Error) => void;
+  const timeout = new Promise<never>((_, reject) => {
+    rejectTimeout = reject;
+  });
+  const timer = setTimeout(() => {
+    const error = new Error("Calendar ICS fetch timed out");
+    controller.abort(error);
+    rejectTimeout(error);
+    if (reader) void reader.cancel().catch(() => undefined);
+  }, timeoutMs);
+
+  const readResponse = async (): Promise<string> => {
+    const res = await fetcher(CALENDAR_ICS_URL, { signal: controller.signal });
+    if (controller.signal.aborted) {
+      if (res.body) void res.body.cancel().catch(() => undefined);
+      throw new Error("Calendar ICS fetch timed out");
+    }
+    if (!res.ok) throw new Error(`Failed to fetch ICS (${res.status})`);
+    if (!res.body) return "";
+    reader = res.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let total = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (controller.signal.aborted) throw new Error("Calendar ICS fetch timed out");
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) throw new Error("Calendar ICS is too large");
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    return new TextDecoder().decode(bytes);
+  };
+
+  try {
+    return await Promise.race([readResponse(), timeout]);
+  } finally {
+    clearTimeout(timer);
+    if (reader) void reader.cancel().catch(() => undefined);
+  }
 }
 
 function parseIcs(text: string): IcsEvent[] {
@@ -44,7 +94,7 @@ async function getEvents(): Promise<IcsEvent[]> {
 
   inFlight = (async () => {
     try {
-      const text = await fetchIcsText();
+      const text = await fetchCalendarIcsText();
       const events = parseIcs(text);
       cachedEvents = { events, fetchedAt: Date.now() };
       return events;

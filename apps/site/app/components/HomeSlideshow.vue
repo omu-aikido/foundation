@@ -6,20 +6,10 @@
     { src: "/images/hero/bea041cf.png", alt: "普段の稽古の様子2" },
   ];
   const current = ref(0);
-  let timer: ReturnType<typeof setInterval> | undefined;
 
   function show(index: number) {
     current.value = (index + images.length) % images.length;
-    restart();
   }
-
-  function restart() {
-    clearInterval(timer);
-    timer = setInterval(() => show(current.value + 1), 5000);
-  }
-
-  onMounted(restart);
-  onBeforeUnmount(() => clearInterval(timer));
 </script>
 
 <template>
@@ -29,7 +19,7 @@
     <div
       v-for="(image, index) in images"
       :key="image.src"
-      class="absolute inset-0 h-full w-full transition-opacity duration-1000"
+      class="absolute inset-0 h-full w-full motion-safe:transition-opacity motion-safe:duration-1000"
       :class="index === current ? 'z-10 opacity-100' : 'opacity-0'"
     >
       <img
@@ -52,7 +42,7 @@
     />
     <button
       type="button"
-      class="absolute left-4 top-1/2 z-30 rounded-full bg-black/30 p-3 text-white opacity-0 transition group-hover:opacity-100"
+      class="absolute left-4 top-1/2 z-30 rounded-full bg-black/30 p-3 text-white opacity-100 transition motion-reduce:transition-none"
       aria-label="前の写真"
       @click="show(current - 1)"
     >
@@ -60,7 +50,7 @@
     </button>
     <button
       type="button"
-      class="absolute right-4 top-1/2 z-30 rounded-full bg-black/30 p-3 text-white opacity-0 transition group-hover:opacity-100"
+      class="absolute right-4 top-1/2 z-30 rounded-full bg-black/30 p-3 text-white opacity-100 transition motion-reduce:transition-none"
       aria-label="次の写真"
       @click="show(current + 1)"
     >
@@ -71,7 +61,7 @@
         v-for="(_, index) in images"
         :key="index"
         type="button"
-        class="h-1.5 rounded-full bg-white transition-all"
+        class="h-1.5 rounded-full bg-white motion-safe:transition-[width,opacity]"
         :class="index === current ? 'w-8' : 'w-2 opacity-40'"
         :aria-label="`${index + 1}枚目の写真`"
         @click="show(index)"

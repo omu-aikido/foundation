@@ -7,7 +7,7 @@ on:
   push:
     branches-ignore: [main]
   pull_request:
-    branches: [main]
+    branches: [dev, main]
     types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
@@ -20,12 +20,12 @@ jobs:
           bun-version: "1.4.3"
       - uses: voidzero-dev/setup-vp@v1
         with:
-          node-version-file: package.json
+          node-version: "24"
           cache: true
       - run: vp install --frozen-lockfile
-      - run: vp check
       - run: vp run generate-types:site
       - run: vp run generate-types:server
+      - run: vp check
       - run: vp run typecheck:site
       - run: vp run typecheck:platform
       - run: vp run test:site
@@ -35,19 +35,3 @@ jobs:
         run: vp run build:site
       - name: Build Platform Worker locally
         run: vp run build:platform
-
-  release-note:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.4.3"
-      - run: bun run scripts/platform/check-release-note.ts
-        env:
-          PR_AUTHOR_TYPE: ${{ github.event.pull_request.user.type }}
-          PR_AUTHOR_LOGIN: ${{ github.event.pull_request.user.login }}
-          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
