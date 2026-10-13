@@ -6,6 +6,11 @@ export interface Release {
 
 export const releases: readonly Release[] = [
   {
+    date: "2026-10-13",
+    title: "ビルドシステムの改善",
+    changes: ["速くデプロイできるならその方が良いに決まってますよね。"],
+  },
+  {
     date: "2026-10-12",
     title: "入力と画面操作を改善",
     changes: [
