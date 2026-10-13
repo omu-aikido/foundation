@@ -56,8 +56,6 @@ export default defineConfig({
     // Keep migrated commands fresh; builds and type generation produce environment-dependent artifacts.
     cache: { tasks: false },
     tasks: {
-      "build:platform": "cd apps/platform/client && bun run build && cd ../server && bun run build",
-      "build:site": "cd apps/site && bun run cf-build",
       check: "vp check",
       "dev:platform": "bun scripts/platform/dev.ts",
       "dev:site": "bun scripts/site/dev.ts",

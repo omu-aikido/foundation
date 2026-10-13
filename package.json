@@ -28,7 +28,9 @@
     }
   },
   "scripts": {
-    "prepare": "vp config"
+    "prepare": "vp config",
+    "build:platform": "cd apps/platform/client && bun run build && cd ../server && bun run build",
+    "build:site": "cd apps/site && bun run cf-build"
   },
   "devDependencies": {
     "@iconify-json/ri": "catalog:",
@@ -46,10 +48,14 @@
   "devEngines": {
     "packageManager": {
       "name": "bun",
-      "version": "^1.4.3",
+      "version": "1.4.3",
       "onFail": "download"
     }
   },
+  "engines": {
+    "node": "24.18.0"
+  },
+  "packageManager": "bun@1.4.3",
   "patchedDependencies": {
     "@nuxt/devtools@3.4.2": "patches/@nuxt%2Fdevtools@3.4.2.patch"
   }

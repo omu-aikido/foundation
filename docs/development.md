@@ -2,8 +2,8 @@
 
 ## 前提
 
-- Bun 1.4.3 以上。依存関係は `vp install` で導入します。
-- Cloudflare CLI を使う処理には Node.js 22 以上が必要です。
+- Node.js 24.18.0 と Bun 1.4.3 を使用します。依存関係は `vp install` で導入します。
+- Cloudflare CLI を使う処理にも、このNode.jsバージョンを使用します。
 - Worker は Cloudflare runtime で動作し、各アプリの `cloudflare.config.ts` が互換日付と `nodejs_compat` を定めます。
 - TypeScript の共通設定は `tsconfig.base.json`、テスト用の共通型設定は `tsconfig.test.json` です。各workspaceの `tsconfig.json` がruntime用、`test/tsconfig.json`（Siteは `tests/tsconfig.json`）がテスト用の型を定義します。
 
