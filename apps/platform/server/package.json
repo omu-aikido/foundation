@@ -14,8 +14,8 @@
     "typecheck": "bun check -p tsconfig.json && bun check -p test/tsconfig.json"
   },
   "dependencies": {
-    "@clerk/backend": "^3.23.2",
-    "@clerk/hono": "0.1.88",
+    "@clerk/backend": "^3.26.1",
+    "@clerk/hono": "0.1.92",
     "@hono/arktype-validator": "^2.0.1",
     "@libsql/client": "^0.18.0",
     "arktype": "catalog:",
