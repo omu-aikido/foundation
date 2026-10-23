@@ -6,6 +6,7 @@
 - Cloudflare CLI を使う処理にも、このNode.jsバージョンを使用します。
 - Worker は Cloudflare runtime で動作し、各アプリの `cloudflare.config.ts` が互換日付と `nodejs_compat` を定めます。
 - TypeScript の共通設定は `tsconfig.base.json`、テスト用の共通型設定は `tsconfig.test.json` です。各workspaceの `tsconfig.json` がruntime用、`test/tsconfig.json`（Siteは `tests/tsconfig.json`）がテスト用の型を定義します。
+- SiteのNuxt設定では、外部ViteプラグインをNuxt側の `PluginOption` として型付けします。Bunのisolated linkerが同じVite Plusでも異なるpeer解決先を作る場合に、型定義の重複でtypecheckが失敗するのを防ぎます。実行時のプラグイン構成には影響しません。
 
 開発用環境変数の作成・暗号化の手順は[環境設定](environment.md)を参照してください。
 
