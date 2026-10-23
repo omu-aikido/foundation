@@ -6,6 +6,11 @@ export interface Release {
 
 export const releases: readonly Release[] = [
   {
+    date: "2026-10-23",
+    title: "セキュリティアップデート",
+    changes: ["このアップデートにはNode.jsおよび依存パッケージのアップデートが含まれます。"],
+  },
+  {
     date: "2026-10-13",
     title: "ビルドシステムの改善",
     changes: ["速くデプロイできるならその方が良いに決まってますよね。"],

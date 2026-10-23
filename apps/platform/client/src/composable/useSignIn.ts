@@ -3,7 +3,6 @@ import { useClerk } from "@clerk/vue";
 import { type Ref, ref } from "vue";
 
 function extractClerkError(err: unknown): string {
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const clerkError = (err as { errors?: ClerkAPIError[] }).errors?.[0];
   return clerkError?.longMessage ?? clerkError?.message ?? "An error occurred.";
 }

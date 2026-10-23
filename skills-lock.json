@@ -61,11 +61,29 @@
       "skillPath": "skills/interface-review/SKILL.md",
       "computedHash": "8feb4aa0e2a35b629cdff8121ccbed7ff9bfca83bd245a691d16ca9ccd3e52b5"
     },
+    "perform-safely": {
+      "source": "halqme/skills",
+      "sourceType": "github",
+      "skillPath": "skills/perform-safely/SKILL.md",
+      "computedHash": "e9ab03e6b434eb12e5bdf692cff3cd8b95191d42fd9664e81958c759ddd3b6aa"
+    },
+    "place-knowledges": {
+      "source": "halqme/skills",
+      "sourceType": "github",
+      "skillPath": "skills/place-knowledges/SKILL.md",
+      "computedHash": "947e2c7ae5a1015ec585c0695d90c8e6ac951d0f0bec2de372fd74dda605e308"
+    },
     "state-machine": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
       "skillPath": "skills/state-machine/SKILL.md",
       "computedHash": "d7b3c61ca9e424d42116d8976e8fd9051a9e48f4d69cdd0c206929be578c71b3"
+    },
+    "test-design": {
+      "source": "halqme/skills",
+      "sourceType": "github",
+      "skillPath": "skills/test-design/SKILL.md",
+      "computedHash": "120a0954a7759a54e4fa87a894613ee1292ecfda04c77671c7b2c4b44444c1ae"
     },
     "turnstile-spin": {
       "source": "cloudflare/skills",
@@ -90,6 +108,12 @@
       "sourceType": "github",
       "skillPath": "skills/workers-best-practices/SKILL.md",
       "computedHash": "e1c30e93854345114dfa6a0a077363119eb99c03e5c64a8f2109349802e1f2aa"
+    },
+    "write-commit-message": {
+      "source": "halqme/skills",
+      "sourceType": "github",
+      "skillPath": "skills/write-commit-message/SKILL.md",
+      "computedHash": "3057243ec1ed3c2f8bde7cb2ec31731375f76df0115d61ff7e561886b951dd1c"
     }
   }
 }
