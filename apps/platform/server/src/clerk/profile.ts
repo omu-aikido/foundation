@@ -25,7 +25,6 @@ function normalizeRole(value: unknown): AccountMetadataType["role"] {
 function normalizeDateString(value: unknown): AccountMetadataType["getGradeAt"] {
   if (value === null || value === "") return value;
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/u.test(value)) {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     return value as AccountMetadataType["getGradeAt"];
   }
   return null;
@@ -34,7 +33,6 @@ function normalizeDateString(value: unknown): AccountMetadataType["getGradeAt"] 
 function normalizeYear(value: unknown): AccountMetadataType["year"] {
   if (value === null || value === "") return value;
   if (typeof value === "string" && /^(b[1-4]|m[1-2]|d[1-2])$/u.test(value)) {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     return value as AccountMetadataType["year"];
   }
   return "";

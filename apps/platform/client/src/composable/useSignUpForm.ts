@@ -68,7 +68,6 @@ const validateStep = (
   formValues: SignUpFormData,
   formErrors: Partial<FormErrors>,
 ): boolean => {
-  // oxlint-disable-next-line typescript/strict-void-return typescript/no-unsafe-type-assertion
   Object.keys(formErrors).forEach((key) => delete formErrors[key as keyof FormErrors]);
 
   const schema = getValidationSchema(currentStep);
@@ -78,7 +77,6 @@ const validateStep = (
 
   if (result instanceof ArkErrors) {
     for (const error of result) {
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       formErrors[error.path[0] as keyof FormErrors] = error.message;
     }
     return false;
@@ -150,7 +148,6 @@ const handleClerkSignUp = async (
     isSignUpCreated.value = false;
     const errorMsg = "User registration failed";
     if (err !== null && typeof err === "object" && "errors" in err) {
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       clerkErrors.value = (err as { errors: ClerkAPIError[] }).errors;
     } else {
       formErrors.general = errorMsg;

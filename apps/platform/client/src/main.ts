@@ -2,7 +2,6 @@ import { clerkPlugin } from "@clerk/vue";
 import { createApp } from "vue";
 import { QueryClient, VueQueryPlugin } from "@tanstack/vue-query";
 
-// oxlint-disable import/no-unassigned-import
 import "./assets/main.css";
 import "virtual:uno.css";
 
