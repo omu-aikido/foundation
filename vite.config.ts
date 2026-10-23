@@ -14,6 +14,8 @@ export default defineConfig({
       "**/.wrangler/**",
       "**/.direnv/**",
       ".agents/**",
+      "patches/braces",
+      "patches/node-forge",
     ],
     plugins: ["import", "unicorn", "promise", "typescript", "oxc"],
     rules: {

@@ -42,6 +42,8 @@
   },
   "peerDependencies": {},
   "overrides": {
+    "braces": "file:./patches/braces",
+    "node-forge": "file:./patches/node-forge",
     "simple-git": "4.0.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.3.0"
   },
