@@ -11,7 +11,7 @@
   <section id="hero-section" class="stack relative gap-4 pt-12">
     <h1 class="h1">大阪公立大学<br class="sm:hidden" />合氣道部</h1>
     <p class="max-w-2/3 leading-relaxed fg-base">
-      大阪公立大学合氣道部は、森之宮キャンパス・中百舌鳥キャンパス・杉本キャンパスで活動する、体育会所属の合気道団体です。
+      大阪公立大学合氣道部は、大阪公立大学（ハム大）の森之宮・中百舌鳥・杉本キャンパスで活動する、体育会所属の合気道団体です。
     </p>
     <div class="inline-flex gap-2">
       <NuxtLink to="/about" class="button accent w-fit px-4 py-2">活動について→</NuxtLink>
