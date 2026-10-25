@@ -30,7 +30,9 @@
   "scripts": {
     "prepare": "vp config",
     "build:platform": "cd apps/platform/client && bun run build && cd ../server && bun run build",
-    "build:site": "cd apps/site && bun run cf-build"
+    "build:site": "cd apps/site && bun run cf-build",
+    "format": "bun fmt",
+    "format:check": "bun fmt --check"
   },
   "devDependencies": {
     "@iconify-json/ri": "catalog:",
