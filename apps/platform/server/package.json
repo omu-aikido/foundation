@@ -19,7 +19,7 @@
     "@hono/arktype-validator": "^2.0.1",
     "@libsql/client": "^0.18.0",
     "arktype": "^2.2.9",
-    "drizzle-orm": "^1.0.0-rc.5-ab785fc",
+    "drizzle-orm": "^1.0.0-rc.5",
     "hono": "^4.13.13",
     "record-domain": "file:../../../packages/record-domain",
     "svix": "^2.9.0"
