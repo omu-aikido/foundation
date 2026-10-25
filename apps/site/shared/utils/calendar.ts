@@ -61,7 +61,7 @@ export function getJstDateKey(date: Date): string {
   return formatLocalDate(date);
 }
 
-export function isSameJstDay(left: Date, right: Date): boolean {
+function isSameJstDay(left: Date, right: Date): boolean {
   const leftParts = getJstDateParts(left);
   const rightParts = getJstDateParts(right);
 
@@ -122,14 +122,6 @@ export function clampCalendarMonth(year: number, month: number, now = new Date()
 
 export function getJstDateNumber(date: Date): number {
   return getJstDateParts(date).date;
-}
-
-export function getJstYear(date: Date): number {
-  return getJstDateParts(date).year;
-}
-
-export function getJstMonth(date: Date): number {
-  return getJstDateParts(date).month;
 }
 
 function isValidDateInstance(date: Date): boolean {

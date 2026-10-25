@@ -4,7 +4,7 @@ import { isAbsolute, join, relative, resolve, sep } from "node:path";
 import type CFType from "../cloudflare.config";
 
 type SiteCloudflareConfig = typeof CFType;
-export type CloudflareBuildConfig = Omit<SiteCloudflareConfig, "worker"> & {
+type CloudflareBuildConfig = Omit<SiteCloudflareConfig, "worker"> & {
   worker: Omit<SiteCloudflareConfig["worker"], "entrypoint"> & { entrypoint: string };
 };
 

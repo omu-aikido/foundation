@@ -10,7 +10,7 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.json && vue-tsc --noEmit -p test/tsconfig.json"
   },
   "dependencies": {
-    "@clerk/vue": "^2.5.13",
+    "@clerk/vue": "^2.5.14",
     "@iconify-json/lucide": "^1.2.147",
     "@tanstack/vue-form": "^1.33.5",
     "@tanstack/vue-query": "^5.104.5",

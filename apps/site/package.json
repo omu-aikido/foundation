@@ -16,7 +16,6 @@
   "dependencies": {
     "@nuxtjs/sitemap": "^9.1.0",
     "@unocss/nuxt": "^66.11.0",
-    "@unocss/preset-attributify": "^66.11.0",
     "arktype": "catalog:",
     "h3": "^2.0.8",
     "hono": "catalog:",
@@ -38,7 +37,6 @@
     "vite-plugin-third-party-licenses": "workspace:*",
     "vite-plugin-vue-devtools": "catalog:",
     "vue-router": "catalog:",
-    "vue-tsc": "catalog:",
     "wrangler": "catalog:"
   },
   "packageManager": "bun"

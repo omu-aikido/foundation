@@ -8,7 +8,7 @@ const contactFieldsDefinition = {
   body: "string",
 } as const;
 
-export const contactFieldsType = type(contactFieldsDefinition);
+const contactFieldsType = type(contactFieldsDefinition);
 export const contactType = type({
   ...contactFieldsDefinition,
   "cf-turnstile-response": "string",
@@ -18,7 +18,7 @@ const emailType = type("string.email");
 const fieldNames = new Set(["name", "email", "subject", "body"]);
 
 export type ContactFields = typeof contactFieldsType.infer;
-export type ContactInput = typeof contactType.infer;
+type ContactInput = typeof contactType.infer;
 export type ContactValidation =
   | { success: true; data: ContactInput }
   | { success: false; fields: Record<string, string[]> };
