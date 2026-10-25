@@ -1,7 +1,8 @@
 <script setup lang="ts">
   definePageMeta({
     title: "稽古場所",
-    description: "森之宮・中百舌鳥・杉本で活動しています",
+    description:
+      "大阪公立大学合氣道部の稽古場所を、森之宮・中百舌鳥・杉本のキャンパス別に案内します。",
     navigation: { parent: "/", order: 2 },
   });
   const maps = {
@@ -16,7 +17,7 @@
   <MarkdownPage>
     <h1>稽古場所</h1>
     <h2>森之宮キャンパス</h2>
-    <p>2026年度より2階マルチユースルーム（201号室）にて活動します。</p>
+    <p>2026年度より2階マルチユースルーム（201号室）または1階サブアリーナにて活動しています。</p>
     <img
       src="/images/access/multi-use-room.png"
       alt="マルチユースルームの場所は2階の北側にあります。"

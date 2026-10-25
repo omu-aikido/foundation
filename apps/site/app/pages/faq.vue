@@ -1,7 +1,8 @@
 <script setup lang="ts">
   definePageMeta({
     title: "よくある質問",
-    description: "マシュマロなどから",
+    description:
+      "大阪公立大学合氣道部の活動頻度や新歓、稽古について、入部前によくいただく質問にお答えします。",
     navigation: { parent: "/", order: 5 },
   });
   const groups = [

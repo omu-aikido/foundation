@@ -8,9 +8,9 @@
       </span>
     </p>
     <p class="mt-3">
-      <NuxtLink to="/privacy-policy" class="link">プライバシーポリシー</NuxtLink>
-      <span>&ThickSpace;</span>
-      <NuxtLink to="/terms-of-service" class="link">利用規約</NuxtLink>
+      <NuxtLink to="/privacy-policy" class="link mx-4">プライバシーポリシー</NuxtLink>
+      <NuxtLink to="/terms-of-service" class="link mx-4">利用規約</NuxtLink>
+      <NuxtLink to="/licenses.txt" class="link mx-4">OSSライセンス</NuxtLink>
     </p>
     <div class="mx-auto mt-8 flex items-center justify-between px-1/4 text-2xl sm:px-1/3">
       <a

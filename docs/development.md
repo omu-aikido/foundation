@@ -12,6 +12,8 @@
 
 ## 開発と検証
 
+Siteのページタイトルと説明文はVueページの `definePageMeta`、生成コンテンツのページは `apps/site/content/pages/` のfrontmatterで管理します。共通のcanonical URL、OGP、Xカードは `apps/site/app/app.vue` が設定し、共有画像には `apps/site/public/images/hero/bea041cf.png` を使います。
+
 ```sh
 vp run dev:site
 vp run dev:platform

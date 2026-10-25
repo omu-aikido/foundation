@@ -1,7 +1,7 @@
 <script setup lang="ts">
   definePageMeta({
     title: "アプリ",
-    description: "ちょっと便利なツール集",
+    description: "大阪公立大学合氣道部が公開しているツールを利用できます。",
     navigation: { parent: "/", order: 6 },
   });
 

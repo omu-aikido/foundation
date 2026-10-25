@@ -1,7 +1,8 @@
 <script setup lang="ts">
   definePageMeta({
-    title: "トップ",
-    description: "大阪公立大学合氣道部の公式ホームページです",
+    title: "大阪公立大学合氣道部",
+    description:
+      "大阪公立大学の森之宮・中百舌鳥・杉本キャンパスで稽古する、体育会所属の合氣道部です。活動内容や稽古予定をご案内します。",
     navigation: { order: 0 },
   });
 </script>

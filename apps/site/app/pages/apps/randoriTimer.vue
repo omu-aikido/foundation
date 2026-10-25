@@ -1,7 +1,8 @@
 <script setup lang="ts">
   definePageMeta({
     title: "乱取りタイマー",
-    description: "乱取り特化のタイマー",
+    description:
+      "合気道の乱取り稽古に使えるタイマーです。ラウンドの時間や回数を設定して稽古を進行できます。",
   });
 
   import { useRandoriTimer } from "randori-timer";
