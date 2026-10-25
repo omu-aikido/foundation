@@ -1,10 +1,10 @@
-export interface WorkerVersionMetadata {
+interface WorkerVersionMetadata {
   id: string;
   tag?: string;
   timestamp?: string;
 }
 
-export interface PublicVersion {
+interface PublicVersion {
   id: string;
   shortId: string;
   tag: string | null;
