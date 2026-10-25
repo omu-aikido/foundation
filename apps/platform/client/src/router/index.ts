@@ -89,12 +89,12 @@ interface ClerkUser {
   publicMetadata: unknown;
 }
 
-export interface ClerkClient {
+interface ClerkClient {
   user: ClerkUser | null | undefined;
   loaded: boolean;
 }
 
-export interface ClerkWaitOptions {
+interface ClerkWaitOptions {
   timeoutMs?: number;
   intervalMs?: number;
   sleep?: (delayMs: number) => Promise<void>;

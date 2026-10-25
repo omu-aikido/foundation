@@ -1,7 +1,7 @@
 <script setup lang="ts">
   definePageMeta({
-    title: "About",
-    description: "活動概要",
+    title: "活動紹介",
+    description: "大阪公立大学合氣道部の活動日・稽古場所・年間行事、部費や入部方法をご案内します。",
     navigation: { parent: "/", order: 1 },
   });
 
@@ -53,7 +53,7 @@
 
 <template>
   <MarkdownPage>
-    <h1>About</h1>
+    <h1>活動紹介</h1>
     <p>
       <strong
         >2022年の春より、大阪市立大学合気道サークルと大阪府立大学合氣道部が統合し、大阪公立大学合氣道部として活動しています！</strong

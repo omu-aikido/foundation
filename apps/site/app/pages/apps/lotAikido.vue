@@ -6,8 +6,9 @@
   import WazaTable from "lot-aikido/components/WazaTable.vue";
 
   definePageMeta({
-    title: "lotAikido",
-    description: "合気道の稽古技をランダムに表示します",
+    title: "合気道 技ジェネレーター",
+    description:
+      "条件を指定して、合気道の稽古技をランダムに選びます。技の候補を並べた稽古リストの作成にも使えます。",
   });
 
   const gen = useGenerator();

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   definePageMeta({
     title: "稽古予定",
-    description: "月ごとの稽古予定",
+    description: "大阪公立大学合氣道部の稽古予定を月ごとのカレンダーで確認できます。",
     key: (route) => route.fullPath,
   });
 

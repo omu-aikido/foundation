@@ -1,4 +1,4 @@
-export interface Release {
+interface Release {
   date: string;
   title: string;
   changes: readonly string[];

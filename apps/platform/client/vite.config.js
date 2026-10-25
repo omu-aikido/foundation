@@ -1,6 +1,6 @@
 import { bundledLicenseListPlugin } from "vite-plugin-third-party-licenses";
 import { defineConfig } from "vite-plus";
-import path from "path"; // pathをインポート
+import { fileURLToPath } from "node:url";
 import UnoCSS from "unocss/vite";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
@@ -16,7 +16,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   server: {

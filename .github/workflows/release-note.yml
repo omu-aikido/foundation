@@ -16,8 +16,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.4.3"
       - run: bun run scripts/platform/check-release-note.ts
         env:
           PR_AUTHOR_TYPE: ${{ github.event.pull_request.user.type }}

@@ -49,7 +49,7 @@ function parseDateQuery(value: string, endOfDay = false): Date {
   return date;
 }
 
-export function getAllowedCalendarWindow(now = new Date()) {
+function getAllowedCalendarWindow(now = new Date()) {
   const { year, month } = getCurrentJstYearMonth(now);
   const start = createJstDate(year, month, 1);
   const end = parseLocalDate(formatLocalDate(createJstDate(year, month + 2, 0)), {

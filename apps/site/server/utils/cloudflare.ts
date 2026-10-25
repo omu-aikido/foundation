@@ -2,7 +2,7 @@
 
 import type { ContactEnv } from "../api/contact-app";
 
-export interface CloudflareRuntime {
+interface CloudflareRuntime {
   env: ContactEnv;
   context?: ExecutionContext;
 }

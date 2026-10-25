@@ -63,7 +63,7 @@ export default defineConfig({
       "dev:site": "bun scripts/site/dev.ts",
       "generate-types:server": "cd apps/platform/server && bun run cf-typegen",
       "generate-types:site": "cd apps/site && bun run generate-types",
-      knip: "vpx knip --workspace apps/platform/client --workspace apps/platform/server --workspace packages/record-domain",
+      knip: "vpx knip --directory apps/platform --workspace client --workspace server && vpx knip --workspace packages/record-domain",
       "test:platform":
         "bun test --isolate apps/platform/server/test apps/platform/client/test packages/record-domain/test scripts/platform",
       "test:site":

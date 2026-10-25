@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    "client": {
+      "entry": ["src/main.ts", "test/**/*.test.ts"],
+      "ignoreDependencies": ["@vue/tsconfig"]
+    },
+    "server": {
+      "entry": [
+        "src/index.ts",
+        "rpc.d.ts",
+        "cloudflare.config.ts",
+        "wrangler.config.ts",
+        "test/**/*.test.ts"
+      ],
+      "ignoreBinaries": ["check"]
+    }
+  }
+}

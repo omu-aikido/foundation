@@ -1,6 +1,6 @@
 import honoClient from "./honoClient";
 
-export interface PublicVersion {
+interface PublicVersion {
   id: string;
   shortId: string;
   tag: string | null;
