@@ -9,8 +9,11 @@
     "typecheck": "bun check -p tsconfig.json && bun check -p test/tsconfig.json"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
-    "@types/node": "catalog:",
-    "vite": "catalog:"
+    "@types/bun": "^1.4.4",
+    "@types/node": "^26.6.5",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0"
+  },
+  "peerDependencies": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0"
   }
 }

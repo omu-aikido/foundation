@@ -18,7 +18,7 @@
 - `scripts/platform`: Recordの開発・環境・release-note補助
 - `scripts/site`: Siteの開発補助
 
-workspace一覧はroot `package.json`、root共通コマンドのtask定義とVite+のlint・formatなどtoolchain設定はroot `vite.config.ts`を正本とする。app側のVite設定には各app固有のbuild/dev-server設定のみを置き、アプリ固有の依存とscriptは各アプリの`package.json`に置く。Bunの最低バージョンは `package.json` の `devEngines.packageManager` に定義する。
+インストール単位はroot（開発ツールと `packages/*` のworkspace）、Site、Platform（ClientとServerのworkspace）に分け、各単位で `package.json` と `bun.lock` を管理する。アプリは共有パッケージを `file:` で参照する。導入手順とWorkers Buildsの設定は[開発ドキュメント](development.md)を正本とする。root共通コマンドのtask定義とVite+のlint・formatなどtoolchain設定はroot `vite.config.ts`を正本とする。app側のVite設定には各app固有のbuild/dev-server設定のみを置き、アプリ固有の依存とscriptは各アプリの `package.json` に置く。Bunのバージョンは各インストールルートの `package.json` の `packageManager` に定義する。
 
 ## Site rendering
 
@@ -36,9 +36,9 @@ SiteはNuxtのSSRを基本とする。安定した公開ページとツールは
 
 SiteはNuxtのNitro `cloudflare_module` presetを使い、route renderingはNuxt SSRを基本とする。Nitro `compiled` hookは同じ `apps/site/cloudflare.config.ts` のWorker設定を使い、Nitroのserver/public出力をBuild Output Specification v0 (`apps/site/.cloudflare/output/v0`)として配置する。Worker manifestはpartial形式とし、module inventoryはcf CLIのreaderにbundleから解決させる。
 
-この橋渡しはroot `package.json` のcatalogで指定する `cf` バージョンに要求されるBuild Outputに合わせたもので、Site testsは生成物の配置と設定を検査し、`cf build`がreaderとの互換性を検証する。Local Worker previewはWranglerの `--experimental-new-config` で同じ `cloudflare.config.ts` を読み、Nitro出力と `.output/public` を使う。Cloudflare CLI・Nitro更新時はこの契約を再確認する。
+この橋渡しはSiteの `package.json` で指定する `cf` バージョンに要求されるBuild Outputに合わせたもので、Site testsは生成物の配置と設定を検査し、`cf deploy --prebuilt --dry-run` がreaderとの互換性を検証する。Local Worker previewはWranglerの `--experimental-new-config` で同じ `cloudflare.config.ts` を読み、Nitro出力と `.output/public` を使う。Cloudflare CLI・Nitro更新時はこの契約を再確認する。
 
-Siteのbuildは `vp run build:site`（root `vite.config.ts` のtask）から `apps/site` の `cf-build` scriptを実行し、コンテンツ生成後に `cf build` を呼びます。Platformの `vp run build:platform` はClientの `vp build` とServerの `cf build` を実行します。これらはローカルbuildでありdeployやCloudflareリソース変更を行いません。Site previewはbuild後に `cd apps/site && bun run preview` で起動し、Wranglerの `--local` でremote bindingsを無効にします。
+Siteのbuildは `vp run build:site`（root `vite.config.ts` のtask）から `apps/site` の `cf-build` scriptを実行し、コンテンツ生成と `nuxt build` の後に `cf deploy --prebuilt --dry-run` で生成物を検証します。Platformの `vp run build:platform` はClientの `vp build` とServerの `cf build` を実行します。これらはローカルbuildでありdeployやCloudflareリソース変更を行いません。Site previewはbuild後に `cd apps/site && bun run preview` で起動し、Wranglerの `--local` でremote bindingsを無効にします。
 
 ## 設定と運用境界
 

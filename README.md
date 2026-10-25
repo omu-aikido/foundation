@@ -4,7 +4,7 @@
 
 ## 開発を始める
 
-必要環境は Bun 1.4.3 以上、Cloudflare CLI 用の Node.js 22 以上です。依存関係を導入するには `vp install` を実行します。開発用環境変数の準備は [`docs/environment.md`](docs/environment.md)、起動・検証・PRの手順は [`docs/development.md`](docs/development.md) を参照してください。
+必要環境は Bun 1.4.4 と Node.js 26.12.1 です。ルートで `vp install`、続いて `vp run install:apps` を実行します。開発ツール・Site・Platformはそれぞれ独立したロックファイルで依存関係を管理します。開発用環境変数の準備は [`docs/environment.md`](docs/environment.md)、起動・検証・PRの手順は [`docs/development.md`](docs/development.md) を参照してください。
 
 ```sh
 vp run dev:site

@@ -1,53 +1,32 @@
 {
   "name": "foundation",
   "private": true,
-  "workspaces": {
-    "packages": [
-      "apps/*",
-      "apps/platform/*",
-      "packages/*"
-    ],
-    "catalog": {
-      "@cloudflare/workers-types": "^5.20261024.1",
-      "@iconify-json/ri": "^1.2.10",
-      "@types/bun": "^1.4.4",
-      "@types/node": "^26.6.5",
-      "arktype": "^2.2.9",
-      "cf": "^1.0.0-beta.21",
-      "hono": "^4.13.13",
-      "rolldown": "^1.2.15",
-      "typescript": "^6.0.3",
-      "unocss": "^66.11.0",
-      "vite-plugin-vue-devtools": "^8.2.1",
-      "vite-plus": "1.4.0",
-      "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-      "vue-router": "^5.4.0",
-      "vue-tsc": "^3.3.13",
-      "vue": "^3.5.44",
-      "wrangler": "^4.152.0"
-    }
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "prepare": "vp config",
     "build:platform": "cd apps/platform/client && bun run build && cd ../server && bun run build",
     "build:site": "cd apps/site && bun run cf-build",
     "format": "bun fmt",
-    "format:check": "bun fmt --check"
+    "format:check": "bun fmt --check",
+    "install:apps": "(cd apps/site && vp install) && (cd apps/platform && vp install)"
   },
   "devDependencies": {
-    "@iconify-json/ri": "catalog:",
-    "@types/bun": "catalog:",
-    "cf": "catalog:",
-    "typescript": "catalog:",
-    "vite": "catalog:",
-    "vite-plus": "catalog:"
+    "@iconify-json/ri": "^1.2.10",
+    "@types/bun": "^1.4.4",
+    "cf": "^1.0.0-beta.21",
+    "knip": "5",
+    "typescript": "^6.0.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+    "vite-plus": "1.4.0"
   },
   "peerDependencies": {},
   "overrides": {
     "braces": "file:./patches/braces",
     "node-forge": "file:./patches/node-forge",
     "simple-git": "4.0.2",
-    "vite": "catalog:"
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0"
   },
   "engines": {
     "node": "26.12.1"

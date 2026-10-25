@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "bun run generate-content && nuxt build",
-    "cf-build": "bun run generate-content && cf build",
+    "cf-build": "bun run build && cf deploy --prebuilt --dry-run",
     "dev": "nuxt dev",
     "generate-content": "bun build/generate-site-content.ts",
     "generate-types": "cf workers types",
@@ -16,28 +16,40 @@
   "dependencies": {
     "@nuxtjs/sitemap": "^9.1.0",
     "@unocss/nuxt": "^66.11.0",
-    "arktype": "catalog:",
+    "arktype": "^2.2.9",
     "h3": "^2.0.8",
-    "hono": "catalog:",
-    "lot-aikido": "workspace:*",
+    "hono": "^4.13.13",
+    "lot-aikido": "file:../../packages/lot-aikido",
     "marked": "^18.1.1",
     "nuxt": "^4.6.2",
-    "randori-timer": "workspace:*",
+    "randori-timer": "file:../../packages/randori-timer",
     "ts-ics": "^2.4.7",
-    "unocss": "catalog:",
-    "vue": "catalog:"
+    "unocss": "^66.11.0",
+    "vue": "^3.5.44"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "catalog:",
-    "@iconify-json/ri": "catalog:",
-    "@types/bun": "catalog:",
-    "@types/node": "catalog:",
-    "rolldown": "catalog:",
-    "typescript": "catalog:",
-    "vite-plugin-third-party-licenses": "workspace:*",
-    "vite-plugin-vue-devtools": "catalog:",
-    "vue-router": "catalog:",
-    "wrangler": "catalog:"
+    "@cloudflare/workers-types": "^5.20261024.1",
+    "@iconify-json/ri": "^1.2.10",
+    "@types/bun": "^1.4.4",
+    "@types/node": "^26.6.5",
+    "cf": "^1.0.0-beta.21",
+    "rolldown": "^1.2.15",
+    "typescript": "^6.0.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+    "vite-plugin-third-party-licenses": "file:../../packages/vite-plugin-third-party-licenses",
+    "vite-plugin-vue-devtools": "^8.2.1",
+    "vue-router": "^5.4.0",
+    "vue-tsc": "^3.3.13",
+    "wrangler": "^4.152.0"
   },
-  "packageManager": "bun"
+  "overrides": {
+    "braces": "file:../../patches/braces",
+    "node-forge": "file:../../patches/node-forge",
+    "simple-git": "4.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0"
+  },
+  "engines": {
+    "node": "26.12.1"
+  },
+  "packageManager": "bun@1.4.4"
 }
