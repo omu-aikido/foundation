@@ -1,6 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "bun"
+    target-branch: "dev"
     directories:
       - "/"
       - "/apps/site"
@@ -24,6 +25,7 @@ updates:
       include: "scope"
 
   - package-ecosystem: "github-actions"
+    target-branch: "dev"
     directory: "/"
     schedule:
       interval: "weekly"
