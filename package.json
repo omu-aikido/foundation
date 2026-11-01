@@ -15,7 +15,7 @@
   "devDependencies": {
     "@iconify-json/ri": "^1.2.10",
     "@types/bun": "^1.4.4",
-    "cf": "^1.0.0-beta.21",
+    "cf": "^1.0.0-beta.25",
     "knip": "5",
     "typescript": "^6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
