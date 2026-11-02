@@ -4,6 +4,20 @@
     "packages/record-domain": {
       "entry": ["index.ts", "test/**/*.test.ts"],
       "ignoreBinaries": ["check"]
+    },
+    "apps/platform/client": {
+      "entry": ["src/main.ts", "test/**/*.test.ts"],
+      "ignoreDependencies": ["@vue/tsconfig"]
+    },
+    "apps/platform/server": {
+      "entry": [
+        "src/index.ts",
+        "rpc.d.ts",
+        "cloudflare.config.ts",
+        "wrangler.config.ts",
+        "test/**/*.test.ts"
+      ],
+      "ignoreBinaries": ["check"]
     }
   }
 }

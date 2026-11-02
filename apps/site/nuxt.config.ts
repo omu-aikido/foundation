@@ -3,7 +3,10 @@ import cloudflareConfig from "./cloudflare.config";
 import vueDevTools from "vite-plugin-vue-devtools";
 import { writeCloudflareBuildOutput } from "./build/cloudflare-build-output";
 import { securityHeaders } from "./security-headers";
-import type { PluginOption } from "vite";
+import type { NuxtConfig } from "nuxt/schema";
+
+// Use Nuxt's own Vite plugin type; this app's `vite` can resolve to another peer-context copy.
+type NuxtVitePlugin = NonNullable<NonNullable<NuxtConfig["vite"]>["plugins"]>[number];
 
 // Keep stable content cached as assets; calendar pages render at request time.
 const prerenderRoutes = [
@@ -110,10 +113,10 @@ export default defineNuxtConfig({
   vite: {
     plugins: [
       // Bun's peer-context copies of Vite Plus trigger recursive plugin-type conflicts with Nuxt.
-      bundledLicenseListPlugin() as unknown as PluginOption,
+      bundledLicenseListPlugin() as unknown as NuxtVitePlugin,
       vueDevTools({
         launchEditor: "zed",
-      }) as unknown as PluginOption,
+      }) as unknown as NuxtVitePlugin,
     ],
     optimizeDeps: {
       include: ["arktype"],

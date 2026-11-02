@@ -1,39 +1,27 @@
 version: 2
-updates:
-  - package-ecosystem: "bun"
+
+multi-ecosystem-groups:
+  dependencies:
     target-branch: "dev"
-    directories:
-      - "/"
-      - "/apps/site"
-      - "/apps/platform"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
-    groups:
-      dependencies:
-        dependency-type: "production"
-        update-types:
-          - "minor"
-          - "patch"
-      dev-dependencies:
-        dependency-type: "development"
-        update-types:
-          - "minor"
-          - "patch"
     commit-message:
-      prefix: "deps"
+      prefix: "chore"
       include: "scope"
 
-  - package-ecosystem: "github-actions"
-    target-branch: "dev"
+updates:
+  - package-ecosystem: "bun"
     directory: "/"
-    schedule:
-      interval: "weekly"
-    groups:
-      actions:
-        update-types:
-          - "minor"
-          - "patch"
-    commit-message:
-      prefix: "ci"
-      include: "scope"
+    patterns:
+      - "*"
+    multi-ecosystem-group: "dependencies"
+    # Nuxt と vue-tsc が TypeScript 7 に未対応なので、7 系へは上げない。
+    ignore:
+      - dependency-name: "typescript"
+        versions: ["7.x"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    patterns:
+      - "*"
+    multi-ecosystem-group: "dependencies"

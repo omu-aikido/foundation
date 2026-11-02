@@ -2,54 +2,46 @@
 
 ## 前提
 
-- Node.js 26.12.1 と Bun 1.4.4 を使用します。依存関係は以下の3つのインストールルートで、それぞれ `vp install` で導入します。
+- Node.js 26.12.1 と Bun 1.4.4 を使用します。依存関係はルートで `vp install` を実行して導入します。
 - Cloudflare CLI を使う処理にも、このNode.jsバージョンを使用します。
 - Worker は Cloudflare runtime で動作し、各アプリの `cloudflare.config.ts` が互換日付と `nodejs_compat` を定めます。
 - TypeScript の共通設定は `tsconfig.base.json`、テスト用の共通型設定は `tsconfig.test.json` です。各workspaceの `tsconfig.json` がruntime用、`test/tsconfig.json`（Siteは `tests/tsconfig.json`）がテスト用の型を定義します。
-- SiteのNuxt設定では、外部ViteプラグインをNuxt側の `PluginOption` として型付けします。Bunのisolated linkerが同じVite Plusでも異なるpeer解決先を作る場合に、型定義の重複でtypecheckが失敗するのを防ぎます。実行時のプラグイン構成には影響しません。
+- SiteのNuxt設定では、外部ViteプラグインをNuxtの設定型から取り出したプラグイン型として型付けします。Bunのisolated linkerが同じVite Plusでも異なるpeer解決先を作る場合に、型定義の重複でtypecheckが失敗するのを防ぎます。実行時のプラグイン構成には影響しません。
 
 開発用環境変数の作成・暗号化の手順は[環境設定](environment.md)を参照してください。
 
 ## 依存関係の導入
 
-| インストールルート | 対象                                       | ロックファイル           |
-| ------------------ | ------------------------------------------ | ------------------------ |
-| リポジトリルート   | 共通開発ツールと `packages/*` の開発・検証 | `bun.lock`               |
-| `apps/site`        | Site Worker                                | `apps/site/bun.lock`     |
-| `apps/platform`    | Client SPAとServerを含むPlatform Worker    | `apps/platform/bun.lock` |
+ルートの `package.json` が `packages/*`、`apps/site`、`apps/platform`、`apps/platform/client`、`apps/platform/server` をworkspaceとしてまとめ、ロックファイルはルートの `bun.lock` だけです。
 
 ```sh
 vp install
-(cd apps/site && vp install)
-(cd apps/platform && vp install)
 ```
 
-アプリの依存導入はルートから `vp run install:apps` でも実行できます。CIでは各ルートで `vp install --frozen-lockfile` を使います。各アプリはルートの `node_modules` に依存せずbuildできます。ビルドツールも必要なので、開発依存を含めて導入してください。
-
-共有パッケージは `file:` で参照します。リポジトリ全体をcheckoutした状態でインストールしてください。共有パッケージを編集したら、利用するアプリ側でも再度 `vp install` を実行して取り込みます。共有パッケージの外部依存を変更した場合は、ルートと利用先のロックファイルをそれぞれ更新します。
+CIでは `vp install --frozen-lockfile` を使います。各 `package.json` の依存はexactなバージョンで書き、`bunfig.toml` の `exact = true` で追加時もexactにします。アプリは共有パッケージを `workspace:*` で参照します。
 
 ## Workers Builds
 
-Workers Buildsでは以下を設定します。Build variablesは `SKIP_DEPENDENCY_INSTALL=1`、`BUN_VERSION=1.4.4`、`NODE_VERSION=26.12.1` とし、自動依存導入を止めてbuildコマンド内で対象のロックファイルから導入します。Cloudflareのビルド環境ではVite+のグローバル導入を前提にせず `bun install` を使います。
+Workers Buildsでは以下を設定します。Build variablesは `SKIP_DEPENDENCY_INSTALL=1`、`BUN_VERSION=1.4.4`、`NODE_VERSION=26.12.1` とし、自動依存導入を止めてbuildコマンド内でルートのロックファイルから対象アプリの依存だけを導入します。Cloudflareのビルド環境ではVite+のグローバル導入を前提にせず `bun install` を使います。
 
-| 設定           | Site                                                | Platform                                              |
-| -------------- | --------------------------------------------------- | ----------------------------------------------------- |
-| Root directory | `apps/site`                                         | `apps/platform`                                       |
-| Build command  | `bun install --frozen-lockfile && bun run cf-build` | `bun install --frozen-lockfile && bun run build`      |
-| Deploy command | `bunx --no-install cf deploy --prebuilt`            | `cd server && bunx --no-install cf deploy --prebuilt` |
+| 設定           | Site                                                                                     | Platform                                                                                     |
+| -------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Root directory | `apps/site`                                                                              | `apps/platform`                                                                              |
+| Build command  | `(cd ../.. && bun install --frozen-lockfile --filter official-site) && bun run cf-build` | `(cd ../.. && bun install --frozen-lockfile --filter './apps/platform/**') && bun run build` |
+| Deploy command | `bunx --no-install cf deploy --prebuilt`                                                 | `cd server && bunx --no-install cf deploy --prebuilt`                                        |
 
-PlatformのbuildはClient、Serverの順に実行します。ClientのVite設定はmodule runnerで読み込み、`file:` で導入した共有TypeScriptプラグインも変換します。上記のDeploy commandは実際のデプロイ用です。ローカル検証には既存の `vp run deploy:site` / `vp run deploy:platform`（`--dry-run`）を使用してください。
+PlatformのbuildはClient、Serverの順に実行します。ClientのVite設定はmodule runnerで読み込み、workspaceの共有TypeScriptプラグインも変換します。上記のDeploy commandは実際のデプロイ用です。ローカル検証には既存の `vp run deploy:site` / `vp run deploy:platform`（`--dry-run`）を使用してください。
 
 Workers Buildsの設定仕様は[Build image](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/)と[Build watch paths](https://developers.cloudflare.com/workers/ci-cd/builds/build-watch-paths/)を参照してください。
 
 Cloudflare側のbuild watch pathsには、リポジトリルートからの相対パスで以下を設定します。
 
-| Worker   | Include paths                                                                                                                                                              |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Site     | `apps/site/*`, `packages/lot-aikido/*`, `packages/randori-timer/*`, `packages/vite-plugin-third-party-licenses/*`, `patches/*`, `tsconfig.base.json`, `tsconfig.test.json` |
-| Platform | `apps/platform/*`, `packages/record-domain/*`, `packages/vite-plugin-third-party-licenses/*`, `tsconfig.base.json`, `tsconfig.test.json`, `vite.config.ts`                 |
+| Worker   | Include paths                                                                                                                                                                                             |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Site     | `apps/site/*`, `packages/lot-aikido/*`, `packages/randori-timer/*`, `packages/vite-plugin-third-party-licenses/*`, `patches/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json` |
+| Platform | `apps/platform/*`, `packages/record-domain/*`, `packages/vite-plugin-third-party-licenses/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json`, `vite.config.ts`                 |
 
-`*` はWorkers Buildsのパス指定でサブディレクトリも含めます。ルートの `package.json` と `bun.lock` はアプリの依存解決に使わないため監視対象に含めません。Cloudflareダッシュボードの作業ルート・依存導入・build/deployコマンド・監視パスは、この構成に合わせて設定してください。
+`*` はWorkers Buildsのパス指定でサブディレクトリも含めます。依存の更新は各アプリの `package.json` のexactなバージョンの変化で検知するため、ルートの `bun.lock` は監視対象に含めません。推移的依存だけが変わった場合は、次にそのアプリが変更されたときに反映されます。ルートの `package.json` の `overrides` と `catalog` は両アプリに効くため監視します。Cloudflareダッシュボードの作業ルート・依存導入・build/deployコマンド・監視パスは、この構成に合わせて設定してください。
 
 ## 開発と検証
 
@@ -69,7 +61,7 @@ vp run build:platform
 
 `dev:site` と `dev:platform` は、必要な `.env` がない場合だけ暗号化ファイルから復号し、既存の平文ファイルを保護して起動します。
 
-ルートとSiteの `package.json` で `simple-git` を override し、`braces` と `node-forge` は `patches/` のローカルパッケージを使用します。Viteは各インストールルートのoverrideでVite Plusのcoreへ解決します。PlatformのClientが使うHono RPC型は `apps/platform/server/rpc.d.ts` に置きます。
+ルートの `package.json` で `simple-git` を override し、`braces` と `node-forge` は `patches/` のローカルパッケージを使用します。Viteはルートのoverrideと `catalog` でVite Plusのcoreへ解決します。PlatformのClientが使うHono RPC型は `apps/platform/server/rpc.d.ts` に置きます。
 
 `build:site` はコンテンツ生成と `nuxt build` を実行し、Nuxt/Nitro の出力を Cloudflare Build Output Specification v0 (`apps/site/.cloudflare/output/v0`) に構成して `cf deploy --prebuilt --dry-run` で検証します。`build:platform` はClient SPAとServer Workerをローカルでbuildします。どちらもdeployやCloudflareリソース変更は行いません。`test:*`、`typecheck:*` もローカル検証です。
 
