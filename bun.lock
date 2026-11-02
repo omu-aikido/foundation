@@ -10,8 +10,8 @@
         "cf": "^1.0.0-beta.21",
         "knip": "5",
         "typescript": "^6.0.3",
-        "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-        "vite-plus": "1.4.0",
+        "vite": "catalog:",
+        "vite-plus": "catalog:",
       },
     },
     "packages/database": {
@@ -54,7 +54,7 @@
       "devDependencies": {
         "@types/bun": "^1.4.4",
         "@types/node": "^26.6.5",
-        "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+        "vite": "catalog:",
       },
       "peerDependencies": {
         "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
@@ -65,7 +65,11 @@
     "braces": "file:./patches/braces",
     "node-forge": "file:./patches/node-forge",
     "simple-git": "4.0.2",
+    "vite": "catalog:",
+  },
+  "catalog": {
     "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+    "vite-plus": "1.4.0",
   },
   "packages": {
     "@ark/schema": ["@ark/schema@0.56.8", "", { "dependencies": { "@ark/util": "0.56.8" } }, "sha512-R05TOe85oQBGFFw2zKMuZpqkXibLKuC/aJt6VwFn5Cjc4x3NkWfhvGRpRDycNkj3ddcHnOPtIsmjVowJO9Yxdw=="],
