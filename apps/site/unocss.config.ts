@@ -70,7 +70,7 @@ export default defineConfig({
     {
       // palette
       /// background colors
-      "bg-accent": "bg-sky-600 dark:bg-sky-500",
+      "bg-accent": "bg-sky-700 dark:bg-sky-500",
       "bg-base": "bg-zinc-50 dark:bg-zinc-900",
       "bg-muted": "bg-zinc-300 dark:bg-zinc-700",
       "bg-ghost": "bg-zinc-100/60 dark:bg-zinc-800/60",
@@ -81,6 +81,7 @@ export default defineConfig({
       "fg-muted": "text-zinc-600 dark:text-zinc-400",
       "fg-ghost": "text-zinc-400 dark:text-zinc-500",
       "fg-invert": "text-zinc-50 dark:text-zinc-900",
+      "fg-error": "text-error dark:text-red-400",
       /// borders
       "bordered-accent": "border-sky-600 dark:border-sky-500",
       "bordered-base": "border-zinc-300 dark:border-zinc-700",
@@ -94,8 +95,8 @@ export default defineConfig({
       ghost: "bg-ghost fg-ghost",
 
       // Status
-      "status-error": "text-error font-medium",
-      "status-icon-error": "text-error bg-error/10 p-1 rounded-full",
+      "status-error": "fg-error font-medium",
+      "status-icon-error": "fg-error bg-error/10 p-1 rounded-full",
     },
     // Components
     {

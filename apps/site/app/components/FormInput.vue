@@ -23,7 +23,7 @@
   <div class="stack gap-1">
     <label :for="id" class="text-sm font-bold fg-base">
       {{ label }}
-      <span v-if="required" class="font-bold text-error" aria-hidden="true">*</span>
+      <span v-if="required" class="font-bold fg-error" aria-hidden="true">*</span>
     </label>
     <input
       v-if="rows === 1"
@@ -50,6 +50,6 @@
       class="control resize-y"
       @input="update"
     />
-    <p v-if="error" :id="`${id}-error`" class="mt-1 text-xs text-error">{{ error }}</p>
+    <p v-if="error" :id="`${id}-error`" class="mt-1 text-xs fg-error">{{ error }}</p>
   </div>
 </template>

@@ -111,7 +111,7 @@
         status === 'verified'
           ? 'text-success'
           : status === 'error' || status === 'expired'
-            ? 'text-error'
+            ? 'fg-error'
             : 'fg-muted'
       "
       aria-live="polite"

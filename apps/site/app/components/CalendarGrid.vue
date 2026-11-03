@@ -48,7 +48,7 @@
 </script>
 
 <template>
-  <div v-if="error" class="mb-3 text-error" role="alert">
+  <div v-if="error" class="mb-3 fg-error" role="alert">
     <p>稽古予定を取得できませんでした。再読み込みしてください。</p>
     <button type="button" class="button mt-2" :disabled="pending" @click="refresh()">
       {{ pending ? "再読み込み中..." : "予定を再読み込み" }}
@@ -81,7 +81,13 @@
         v-for="day in ['日', '月', '火', '水', '木', '金', '土']"
         :key="day"
         class="text-center text-sm font-semibold"
-        :class="day === '日' ? 'text-red-500' : day === '土' ? 'text-blue-500' : 'fg-base'"
+        :class="
+          day === '日'
+            ? 'text-red-700 dark:text-red-400'
+            : day === '土'
+              ? 'text-blue-700 dark:text-blue-400'
+              : 'fg-base'
+        "
       >
         {{ day }}
       </div>

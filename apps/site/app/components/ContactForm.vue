@@ -92,7 +92,7 @@
     <p class="mt-1 fg-muted">ありがとうございます。</p>
   </div>
   <form v-else novalidate class="stack mt-4 gap-4" @submit.prevent="submit">
-    <p v-if="status === 'error' && errorMessage" role="alert" class="text-error">
+    <p v-if="status === 'error' && errorMessage" role="alert" class="fg-error">
       {{ errorMessage }}
     </p>
     <FormInput
@@ -139,7 +139,7 @@
         @token="turnstileToken = $event"
         @status="turnstileStatus = $event"
       />
-      <p v-else class="text-sm text-error">
+      <p v-else class="text-sm fg-error">
         PUBLIC_CF_TURNSTILE_SITEKEY が未設定です。このままでは送信できません。
       </p>
       <template #fallback
