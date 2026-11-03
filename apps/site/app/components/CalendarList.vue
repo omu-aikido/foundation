@@ -1,7 +1,12 @@
 <script setup lang="ts">
   const startDate = getTodayInJst();
   const endDate = new Date(startDate.getTime() + 21 * 24 * 60 * 60 * 1000);
-  const { data: events, error } = await useFetch<CalendarEvent[]>("/__calendar", {
+  const {
+    data: events,
+    error,
+    pending,
+    refresh,
+  } = await useFetch<CalendarEvent[]>("/__calendar", {
     key: "calendar-list",
     query: {
       start: formatLocalDate(startDate),
@@ -19,7 +24,12 @@
 </script>
 
 <template>
-  <div v-if="error" class="status-error">稽古予定を取得できませんでした。</div>
+  <div v-if="error" class="mb-3 fg-error" role="alert">
+    <p>稽古予定を取得できませんでした。再読み込みしてください。</p>
+    <button type="button" class="button mt-2" :disabled="pending" @click="refresh()">
+      {{ pending ? "再読み込み中..." : "予定を再読み込み" }}
+    </button>
+  </div>
   <div v-else-if="!events?.length" class="inline-flex gap-2 fg-muted">
     <span class="i-ri:calendar-view h-6 w-6" aria-hidden="true" />
     <p>今後3週間の稽古予定はありません</p>
