@@ -56,16 +56,21 @@
     >
       <span class="i-ri:arrow-right-s-line block size-6" />
     </button>
-    <div class="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 gap-3">
+    <div class="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 gap-1">
       <button
         v-for="(_, index) in images"
         :key="index"
         type="button"
-        class="h-1.5 rounded-full bg-white motion-safe:transition-[width,opacity]"
-        :class="index === current ? 'w-8' : 'w-2 opacity-40'"
+        class="p-2.5"
         :aria-label="`${index + 1}枚目の写真`"
+        :aria-current="index === current ? 'true' : undefined"
         @click="show(index)"
-      />
+      >
+        <span
+          class="block h-1.5 rounded-full bg-white motion-safe:transition-[width,opacity]"
+          :class="index === current ? 'w-8' : 'w-2 opacity-40'"
+        />
+      </button>
     </div>
   </div>
 </template>
