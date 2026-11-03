@@ -3,12 +3,12 @@
   "version": "4.0.0",
   "type": "module",
   "scripts": {
-    "build": "bun run generate-content && nuxt build",
+    "build": "bun run generate-content && panda codegen && nuxt build",
     "cf-build": "bun run build && cf deploy --prebuilt --dry-run",
     "dev": "nuxt dev",
     "generate-content": "bun build/generate-site-content.ts",
     "generate-types": "cf workers types",
-    "postinstall": "bun run generate-content && nuxt prepare",
+    "postinstall": "bun run generate-content && panda codegen && nuxt prepare",
     "preview": "wrangler dev --experimental-new-config --local --ip 127.0.0.1 --assets .output/public",
     "test": "bun test",
     "typecheck": "nuxt typecheck && bun check -p tests/tsconfig.json"
@@ -17,6 +17,7 @@
     "@nuxtjs/sitemap": "9.1.0",
     "@unocss/nuxt": "66.12.0",
     "arktype": "2.2.9",
+    "design-tokens": "workspace:*",
     "h3": "2.0.8",
     "hono": "4.13.16",
     "lot-aikido": "workspace:*",
@@ -30,6 +31,8 @@
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261102.1",
     "@iconify-json/ri": "1.2.10",
+    "@pandacss/dev": "2.5.0",
+    "@pandacss/preset-base": "2.5.0",
     "@types/bun": "1.4.4",
     "@types/node": "26.6.6",
     "cf": "1.0.0-beta.26",

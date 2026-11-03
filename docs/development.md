@@ -36,10 +36,10 @@ Workers Buildsの設定仕様は[Build image](https://developers.cloudflare.com/
 
 Cloudflare側のbuild watch pathsには、リポジトリルートからの相対パスで以下を設定します。
 
-| Worker   | Include paths                                                                                                                                                                                             |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Site     | `apps/site/*`, `packages/lot-aikido/*`, `packages/randori-timer/*`, `packages/vite-plugin-third-party-licenses/*`, `patches/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json` |
-| Platform | `apps/platform/*`, `packages/record-domain/*`, `packages/vite-plugin-third-party-licenses/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json`, `vite.config.ts`                 |
+| Worker   | Include paths                                                                                                                                                                                                                         |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Site     | `apps/site/*`, `packages/design-tokens/*`, `packages/lot-aikido/*`, `packages/randori-timer/*`, `packages/vite-plugin-third-party-licenses/*`, `patches/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json` |
+| Platform | `apps/platform/*`, `packages/record-domain/*`, `packages/vite-plugin-third-party-licenses/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json`, `vite.config.ts`                                             |
 
 `*` はWorkers Buildsのパス指定でサブディレクトリも含めます。依存の更新は各アプリの `package.json` のexactなバージョンの変化で検知するため、ルートの `bun.lock` は監視対象に含めません。推移的依存だけが変わった場合は、次にそのアプリが変更されたときに反映されます。ルートの `package.json` の `overrides` と `catalog` は両アプリに効くため監視します。Cloudflareダッシュボードの作業ルート・依存導入・build/deployコマンド・監視パスは、この構成に合わせて設定してください。
 
@@ -63,7 +63,9 @@ vp run build:platform
 
 ルートの `package.json` で `simple-git` を override し、`braces` と `node-forge` は `patches/` のローカルパッケージを使用します。Viteはルートのoverrideと `catalog` でVite Plusのcoreへ解決します。PlatformのClientが使うHono RPC型は `apps/platform/server/rpc.d.ts` に置きます。
 
-`build:site` はコンテンツ生成と `nuxt build` を実行し、Nuxt/Nitro の出力を Cloudflare Build Output Specification v0 (`apps/site/.cloudflare/output/v0`) に構成して `cf deploy --prebuilt --dry-run` で検証します。`build:platform` はClient SPAとServer Workerをローカルでbuildします。どちらもdeployやCloudflareリソース変更は行いません。`test:*`、`typecheck:*` もローカル検証です。
+SiteのスタイルはUnoCSSとPandaCSSの共存中です。Pandaは `design-tokens` の preset と `strictTokens` を使い、`apps/site/styled-system` は codegen の生成物です。`apps/site` の `postinstall` と `build` が `panda codegen` を実行します。
+
+`build:site` はコンテンツ生成、`panda codegen`、`nuxt build` を実行し、Nuxt/Nitro の出力を Cloudflare Build Output Specification v0 (`apps/site/.cloudflare/output/v0`) に構成して `cf deploy --prebuilt --dry-run` で検証します。`build:platform` はClient SPAとServer Workerをローカルでbuildします。どちらもdeployやCloudflareリソース変更は行いません。`test:*`、`typecheck:*` もローカル検証です。
 
 SiteのWorker previewはSite build後に実行します。
 

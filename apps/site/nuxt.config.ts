@@ -32,7 +32,12 @@ export default defineNuxtConfig({
     enabled: false,
   },
   modules: ["@unocss/nuxt", "@nuxtjs/sitemap"],
-  css: ["~/assets/global.css"],
+  css: ["~/assets/global.css", "~/assets/panda.css"],
+  postcss: {
+    plugins: {
+      "@pandacss/dev/postcss": {},
+    },
+  },
   site: {
     url: "https://omu-aikido.com",
     name: "大阪公立大学合氣道部",

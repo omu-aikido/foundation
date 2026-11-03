@@ -11,6 +11,14 @@ import {
 } from "unocss";
 
 export default defineConfig({
+  // reset は `button` や `h1` への指定を含む。レイヤー外だと、詳細度に関係なく
+  // Panda の `@layer utilities` より勝つ。ユーティリティまで入れると、global.css の
+  // 要素指定が Uno のクラスより勝ってしまう。
+  outputToCssLayers: {
+    cssLayerName(layer) {
+      return layer === "base" ? "reset" : null;
+    },
+  },
   presets: [
     presetWind4({
       dark: "media",

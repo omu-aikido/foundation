@@ -12,7 +12,7 @@
 - `apps/platform/tests/e2e`: Platform E2E環境ファイル
 - `packages/database`: Tursoローカル開発とDrizzle migrations
 - `packages/record-domain`: Recordの共有型・schema・ロジック
-- `packages/design-tokens`: Siteと共有UI向けのPanda preset（色・文字サイズ・行間）
+- `packages/design-tokens`: Siteと共有UI向けのPanda preset（トークン、text style、recipe）。パレット色を直接書ける `@pandacss/preset-panda` は使わない
 - `packages/lot-aikido`: 抽選機能のUI・composable・技データ
 - `packages/randori-timer`: 乱取りタイマーのUI・composable・音声処理
 - `packages/vite-plugin-third-party-licenses`: third-party license一覧を出力するVite plugin
@@ -20,6 +20,10 @@
 - `scripts/site`: Siteの開発補助
 
 依存関係はrootの1つのBun workspaceで管理し、`packages/*`、Site、Platform（Client、Server）をworkspaceに含める。ロックファイルはrootの `bun.lock` だけを置き、各 `package.json` には依存をexactなバージョンで書く。アプリは共有パッケージを `workspace:*` で参照する。導入手順とWorkers Buildsの設定は[開発ドキュメント](development.md)を正本とする。root共通コマンドのtask定義とVite+のlint・formatなどtoolchain設定はroot `vite.config.ts`を正本とする。app側のVite設定には各app固有のbuild/dev-server設定のみを置き、アプリ固有の依存とscriptは各アプリの `package.json` に置く。Bunのバージョンはrootの `package.json` の `packageManager` に定義する。
+
+## Site styles
+
+SiteのスタイルはUnoCSSとPandaCSSの共存中である。予定表はPandaで書き、それ以外はUnoCSSのままにする。Pandaは `design-tokens` の preset と `strictTokens` を使い、リセットはUnoCSSに任せて preflight は無効にする。UnoCSSのresetはPandaの `reset` レイヤーへ入れ、要素セレクタがPandaのクラスより優先されないようにする。UnoCSSのユーティリティはレイヤー外のままにする。`apps/site/styled-system` は `panda codegen` の生成物であり、Gitには含めない。
 
 ## Site rendering
 
