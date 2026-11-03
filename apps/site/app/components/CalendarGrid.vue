@@ -96,7 +96,7 @@
       <div
         v-for="(date, index) in days"
         :key="date ? getJstDateKey(date) : `empty-${index}`"
-        class="min-h-24 rounded-sm border p-1 bordered-muted bg-zinc-200/20 dark:bg-zinc-800/20"
+        class="min-h-24 min-w-0 rounded-sm border p-1 bordered-muted bg-zinc-200/20 dark:bg-zinc-800/20"
         :class="!date && 'opacity-60'"
       >
         <template v-if="date"
@@ -109,12 +109,11 @@
               :key="event.id"
               class="list-none rounded px-1 py-0.5 text-xs leading-tight"
               :class="badge(event.title)"
-              :title="event.title"
             >
-              <span class="block truncate">{{ event.title }}</span>
+              <span class="block [overflow-wrap:anywhere]">{{ event.title }}</span>
               <span
                 v-if="formatMonthlyEventTime(event)"
-                class="block truncate text-xs opacity-80"
+                class="block [overflow-wrap:anywhere] text-xs opacity-80"
                 >{{ formatMonthlyEventTime(event) }}</span
               >
             </li>
