@@ -87,12 +87,7 @@
     <p>詳しい予定は<NuxtLink to="/calendar">予定表</NuxtLink>をご確認ください。</p>
     <h3>年間行事予定</h3>
     <section class="my-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <div
-        v-for="item in annual"
-        :key="item[0]"
-        class="card"
-        :class="item[1] === '—' && 'opacity-60'"
-      >
+      <div v-for="item in annual" :key="item[0]" class="card">
         <p class="text-sm font-semibold fg-muted">{{ item[0] }}</p>
         <p class="mt-2 fg-muted">{{ item[1] }}</p>
       </div>
