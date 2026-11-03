@@ -54,8 +54,8 @@
       {{ pending ? "再読み込み中..." : "予定を再読み込み" }}
     </button>
   </div>
-  <div class="overflow-hidden" role="grid" aria-labelledby="calendar-title">
-    <h2 id="calendar-title" class="h2 mb-4 flex items-center justify-between">
+  <div class="overflow-hidden">
+    <h2 class="h2 mb-4 flex items-center justify-between">
       <NuxtLink
         v-if="prevHref"
         :to="prevHref"
@@ -76,7 +76,7 @@
         ><span class="i-ri:arrow-right-s-line block h-5 w-5"
       /></span>
     </h2>
-    <div class="mb-2 grid grid-cols-7" role="row">
+    <div class="mb-2 grid grid-cols-7">
       <div
         v-for="day in ['日', '月', '火', '水', '木', '金', '土']"
         :key="day"
@@ -92,11 +92,10 @@
         {{ day }}
       </div>
     </div>
-    <div class="grid grid-cols-7 gap-1" role="rowgroup">
+    <div class="grid grid-cols-7 gap-1">
       <div
         v-for="(date, index) in days"
         :key="date ? getJstDateKey(date) : `empty-${index}`"
-        role="gridcell"
         class="min-h-24 rounded-sm border p-1 bordered-muted bg-zinc-200/20 dark:bg-zinc-800/20"
         :class="!date && 'opacity-60'"
       >
