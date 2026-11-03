@@ -3,6 +3,7 @@
     title: "乱取りタイマー",
     description:
       "合気道の乱取り稽古に使えるタイマーです。ラウンドの時間や回数を設定して稽古を進行できます。",
+    navigation: { parent: "/apps", order: 2 },
   });
 
   import { useRandoriTimer } from "randori-timer";
