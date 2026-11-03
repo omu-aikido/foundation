@@ -108,14 +108,14 @@
             <li
               v-for="event in byDate.get(getJstDateKey(date)) ?? []"
               :key="event.id"
-              class="list-none rounded px-1 py-0.5 text-[11px] leading-tight"
+              class="list-none rounded px-1 py-0.5 text-xs leading-tight"
               :class="badge(event.title)"
               :title="event.title"
             >
               <span class="block truncate">{{ event.title }}</span>
               <span
                 v-if="formatMonthlyEventTime(event)"
-                class="block truncate text-[10px] opacity-80"
+                class="block truncate text-xs opacity-80"
                 >{{ formatMonthlyEventTime(event) }}</span
               >
             </li>

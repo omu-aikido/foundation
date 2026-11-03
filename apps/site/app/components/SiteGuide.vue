@@ -13,7 +13,7 @@
     >
       <span class="self-center">
         <span class="block text-[1.08rem] font-bold">{{ item.title }}</span>
-        <span v-if="item.description" class="mt-1 block flex-1 text-xs leading-1.5 fg-muted">
+        <span v-if="item.description" class="mt-1 block flex-1 text-xs leading-relaxed fg-muted">
           {{ item.description }}
         </span>
       </span>
