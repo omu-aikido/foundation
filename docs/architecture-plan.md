@@ -22,7 +22,7 @@
 
 ## Site rendering
 
-SiteはNuxtのSSRを基本とする。安定した公開ページとツールはSSRでprerenderしてcached assetsとして維持し、予定表は最新予定を取得するruntime SSRにする。route別のCSR overrideと重複したprerender ruleは設けない。security headersはNuxt routeRulesと生成するCloudflare `_headers`でSSR/asset双方に適用し、APIの`no-store`とNuxt SEO metadataも維持する。ブラウザAPIが必要なtimer/audio機能はmount後に初期化し、lotAikidoの乱数seedはSSR hydration後にshuffleしてサーバーと初期HTMLを一致させる。
+SiteはNuxtのSSRを基本とする。安定した公開ページとツールはSSRでprerenderしてcached assetsとして維持し、予定表は最新予定を取得するruntime SSRにする。route別のCSR overrideと重複したprerender ruleは設けない。動きのない静的ページはrouteRulesの`noScripts`でクライアントJSなしに配信し、ホーム、お問い合わせ、予定表、各ツールはJSを維持する。security headersは`/**`のrouteRulesが個別ルールへマージされたまま、生成するCloudflare `_headers`でもSSR/asset双方に適用し、APIの`no-store`とNuxt SEO metadataも維持する。JSのないページ間の遷移は、reduced motionを望まない閲覧者に対してCSSのcross-document view transitionで切り替える。ブラウザAPIが必要なtimer/audio機能はmount後に初期化し、lotAikidoの乱数seedはSSR hydration後にshuffleしてサーバーと初期HTMLを一致させる。
 
 ## Site security contract
 

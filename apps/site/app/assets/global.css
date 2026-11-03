@@ -50,6 +50,12 @@ textarea {
   }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     background: #18181b;

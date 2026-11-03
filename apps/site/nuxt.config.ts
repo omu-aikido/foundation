@@ -76,11 +76,22 @@ export default defineNuxtConfig({
     contactAllowedOrigins: process.env.CONTACT_ALLOWED_ORIGINS ?? "https://omu-aikido.com",
     turnstileHostname: process.env.TURNSTILE_HOSTNAME ?? "omu-aikido.com",
   },
+  // Nitro defu-merges matched route rules; a more specific rule wins only on conflicting keys.
+  // Keep security headers on "/**". Copying them onto each noScripts route would drift from that set.
   routeRules: {
     "/api/**": {
       cors: false,
       headers: { "Cache-Control": "no-store" },
     },
+    "/about": { noScripts: true },
+    "/about/aikido": { noScripts: true },
+    "/about/links": { noScripts: true },
+    "/access": { noScripts: true },
+    "/apps": { noScripts: true },
+    "/faq": { noScripts: true },
+    "/privacy-policy": { noScripts: true },
+    "/support": { noScripts: true },
+    "/terms-of-service": { noScripts: true },
     "/**": { headers: securityHeaders },
   },
   nitro: {
