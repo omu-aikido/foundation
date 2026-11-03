@@ -7,7 +7,7 @@
           alt=""
           width="40"
           height="40"
-          class="h-10 w-10 rounded-full p-1 transition group-hover:animate-spin"
+          class="h-10 w-10 rounded-full p-1 transition motion-safe:group-hover:animate-spin"
         />
       </NuxtLink>
     </div>
