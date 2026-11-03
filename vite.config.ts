@@ -67,11 +67,11 @@ export default defineConfig({
       "test:platform":
         "bun test --isolate apps/platform/server/test apps/platform/client/test packages/record-domain/test scripts/platform",
       "test:site":
-        "bun test --isolate apps/site/tests packages/lot-aikido/test packages/randori-timer/test",
+        "bun test --isolate apps/site/tests packages/lot-aikido/test packages/randori-timer/test packages/design-tokens/test",
       "typecheck:platform":
         "cd apps/platform/server && bun run typecheck && cd ../client && bun run typecheck && cd ../../../packages/record-domain && bun run typecheck",
       "typecheck:site":
-        "cd apps/site && bun run typecheck && cd ../../packages/lot-aikido && bun run typecheck && cd ../randori-timer && bun run typecheck",
+        "cd apps/site && bun run typecheck && cd ../../packages/lot-aikido && bun run typecheck && cd ../randori-timer && bun run typecheck && cd ../design-tokens && bun run typecheck",
       "deploy:site":
         "vp run build:site && (cd apps/site && bunx --no-install cf deploy --prebuilt --dry-run)",
       "deploy:platform":

@@ -12,6 +12,7 @@
 - `apps/platform/tests/e2e`: Platform E2E環境ファイル
 - `packages/database`: Tursoローカル開発とDrizzle migrations
 - `packages/record-domain`: Recordの共有型・schema・ロジック
+- `packages/design-tokens`: Siteと共有UI向けのPanda preset（色・文字サイズ・行間）
 - `packages/lot-aikido`: 抽選機能のUI・composable・技データ
 - `packages/randori-timer`: 乱取りタイマーのUI・composable・音声処理
 - `packages/vite-plugin-third-party-licenses`: third-party license一覧を出力するVite plugin
