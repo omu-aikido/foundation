@@ -1,4 +1,4 @@
-import { definePreset } from "@pandacss/dev";
+import { definePreset, defineRecipe } from "@pandacss/dev";
 
 // presetWind4 の oklch をそのまま置く。`{colors.zinc.*}` は @pandacss/preset-panda が
 // 無いと解決できず、この preset 単体の色が変わる。
@@ -34,6 +34,8 @@ const error = "oklch(0.567 0.224 27)";
 
 const zinc100At60 = "oklch(96.7% 0.001 286.375 / 60%)";
 const zinc800At60 = "oklch(27.4% 0.006 286.033 / 60%)";
+const zinc200At20 = "oklch(92% 0.004 286.32 / 20%)";
+const zinc800At20 = "oklch(27.4% 0.006 286.033 / 20%)";
 
 function semanticColor(base: string, dark: string) {
   return { value: { base, _dark: dark } };
@@ -43,6 +45,92 @@ function semanticColor(base: string, dark: string) {
 function sameColor(value: string) {
   return semanticColor(value, value);
 }
+
+// presetWind4 の spacing は 1 = 0.25rem。Site と packages で使っている段階だけ置く。
+const spacingSteps = [0, 0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 9, 10, 12, 16, 18, 24, 32];
+
+function rem(step: number): string {
+  if (step === 0) return "0";
+  return `${step / 4}rem`;
+}
+
+function lengthScale(steps: readonly number[]) {
+  return Object.fromEntries(steps.map((step) => [String(step), { value: rem(step) }]));
+}
+
+// wind4 の text-* が font-size と一緒に付ける line-height。fontSizes には付けない。
+// 数値を fontSize トークンへ入れると、フォントサイズだけの指定ができなくなる。
+const textLineHeights = {
+  xs: { value: "1rem" },
+  sm: { value: "1.25rem" },
+  lg: { value: "1.75rem" },
+  xl: { value: "1.75rem" },
+  "2xl": { value: "2rem" },
+  "3xl": { value: "2.25rem" },
+};
+
+// className を Uno の shortcut（button / link / card）と同じにしない。
+// shortcut はレイヤー外なので、同名クラスは recipe より優先される。
+const link = defineRecipe({
+  className: "panda-link",
+  base: {
+    color: "fg.accent",
+    textDecoration: "none",
+    textUnderlineOffset: "4px",
+    _hover: { textDecorationLine: "underline" },
+  },
+  variants: {
+    external: {
+      true: {
+        _after: { content: '" ↗ "' },
+      },
+    },
+  },
+});
+
+const button = defineRecipe({
+  className: "panda-button",
+  base: {
+    borderRadius: "sm",
+    // フォーカスはブラウザ標準の輪に任せる。1px の独自 outline は標準より見えにくい。
+    _hover: {
+      cursor: "pointer",
+      boxShadow: "sm",
+      opacity: "0.9",
+    },
+    _active: { transform: "translateY(1px)" },
+    _disabled: {
+      cursor: "not-allowed",
+      transform: "none",
+      opacity: "0.6",
+      _hover: {
+        boxShadow: "none",
+        cursor: "not-allowed",
+        opacity: "0.6",
+      },
+      _active: { transform: "none" },
+    },
+  },
+  variants: {
+    tone: {
+      accent: { bg: "bg.accent", color: "fg.invert" },
+      base: { bg: "bg.base", color: "fg.base" },
+    },
+  },
+});
+
+const card = defineRecipe({
+  className: "panda-card",
+  base: {
+    borderRadius: "lg",
+    bg: "bg.ghost",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "border.muted",
+    p: "4",
+    boxShadow: "sm",
+  },
+});
 
 export const preset = definePreset({
   name: "design-tokens",
@@ -54,6 +142,11 @@ export const preset = definePreset({
   },
   theme: {
     extend: {
+      breakpoints: {
+        sm: "40rem",
+        md: "48rem",
+        lg: "64rem",
+      },
       tokens: {
         // xs（0.75rem。既定ルートで 12px）未満は作らない。数値の line-height は fontSize に付けない。
         fontSizes: {
@@ -78,6 +171,51 @@ export const preset = definePreset({
           normal: { value: "1.5" },
           relaxed: { value: "1.625" },
           loose: { value: "2" },
+          ...textLineHeights,
+        },
+        fontWeights: {
+          normal: { value: "400" },
+          medium: { value: "500" },
+          semibold: { value: "600" },
+          bold: { value: "700" },
+          extrabold: { value: "800" },
+        },
+        spacing: lengthScale(spacingSteps),
+        sizes: {
+          ...lengthScale(spacingSteps),
+          full: { value: "100%" },
+          min: { value: "min-content" },
+          max: { value: "max-content" },
+          fit: { value: "fit-content" },
+          prose: { value: "65ch" },
+          "3xl": { value: "48rem" },
+          "4xl": { value: "56rem" },
+          "5xl": { value: "64rem" },
+          // 予定表の min-h-60dvh。spacing の倍数ではなく、生の長さは strictTokens で書けない。
+          "60dvh": { value: "60dvh" },
+        },
+        // md は wind4 の `rounded`（radius.DEFAULT = 0.25rem）。
+        // `rounded-md`（0.375rem）に合わせると、接尾辞なしの rounded が太くなる。
+        radii: {
+          xs: { value: "0.125rem" },
+          sm: { value: "0.25rem" },
+          md: { value: "0.25rem" },
+          lg: { value: "0.5rem" },
+          xl: { value: "0.75rem" },
+          "2xl": { value: "1rem" },
+          full: { value: "calc(infinity * 1px)" },
+        },
+        shadows: {
+          sm: {
+            value: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+          },
+          md: {
+            value: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+          },
+          xl: {
+            value: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+          },
+          none: { value: "0 0 rgb(0 0 0 / 0)" },
         },
       },
       semanticTokens: {
@@ -96,6 +234,7 @@ export const preset = definePreset({
             ghost: semanticColor(zinc100At60, zinc800At60),
             invert: semanticColor(zinc900, zinc50),
             accent: semanticColor(sky700, sky500),
+            subtle: semanticColor(zinc200At20, zinc800At20),
           },
           border: {
             base: semanticColor(zinc300, zinc700),
@@ -122,6 +261,13 @@ export const preset = definePreset({
           },
         },
       },
+      textStyles: {
+        h1: { value: { fontSize: "3xl", fontWeight: "bold", lineHeight: "3xl" } },
+        h2: { value: { fontSize: "2xl", fontWeight: "semibold", lineHeight: "2xl" } },
+        h3: { value: { fontSize: "xl", fontWeight: "medium", lineHeight: "xl" } },
+        h4: { value: { fontSize: "lg", fontWeight: "medium", lineHeight: "lg" } },
+      },
+      recipes: { link, button, card },
     },
   },
 });
