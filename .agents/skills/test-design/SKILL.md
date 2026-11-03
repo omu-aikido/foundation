@@ -21,6 +21,18 @@ Treat tests as executable specifications of behavior, not proof that code has a 
    - use unit tests for pure transformations, resolution, or isolated failure-prone logic;
    - do not mock away the state transition under test.
 
+## Regression tests
+
+A regression test must reproduce an observable failure and assert the required behavior at the relevant boundary. A past bug, changed line, or the label “regression” does not make an implementation detail a contract.
+
+- Do not copy implementation constants, defaults, configuration tables, internal identifiers, or source text into assertions merely to detect changes. Such tests distribute implementation knowledge across files and make valid changes require synchronized edits without protecting behavior.
+- Establish the expected outcome from a requirement or caller-visible contract, not by reading the current implementation. Do not derive the expected result from the same production constant or helper either; that can make the test follow the bug.
+- Assert an exact value only when that value is itself an independently established external contract, such as a protocol field or a documented default. Exercise the behavior that exposes it rather than asserting the internal declaration.
+- For example, test that an operation times out and recovers as required, not that an internal timeout constant equals today's value. If an exact default timeout is contractual, test its observable effect at the boundary.
+- If a proposed test would fail only because an internal value or representation changed while required behavior stayed correct, omit it. If an existing test does this, remove it or replace it with a behavioral test; do not preserve it merely as regression coverage.
+
+Before adding a regression test, identify the failing input or state, the observable harm, and the required outcome. If no behavioral failure can be identified, do not add a test just to accompany the change.
+
 ## Cases to cover
 
 For each material acceptance condition, consider:
