@@ -18,7 +18,7 @@
 - `scripts/platform`: Recordの開発・環境・release-note補助
 - `scripts/site`: Siteの開発補助
 
-インストール単位はroot（開発ツールと `packages/*` のworkspace）、Site、Platform（ClientとServerのworkspace）に分け、各単位で `package.json` と `bun.lock` を管理する。アプリは共有パッケージを `file:` で参照する。導入手順とWorkers Buildsの設定は[開発ドキュメント](development.md)を正本とする。root共通コマンドのtask定義とVite+のlint・formatなどtoolchain設定はroot `vite.config.ts`を正本とする。app側のVite設定には各app固有のbuild/dev-server設定のみを置き、アプリ固有の依存とscriptは各アプリの `package.json` に置く。Bunのバージョンは各インストールルートの `package.json` の `packageManager` に定義する。
+依存関係はrootの1つのBun workspaceで管理し、`packages/*`、Site、Platform（Client、Server）をworkspaceに含める。ロックファイルはrootの `bun.lock` だけを置き、各 `package.json` には依存をexactなバージョンで書く。アプリは共有パッケージを `workspace:*` で参照する。導入手順とWorkers Buildsの設定は[開発ドキュメント](development.md)を正本とする。root共通コマンドのtask定義とVite+のlint・formatなどtoolchain設定はroot `vite.config.ts`を正本とする。app側のVite設定には各app固有のbuild/dev-server設定のみを置き、アプリ固有の依存とscriptは各アプリの `package.json` に置く。Bunのバージョンはrootの `package.json` の `packageManager` に定義する。
 
 ## Site rendering
 
