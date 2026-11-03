@@ -19,9 +19,11 @@
     <h2>森之宮キャンパス</h2>
     <p>2026年度より2階マルチユースルーム（201号室）または1階サブアリーナにて活動しています。</p>
     <img
-      src="/images/access/multi-use-room.png"
+      src="/images/access/multi-use-room.webp"
       alt="マルチユースルームの場所は2階の北側にあります。"
-      loading="eager"
+      width="1800"
+      height="1208"
+      loading="lazy"
     />
     <h2>中百舌鳥キャンパス</h2>
     <p>中百舌鳥門または白鷺門より入って左手、C2棟（体育館）1階奥の武道場で活動しています。</p>

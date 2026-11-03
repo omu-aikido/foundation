@@ -1,9 +1,14 @@
 <script setup lang="ts">
   const images = [
-    { src: "/images/hero/a899c25a.jpg", alt: "2025年度集合写真" },
-    { src: "/images/hero/a61baa65.jpg", alt: "2026年度の新歓の様子です" },
-    { src: "/images/hero/a2007d4a.jpg", alt: "普段の稽古の様子1" },
-    { src: "/images/hero/bea041cf.png", alt: "普段の稽古の様子2" },
+    { src: "/images/hero/a899c25a.webp", alt: "2025年度集合写真", width: 1280, height: 696 },
+    {
+      src: "/images/hero/a61baa65.webp",
+      alt: "2026年度の新歓の様子です",
+      width: 1080,
+      height: 811,
+    },
+    { src: "/images/hero/a2007d4a.webp", alt: "普段の稽古の様子1", width: 1280, height: 960 },
+    { src: "/images/hero/bea041cf.webp", alt: "普段の稽古の様子2", width: 1024, height: 575 },
   ];
   const current = ref(0);
 
@@ -32,8 +37,11 @@
         <img
           :src="image.src"
           :alt="image.alt"
+          :width="image.width"
+          :height="image.height"
           class="relative z-10 max-h-full max-w-full object-contain"
           :loading="index === 0 ? 'eager' : 'lazy'"
+          :fetchpriority="index === 0 ? 'high' : undefined"
         />
       </div>
     </div>
