@@ -1,4 +1,7 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+  import { button } from "~~/styled-system/recipes";
+
   type Status = "loading" | "checking" | "verified" | "expired" | "error";
   const props = defineProps<{ siteKey: string }>();
   const emit = defineEmits<{ token: [value: string]; status: [value: Status] }>();
@@ -93,6 +96,16 @@
     setStatus("error");
   }
 
+  const statusText = {
+    mt: "1",
+    fontSize: "sm",
+    lineHeight: "sm",
+  } as const;
+  const statusSuccess = css({ ...statusText, color: "status.success" });
+  const statusError = css({ ...statusText, color: "fg.error" });
+  const statusMuted = css({ ...statusText, color: "fg.muted" });
+  const retryButton = [button(), css({ mt: "2" })];
+
   defineExpose({ reset });
   onMounted(render);
   onBeforeUnmount(() => {
@@ -106,13 +119,12 @@
   <div>
     <div ref="container" />
     <p
-      class="mt-1 text-sm"
       :class="
         status === 'verified'
-          ? 'text-success'
+          ? statusSuccess
           : status === 'error' || status === 'expired'
-            ? 'fg-error'
-            : 'fg-muted'
+            ? statusError
+            : statusMuted
       "
       aria-live="polite"
     >
@@ -131,7 +143,7 @@
     <button
       v-if="status === 'error' || status === 'expired'"
       type="button"
-      class="button mt-2"
+      :class="retryButton"
       @click="retry"
     >
       セキュリティ確認を再試行

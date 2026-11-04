@@ -1,4 +1,7 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+  import { stack } from "~~/styled-system/patterns";
+  import { button, card } from "~~/styled-system/recipes";
   import { validateContactFields } from "~~/shared/schemas/contact";
 
   type FieldName = "name" | "email" | "subject" | "body";
@@ -27,6 +30,32 @@
   const pending = computed(
     () => status.value === "submitting" || turnstileStatus.value === "checking",
   );
+  const success = [card(), css({ textAlign: "center" })];
+  const successIcon = css({
+    display: "block",
+    mx: "auto",
+    mb: "3",
+    h: "5",
+    w: "5",
+    fontSize: "xl",
+    lineHeight: "none",
+    color: "status.success",
+  });
+  const successTitle = css({
+    fontSize: "lg",
+    lineHeight: "lg",
+    fontWeight: "bold",
+    color: "fg.base",
+  });
+  const thanks = css({ mt: "1", color: "fg.muted" });
+  const formClass = [stack({ gap: "4" }), css({ mt: "4" })];
+  const formError = css({ color: "fg.error" });
+  const note = css({ fontSize: "sm", lineHeight: "sm", color: "fg.muted" });
+  const missingKey = css({ fontSize: "sm", lineHeight: "sm", color: "fg.error" });
+  const submitButton = [
+    button({ tone: "accent" }),
+    css({ ml: "auto", w: "fit", px: "4", py: "2" }),
+  ];
 
   function focusFirstInvalid() {
     const field = (Object.keys(fieldErrors) as FieldName[]).find((key) => fieldErrors[key]);
@@ -86,13 +115,13 @@
 </script>
 
 <template>
-  <div v-if="status === 'success'" role="alert" class="card text-center">
-    <span class="i-ri:checkbox-circle-line mx-auto mb-3 block h-5 w-5 text-success" />
-    <p class="text-lg font-bold fg-base">お問い合わせを受け付けました。</p>
-    <p class="mt-1 fg-muted">ありがとうございます。</p>
+  <div v-if="status === 'success'" role="alert" :class="success">
+    <span :class="successIcon"><span class="i-ri:checkbox-circle-line" /></span>
+    <p :class="successTitle">お問い合わせを受け付けました。</p>
+    <p :class="thanks">ありがとうございます。</p>
   </div>
-  <form v-else novalidate class="stack mt-4 gap-4" @submit.prevent="submit">
-    <p v-if="status === 'error' && errorMessage" role="alert" class="fg-error">
+  <form v-else novalidate :class="formClass" @submit.prevent="submit">
+    <p v-if="status === 'error' && errorMessage" role="alert" :class="formError">
       {{ errorMessage }}
     </p>
     <FormInput
@@ -139,28 +168,26 @@
         @token="turnstileToken = $event"
         @status="turnstileStatus = $event"
       />
-      <p v-else class="text-sm fg-error">
+      <p v-else :class="missingKey">
         PUBLIC_CF_TURNSTILE_SITEKEY が未設定です。このままでは送信できません。
       </p>
-      <template #fallback
-        ><p class="text-sm fg-muted">セキュリティ確認を読み込んでいます...</p></template
-      >
+      <template #fallback><p :class="note">セキュリティ確認を読み込んでいます...</p></template>
     </ClientOnly>
-    <p v-if="pending" role="status" class="text-sm fg-muted">
+    <p v-if="pending" role="status" :class="note">
       {{
         status === "submitting"
           ? "お問い合わせを送信しています..."
           : "セキュリティ確認中です。完了後に送信できます。"
       }}
     </p>
-    <p v-else-if="turnstileStatus !== 'verified'" class="text-sm fg-muted">
+    <p v-else-if="turnstileStatus !== 'verified'" :class="note">
       セキュリティ確認を完了すると送信できます。
     </p>
     <button
       type="submit"
       :aria-disabled="status === 'submitting'"
       :aria-busy="status === 'submitting'"
-      class="button accent ml-auto w-fit px-4 py-2"
+      :class="submitButton"
     >
       {{ status === "submitting" ? "送信中..." : "送信する" }}
     </button>

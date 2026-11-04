@@ -1,4 +1,4 @@
-import { definePreset, defineRecipe } from "@pandacss/dev";
+import { definePattern, definePreset, defineRecipe } from "@pandacss/dev";
 
 // presetWind4 の oklch をそのまま置く。`{colors.zinc.*}` は @pandacss/preset-panda が
 // 無いと解決できず、この preset 単体の色が変わる。
@@ -26,6 +26,14 @@ const orange300 = "oklch(83.7% 0.128 66.29)";
 const orange700 = "oklch(55.3% 0.195 38.402)";
 const rose300 = "oklch(81% 0.117 11.638)";
 const rose700 = "oklch(51.4% 0.222 16.935)";
+
+// presetTypography の prose-gray。Site の fg は zinc なので、本文色を fg.base に寄せると明るさが変わる。
+const gray100 = "oklch(96.7% 0.003 264.542)";
+const gray200 = "oklch(92.8% 0.006 264.531)";
+const gray300 = "oklch(87.2% 0.01 258.338)";
+const gray700 = "oklch(37.3% 0.034 259.733)";
+const gray900 = "oklch(21% 0.034 264.665)";
+const white = "#fff";
 
 // Uno theme の単色。ダーク専用の色は定義されていない。
 const success = "oklch(0.571 0.181 145)";
@@ -67,6 +75,8 @@ const textLineHeights = {
   xl: { value: "1.75rem" },
   "2xl": { value: "2rem" },
   "3xl": { value: "2.25rem" },
+  // text-4xl の line-height。fontSizes.4xl（2.25rem）とは別。
+  "4xl": { value: "2.5rem" },
 };
 
 // className を Uno の shortcut（button / link / card）と同じにしない。
@@ -132,6 +142,132 @@ const card = defineRecipe({
   },
 });
 
+// Uno の `control`。フォーカスは枠色だけ変え、輪は消さない。
+const control = defineRecipe({
+  className: "panda-control",
+  base: {
+    borderRadius: "md",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "border.muted",
+    bg: "bg.base",
+    px: "3",
+    py: "2",
+    color: "fg.base",
+    _focus: { borderColor: "border.accent" },
+  },
+});
+
+// presetTypography の base と MarkdownPage の上書き。色は fg / border トークン。
+// max-width の 65ch は container pattern（utilities）が後から勝つ。
+const prose = defineRecipe({
+  className: "panda-prose",
+  base: {
+    color: "fg.prose",
+    maxW: "prose",
+    fontSize: "base",
+    lineHeight: "lg",
+    "& > :first-child": { mt: "0" },
+    "& > :last-child": { mb: "0" },
+    "& h1": {
+      color: "fg.heading",
+      fontSize: "4xl",
+      fontWeight: "extrabold",
+      lineHeight: "4xl",
+      mt: "0",
+      mb: "8",
+    },
+    "& h2": {
+      color: "fg.heading",
+      fontSize: "2xl",
+      fontWeight: "bold",
+      lineHeight: "2xl",
+      mt: "12",
+      mb: "6",
+    },
+    "& h3": {
+      color: "fg.heading",
+      fontSize: "xl",
+      fontWeight: "semibold",
+      lineHeight: "2xl",
+      mt: "8",
+      mb: "3",
+    },
+    "& p": { m: "0" },
+    "& a": {
+      color: "fg.heading",
+      fontWeight: "medium",
+      textDecorationLine: "underline",
+      textDecorationColor: "border.accent",
+      textUnderlineOffset: "4px",
+    },
+    // Markdown から生成したリンク（build/generate-site-content.ts が data-link を付ける）。
+    // 生 HTML の a は上の見出し色のまま。
+    "& a[data-link]": { color: "fg.accent" },
+    "& a[data-link=external]::after": { content: '" ↗ "' },
+    "& strong": { color: "fg.heading", fontWeight: "semibold" },
+    "& ul": { m: "0", p: "0", listStyle: "none" },
+    "& li": { mt: "2", mb: "2", paddingInlineStart: "1.5" },
+    "& li::before": { content: '"◆"', mr: "2", color: "fg.muted" },
+    "& hr": { mt: "12", mb: "12", borderTopWidth: "1px", borderColor: "border.prose" },
+    "& blockquote": {
+      mt: "1.6rem",
+      mb: "1.6rem",
+      paddingInlineStart: "4",
+      fontWeight: "medium",
+      fontStyle: "italic",
+      color: "fg.quote",
+      borderInlineStartWidth: "0.25rem",
+      borderInlineStartStyle: "solid",
+      borderInlineStartColor: "border.prose",
+      quotes: '"“""”""‘""’"',
+    },
+    // リンク内の太字はリンクの色のまま（presetTypography の `a strong` と同じ）。
+    "& a strong": { color: "inherit" },
+    "& blockquote p:first-of-type::before": { content: "open-quote" },
+    "& blockquote p:last-of-type::after": { content: "close-quote" },
+    // content/pages の画像と活動紹介の定義リスト。見出し直後は上の隣接規則で上余白が消える。
+    "& img": { mt: "8", mb: "8" },
+    "& dl": { mt: "5", mb: "5" },
+    // presetTypography は em の色や太さを変えない。斜体はブラウザの初期値のまま。
+    "& dt": { color: "fg.heading", fontWeight: "semibold", mt: "5" },
+    "& dd": { mt: "2", paddingInlineStart: "1.625rem" },
+    // 見出しと区切り線の直後は上余白を消す。`& h3` と詳細度が同じなので、後に置いて勝たせる。
+    "& :is(h2, h3, hr) + *": { mt: "0" },
+  },
+});
+
+// preset-base の container は max-width 8xl と padding。Uno の shortcut はこれではない。
+const container = definePattern({
+  transform(props) {
+    return {
+      maxW: "4xl",
+      mx: { base: "4", sm: "6", md: "8", lg: "auto" },
+      ...props,
+    };
+  },
+});
+
+// preset-base の stack は gap 8px が既定。Uno の shortcut は段組みだけで、間隔は付けない。
+const stack = definePattern({
+  properties: {
+    align: { type: "property", value: "alignItems" },
+    justify: { type: "property", value: "justifyContent" },
+    gap: { type: "property", value: "gap" },
+  },
+  transform(props) {
+    const { align, justify, gap, ...rest } = props;
+    return {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: align,
+      justifyContent: justify,
+      ...(gap == null ? {} : { gap }),
+      ...rest,
+    };
+  },
+});
+
 export const preset = definePreset({
   name: "design-tokens",
   conditions: {
@@ -143,6 +279,8 @@ export const preset = definePreset({
   theme: {
     extend: {
       breakpoints: {
+        // サイト案内の 3 列化（441px）。他の段階が rem なので、単位を混ぜると並びが崩れる。
+        guide: "27.5625rem",
         sm: "40rem",
         md: "48rem",
         lg: "64rem",
@@ -158,6 +296,8 @@ export const preset = definePreset({
           "2xl": { value: "1.5rem" },
           "3xl": { value: "1.875rem" },
           "4xl": { value: "2.25rem" },
+          // サイト案内の見出し。text-[1.08rem] と同じで、他の段階には乗らない。
+          guide: { value: "1.08rem" },
           "5xl": { value: "3rem" },
           "6xl": { value: "3.75rem" },
           "7xl": { value: "4.5rem" },
@@ -185,7 +325,16 @@ export const preset = definePreset({
           sans: { value: '"Inter", "BIZ UDPGothic", sans-serif' },
           mono: { value: '"Fira Code", monospace' },
         },
-        spacing: lengthScale(spacingSteps),
+        spacing: {
+          ...lengthScale(spacingSteps),
+          // 分数と em は spacing の倍数ではない。Uno が出す値のままにする。
+          "1/4": { value: "25%" },
+          "1/3": { value: "33.3333333333%" },
+          "1/2": { value: "50%" },
+          "1.6rem": { value: "1.6rem" },
+          "1.625rem": { value: "1.625rem" },
+          em: { value: "1em" },
+        },
         sizes: {
           ...lengthScale(spacingSteps),
           full: { value: "100%" },
@@ -193,11 +342,14 @@ export const preset = definePreset({
           max: { value: "max-content" },
           fit: { value: "fit-content" },
           prose: { value: "65ch" },
+          "2/3": { value: "66.6666666667%" },
+          "2xl": { value: "42rem" },
           "3xl": { value: "48rem" },
           "4xl": { value: "56rem" },
           "5xl": { value: "64rem" },
           // 予定表の min-h-60dvh。spacing の倍数ではなく、生の長さは strictTokens で書けない。
           "60dvh": { value: "60dvh" },
+          "90dvh": { value: "90dvh" },
         },
         // md は wind4 の `rounded`（radius.DEFAULT = 0.25rem）。
         // `rounded-md`（0.375rem）に合わせると、接尾辞なしの rounded が太くなる。
@@ -222,6 +374,25 @@ export const preset = definePreset({
           },
           none: { value: "0 0 rgb(0 0 0 / 0)" },
         },
+        // wind4 の blur-sm は 4px ではない。生成 CSS は blur(8px)。backdrop-blur-3xl は 64px。
+        blurs: {
+          sm: { value: "8px" },
+          "3xl": { value: "64px" },
+        },
+        aspectRatios: {
+          video: { value: "16/9" },
+        },
+        gradients: {
+          // 写真の上端と下端。色は overlay トークンなので、モードでは変わらない。
+          photoScrim: {
+            value:
+              "linear-gradient(to top, {colors.overlay.scrim}, transparent, {colors.overlay.veil})",
+          },
+        },
+        animations: {
+          // animate-spin。1s linear infinite。
+          spin: { value: "spin 1s linear infinite" },
+        },
       },
       semanticTokens: {
         colors: {
@@ -232,6 +403,10 @@ export const preset = definePreset({
             invert: semanticColor(zinc50, zinc900),
             accent: semanticColor(sky700, sky400),
             error: semanticColor(error, red400),
+            // presetTypography の prose-gray。本文を fg.base（zinc）にすると明るさが変わる。
+            prose: semanticColor(gray700, gray300),
+            heading: semanticColor(gray900, white),
+            quote: semanticColor(gray900, gray100),
           },
           bg: {
             base: semanticColor(zinc50, zinc900),
@@ -247,6 +422,7 @@ export const preset = definePreset({
             ghost: semanticColor(zinc100At60, zinc800At60),
             invert: semanticColor(zinc600, zinc400),
             accent: semanticColor(sky600, sky500),
+            prose: semanticColor(gray200, gray700),
           },
           status: {
             success: sameColor(success),
@@ -264,6 +440,13 @@ export const preset = definePreset({
             sunday: semanticColor(red700, red400),
             saturday: semanticColor(blue700, blue400),
           },
+          // 写真の上に載せる色。zinc の fg に寄せると、ダークで白黒が反転する。
+          overlay: {
+            fg: sameColor(white),
+            scrim: sameColor("color-mix(in oklab, black 30%, transparent)"),
+            veil: sameColor("color-mix(in oklab, black 10%, transparent)"),
+            frame: sameColor(zinc900),
+          },
         },
       },
       textStyles: {
@@ -272,7 +455,15 @@ export const preset = definePreset({
         h3: { value: { fontSize: "xl", fontWeight: "medium", lineHeight: "xl" } },
         h4: { value: { fontSize: "lg", fontWeight: "medium", lineHeight: "lg" } },
       },
-      recipes: { link, button, card },
+      recipes: { link, button, card, control, prose },
+      keyframes: {
+        spin: {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+      },
     },
   },
+  // extend だと preset-base の stack（gap 8px）が残る。Uno の shortcut は間隔を持たない。
+  patterns: { container, stack },
 });

@@ -1,7 +1,12 @@
+<script setup lang="ts">
+  import { container } from "~~/styled-system/patterns";
+  import { prose } from "~~/styled-system/recipes";
+
+  const article = [container(), prose()];
+</script>
+
 <template>
-  <article
-    class="container prose dark:prose-invert prose-p:(m-0) prose-ul:(m-0 list-none p-0) prose-li:(before:content-['◆'] before:mr-2 before:fg-muted) prose-a:(underline underline-offset-4 underline-sky-600 dark:underline-sky-500)"
-  >
+  <article :class="article">
     <slot />
   </article>
 </template>

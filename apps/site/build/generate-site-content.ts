@@ -27,9 +27,9 @@ function renderMarkdown(markdown: string) {
   return (marked.parse(markdown) as string)
     .replace(
       /<a href="(https?:\/\/[^"]+)">/g,
-      '<a href="$1" target="_blank" rel="noopener noreferrer" class="outer_link">',
+      '<a href="$1" target="_blank" rel="noopener noreferrer" data-link="external">',
     )
-    .replace(/<a href="(\/[^"]*)">/g, '<a href="$1" class="link">');
+    .replace(/<a href="(\/[^"]*)">/g, '<a href="$1" data-link="internal">');
 }
 
 const pages = await Promise.all(

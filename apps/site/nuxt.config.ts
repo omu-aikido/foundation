@@ -32,7 +32,8 @@ export default defineNuxtConfig({
     enabled: false,
   },
   modules: ["@unocss/nuxt", "@nuxt/fonts", "@nuxtjs/sitemap"],
-  css: ["~/assets/global.css", "~/assets/panda.css"],
+  // panda.css のレイヤー順の宣言を、global.css の @layer base より先に読ませる。
+  css: ["~/assets/panda.css", "~/assets/global.css"],
   postcss: {
     plugins: {
       "@pandacss/dev/postcss": {},

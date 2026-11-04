@@ -1,4 +1,7 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+  import { card } from "~~/styled-system/recipes";
+
   definePageMeta({
     title: "活動紹介",
     description: "大阪公立大学合氣道部の活動日・稽古場所・年間行事、部費や入部方法をご案内します。",
@@ -49,6 +52,30 @@
     ["2022年4月", "大学統合に伴い両団体が統合し、大阪公立大学合氣道部が発足"],
     [`〜${new Date().getFullYear()}年`, "現在に至る"],
   ];
+
+  const spaced = css({ "& > :not(:first-child)": { mt: "4" } });
+  const day = css({ fontWeight: "bold" });
+  const place = css({ m: "0" });
+  const time = css({ fontSize: "sm", lineHeight: "sm" });
+  const year = css({
+    my: "2",
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gap: "4",
+    sm: { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" },
+    lg: { gridTemplateColumns: "repeat(3, minmax(0, 1fr))" },
+  });
+  const eventCard = card();
+  const month = css({
+    fontSize: "sm",
+    lineHeight: "sm",
+    fontWeight: "semibold",
+    color: "fg.muted",
+  });
+  const eventName = css({ mt: "2", color: "fg.muted" });
+  const term = css({ fontSize: "sm", lineHeight: "sm", fontWeight: "bold" });
+  const detail = css({ m: "0", lineHeight: "relaxed" });
+  const historyDetail = css({ mt: "1", lineHeight: "relaxed" });
 </script>
 
 <template>
@@ -76,35 +103,35 @@
     </ul>
     <p>詳細は<NuxtLink to="/access">稽古場所</NuxtLink>をご覧ください。</p>
     <h3>活動日</h3>
-    <dl class="space-y-4">
+    <dl :class="spaced">
       <div v-for="item in schedule" :key="item[0]">
-        <dt class="font-bold">{{ item[0] }}</dt>
-        <dd class="m-0">
-          {{ item[1] }}<br /><span class="text-sm">{{ item[2] }}</span>
+        <dt :class="day">{{ item[0] }}</dt>
+        <dd :class="place">
+          {{ item[1] }}<br /><span :class="time">{{ item[2] }}</span>
         </dd>
       </div>
     </dl>
     <p>詳しい予定は<NuxtLink to="/calendar">予定表</NuxtLink>をご確認ください。</p>
     <h3>年間行事予定</h3>
-    <section class="my-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <div v-for="item in annual" :key="item[0]" class="card">
-        <p class="text-sm font-semibold fg-muted">{{ item[0] }}</p>
-        <p class="mt-2 fg-muted">{{ item[1] }}</p>
+    <section :class="year">
+      <div v-for="item in annual" :key="item[0]" :class="eventCard">
+        <p :class="month">{{ item[0] }}</p>
+        <p :class="eventName">{{ item[1] }}</p>
       </div>
     </section>
     <p>※ 上記は主な年間行事予定です。詳細は変更される場合があります。</p>
     <h3>団体等基本情報</h3>
-    <dl class="space-y-4">
+    <dl :class="spaced">
       <div v-for="item in info" :key="item[0]">
-        <dt class="text-sm font-bold">{{ item[0] }}</dt>
-        <dd class="m-0 leading-relaxed">{{ item[1] }}</dd>
+        <dt :class="term">{{ item[0] }}</dt>
+        <dd :class="detail">{{ item[1] }}</dd>
       </div>
     </dl>
     <h3>歴史</h3>
-    <dl class="space-y-4">
+    <dl :class="spaced">
       <div v-for="item in history" :key="item[0]">
-        <dt class="text-sm font-bold">{{ item[0] }}</dt>
-        <dd class="mt-1 leading-relaxed">{{ item[1] }}</dd>
+        <dt :class="term">{{ item[0] }}</dt>
+        <dd :class="historyDetail">{{ item[1] }}</dd>
       </div>
     </dl>
     <p>

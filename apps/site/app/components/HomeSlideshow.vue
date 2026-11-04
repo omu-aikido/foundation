@@ -1,4 +1,7 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+  import { button } from "~~/styled-system/recipes";
+
   const images = [
     { src: "/images/hero/a899c25a.webp", alt: "2025年度集合写真", width: 1280, height: 696 },
     {
@@ -15,69 +18,148 @@
   function show(index: number) {
     current.value = (index + images.length) % images.length;
   }
+
+  const frame = css({
+    position: "relative",
+    display: "block",
+    aspectRatio: "video",
+    w: "full",
+    overflow: "hidden",
+    rounded: "2xl",
+    bg: "overlay.frame",
+    shadow: "xl",
+  });
+  const slide = {
+    position: "absolute",
+    inset: "0",
+    h: "full",
+    w: "full",
+    _motionSafe: {
+      transitionProperty: "opacity",
+      transitionDuration: "1000ms",
+      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    },
+  } as const;
+  const slideOn = css({ ...slide, zIndex: "10", opacity: "1" });
+  const slideOff = css({ ...slide, opacity: "0" });
+  const wash = css({
+    position: "absolute",
+    inset: "0",
+    h: "full",
+    w: "full",
+    objectFit: "cover",
+    filter: "auto",
+    blur: "sm",
+    contrast: "125%",
+    scale: "auto",
+    scaleX: "110%",
+    scaleY: "110%",
+  });
+  const stage = css({
+    position: "relative",
+    display: "flex",
+    h: "full",
+    w: "full",
+    alignItems: "center",
+    justifyContent: "center",
+  });
+  const photo = css({
+    position: "relative",
+    zIndex: "10",
+    maxH: "full",
+    maxW: "full",
+    objectFit: "contain",
+  });
+  const scrim = css({
+    pointerEvents: "none",
+    position: "absolute",
+    inset: "0",
+    zIndex: "20",
+    backgroundGradient: "photoScrim",
+  });
+  const navButton = {
+    position: "absolute",
+    top: "1/2",
+    zIndex: "30",
+    rounded: "full",
+    bg: "overlay.scrim",
+    p: "3",
+    color: "overlay.fg",
+  } as const;
+  // 移行前は presetTagify が <button> に button shortcut（hover・押下・cursor）を当てていた。
+  const prevButton = [button(), css({ ...navButton, left: "4" })];
+  const nextButton = [button(), css({ ...navButton, right: "4" })];
+  const navIcon = css({
+    display: "block",
+    w: "6",
+    h: "6",
+    fontSize: "2xl",
+    lineHeight: "none",
+  });
+  const dots = css({
+    position: "absolute",
+    bottom: "4",
+    left: "1/2",
+    zIndex: "30",
+    display: "flex",
+    translate: "auto",
+    translateX: "-1/2",
+    gap: "1",
+  });
+  const dotButton = [button(), css({ p: "2.5" })];
+  const dot = {
+    display: "block",
+    h: "1.5",
+    rounded: "full",
+    bg: "overlay.fg",
+    _motionSafe: {
+      transitionProperty: "width, opacity",
+      transitionDuration: "150ms",
+      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+    },
+  } as const;
+  const dotOn = css({ ...dot, w: "8" });
+  const dotOff = css({ ...dot, w: "2", opacity: "0.4" });
 </script>
 
 <template>
-  <div
-    class="group relative block aspect-video w-full overflow-hidden rounded-2xl bg-zinc-900 shadow-xl"
-  >
+  <div :class="frame">
     <div
       v-for="(image, index) in images"
       :key="image.src"
-      class="absolute inset-0 h-full w-full motion-safe:transition-opacity motion-safe:duration-1000"
-      :class="index === current ? 'z-10 opacity-100' : 'opacity-0'"
+      :class="index === current ? slideOn : slideOff"
     >
-      <img
-        :src="image.src"
-        alt=""
-        class="absolute inset-0 h-full w-full scale-110 object-cover blur-sm contrast-125"
-        loading="lazy"
-      />
-      <div class="relative flex h-full w-full items-center justify-center">
+      <img :src="image.src" alt="" :class="wash" loading="lazy" />
+      <div :class="stage">
         <img
           :src="image.src"
           :alt="image.alt"
           :width="image.width"
           :height="image.height"
-          class="relative z-10 max-h-full max-w-full object-contain"
+          :class="photo"
           :loading="index === 0 ? 'eager' : 'lazy'"
           :fetchpriority="index === 0 ? 'high' : undefined"
         />
       </div>
     </div>
-    <div
-      class="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-black/30 via-transparent to-black/10"
-    />
-    <button
-      type="button"
-      class="absolute left-4 top-1/2 z-30 rounded-full bg-black/30 p-3 text-white opacity-100 transition motion-reduce:transition-none"
-      aria-label="前の写真"
-      @click="show(current - 1)"
-    >
-      <span class="i-ri:arrow-left-s-line block size-6" />
+    <div :class="scrim" />
+    <button type="button" :class="prevButton" aria-label="前の写真" @click="show(current - 1)">
+      <span :class="navIcon"><span class="i-ri:arrow-left-s-line" /></span>
     </button>
-    <button
-      type="button"
-      class="absolute right-4 top-1/2 z-30 rounded-full bg-black/30 p-3 text-white opacity-100 transition motion-reduce:transition-none"
-      aria-label="次の写真"
-      @click="show(current + 1)"
-    >
-      <span class="i-ri:arrow-right-s-line block size-6" />
+    <button type="button" :class="nextButton" aria-label="次の写真" @click="show(current + 1)">
+      <span :class="navIcon"><span class="i-ri:arrow-right-s-line" /></span>
     </button>
-    <div class="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 gap-1">
+    <div :class="dots">
       <button
         v-for="(_, index) in images"
         :key="index"
         type="button"
-        class="p-2.5"
+        :class="dotButton"
         :aria-label="`${index + 1}枚目の写真`"
         :aria-current="index === current ? 'true' : undefined"
         @click="show(index)"
       >
-        <span
-          class="block h-1.5 rounded-full bg-white motion-safe:transition-[width,opacity]"
-          :class="index === current ? 'w-8' : 'w-2 opacity-40'"
-        />
+        <span :class="index === current ? dotOn : dotOff" />
       </button>
     </div>
   </div>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+
   definePageMeta({
     title: "乱取りタイマー",
     description:
@@ -11,10 +13,11 @@
   import TimerPanel from "randori-timer/components/TimerPanel.vue";
 
   const timer = useRandoriTimer();
+  const page = css({ mx: "auto", maxW: "3xl" });
 </script>
 
 <template>
-  <section class="mx-auto max-w-3xl">
+  <section :class="page">
     <TimerPanel
       :active-round="timer.activeRound.value"
       :display-time="timer.displayTime.value"

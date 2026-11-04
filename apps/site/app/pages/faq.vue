@@ -1,4 +1,7 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+  import { card, link } from "~~/styled-system/recipes";
+
   definePageMeta({
     title: "よくある質問",
     description:
@@ -82,21 +85,49 @@
       ],
     },
   ];
+
+  const title = css({ textStyle: "h1" });
+  const article = css({ my: "4" });
+  const groupTitle = css({ textStyle: "h2", mb: "2", mt: "6" });
+  const questions = css({
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gap: "4",
+    p: "0",
+    md: { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" },
+  });
+  const item = [card(), css({ listStyle: "none" })];
+  const question = css({
+    textStyle: "h4",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "2",
+  });
+  const divider = css({ my: "2", opacity: "0.5", color: "fg.accent" });
+  const answer = css({
+    m: "0",
+    textIndent: "em",
+    fontSize: "sm",
+    lineHeight: "sm",
+    color: "fg.base",
+  });
+  const textLink = link();
+  const external = link({ external: true });
 </script>
 
 <template>
-  <h1 class="h1" id="faq">よくある質問</h1>
-  <article class="my-4" aria-labelledby="faq">
+  <h1 :class="title" id="faq">よくある質問</h1>
+  <article :class="article" aria-labelledby="faq">
     <section v-for="group in groups" :key="group.title">
-      <h2 class="h2 mb-2 mt-6">{{ group.title }}</h2>
-      <ul class="grid grid-cols-1 gap-4 p-0 md:grid-cols-2">
-        <li v-for="faq in group.faqs" :key="faq.question" class="card list-none bg-opacity-60">
-          <h3 class="h4 inline-flex items-center gap-2">
+      <h2 :class="groupTitle">{{ group.title }}</h2>
+      <ul :class="questions">
+        <li v-for="faq in group.faqs" :key="faq.question" :class="item">
+          <h3 :class="question">
             <span class="i-ri:questionnaire-line" aria-hidden="true" />{{ faq.question }}
           </h3>
-          <hr class="my-2 opacity-50 fg-accent" />
-          <p v-for="answer in faq.answers" :key="answer" class="m-0 indent-1em text-sm fg-base">
-            {{ answer }}
+          <hr :class="divider" />
+          <p v-for="answerText in faq.answers" :key="answerText" :class="answer">
+            {{ answerText }}
           </p>
         </li>
       </ul>
@@ -104,11 +135,11 @@
   </article>
   <p>
     まだ知りたいことがありますか？
-    <NuxtLink to="/contact" class="link">お問い合わせ</NuxtLink>や<a
+    <NuxtLink to="/contact" :class="textLink">お問い合わせ</NuxtLink>や<a
       href="https://marshmallow-qa.com/8f2ofku54h476je"
       target="_blank"
       rel="noopener noreferrer"
-      class="outer_link"
+      :class="external"
       >マシュマロ</a
     >からご質問下さい。
   </p>
