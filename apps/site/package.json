@@ -14,6 +14,7 @@
     "typecheck": "nuxt typecheck && bun check -p tests/tsconfig.json"
   },
   "dependencies": {
+    "@nuxt/fonts": "1.2.0",
     "@nuxtjs/sitemap": "9.1.0",
     "@unocss/nuxt": "66.12.0",
     "arktype": "2.2.9",

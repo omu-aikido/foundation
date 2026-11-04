@@ -63,7 +63,7 @@ vp run build:platform
 
 ルートの `package.json` で `simple-git` を override し、`braces` と `node-forge` は `patches/` のローカルパッケージを使用します。Viteはルートのoverrideと `catalog` でVite Plusのcoreへ解決します。PlatformのClientが使うHono RPC型は `apps/platform/server/rpc.d.ts` に置きます。
 
-SiteのスタイルはUnoCSSとPandaCSSの共存中です。Pandaは `design-tokens` の preset と `strictTokens` を使い、`apps/site/styled-system` は codegen の生成物です。`apps/site` の `postinstall` と `build` が `panda codegen` を実行します。
+SiteのスタイルはUnoCSSとPandaCSSの共存中です。Pandaは `design-tokens` の preset と `strictTokens` を使い、`apps/site/styled-system` は codegen の生成物です。`apps/site` の `postinstall` と `build` が `panda codegen` を実行します。Webフォントは `@nuxt/fonts` がビルド時に取得し、外部オリジンへ接続せずサイト自身から配信します。
 
 `build:site` はコンテンツ生成、`panda codegen`、`nuxt build` を実行し、Nuxt/Nitro の出力を Cloudflare Build Output Specification v0 (`apps/site/.cloudflare/output/v0`) に構成して `cf deploy --prebuilt --dry-run` で検証します。`build:platform` はClient SPAとServer Workerをローカルでbuildします。どちらもdeployやCloudflareリソース変更は行いません。`test:*`、`typecheck:*` もローカル検証です。
 

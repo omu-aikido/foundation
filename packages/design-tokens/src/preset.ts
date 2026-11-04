@@ -180,6 +180,11 @@ export const preset = definePreset({
           bold: { value: "700" },
           extrabold: { value: "800" },
         },
+        // 日本語は BIZ UDPGothic。Inter の latin に無い字は次のファミリーで描く。
+        fonts: {
+          sans: { value: '"Inter", "BIZ UDPGothic", sans-serif' },
+          mono: { value: '"Fira Code", monospace' },
+        },
         spacing: lengthScale(spacingSteps),
         sizes: {
           ...lengthScale(spacingSteps),

@@ -31,7 +31,7 @@ export default defineNuxtConfig({
   devtools: {
     enabled: false,
   },
-  modules: ["@unocss/nuxt", "@nuxtjs/sitemap"],
+  modules: ["@unocss/nuxt", "@nuxt/fonts", "@nuxtjs/sitemap"],
   css: ["~/assets/global.css", "~/assets/panda.css"],
   postcss: {
     plugins: {
@@ -64,12 +64,6 @@ export default defineNuxtConfig({
         { rel: "sitemap", href: "/sitemap-index.xml" },
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
         { rel: "apple-touch-icon", href: "/apple-touch-icon-180x180.png" },
-        { rel: "preconnect", href: "https://fonts.googleapis.com" },
-        {
-          rel: "preconnect",
-          href: "https://fonts.gstatic.com",
-          crossorigin: "anonymous",
-        },
         { rel: "preconnect", href: "https://challenges.cloudflare.com" },
       ],
     },
@@ -137,6 +131,31 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: ["arktype"],
     },
+  },
+  // 先頭以外の font-family は @font-face にならない。日本語の BIZ UDPGothic は2番目なので global で出す。
+  fonts: {
+    provider: "google",
+    defaults: {
+      styles: ["normal"],
+      subsets: ["latin"],
+    },
+    families: [
+      // 可変フォントなので 400–800 を1ファイルで取る。
+      // 既定ではスタック後続の BIZ UDPGothic も Inter 用に size-adjust され、
+      // 端末にある BIZ UDPGothic（Windows 標準）で日本語が 85% に縮む。欧文だけに絞る。
+      {
+        name: "Inter",
+        weights: ["400 800"],
+        fallbacks: ["Segoe UI", "Helvetica Neue", "Arial", "Noto Sans", "Liberation Sans"],
+      },
+      {
+        name: "BIZ UDPGothic",
+        weights: [400, 700],
+        subsets: ["japanese", "latin"],
+        global: true,
+      },
+      { name: "Fira Code", weights: [400] },
+    ],
   },
   unocss: {
     nuxtLayers: true,

@@ -4,7 +4,6 @@ import {
   presetIcons,
   presetTagify,
   presetTypography,
-  presetWebFonts,
   presetWind4,
   transformerDirectives,
   transformerVariantGroup,
@@ -32,13 +31,6 @@ export default defineConfig({
       },
     }),
     presetTypography(),
-    presetWebFonts({
-      provider: "google",
-      fonts: {
-        sans: "Inter:400,700",
-        mono: "Fira+Code:400,700",
-      },
-    }),
     presetTagify(),
   ],
   transformers: [
@@ -52,7 +44,7 @@ export default defineConfig({
       error: "oklch(0.567 0.224 27)",
     },
     font: {
-      sans: '"Inter", sans-serif',
+      sans: '"Inter", "BIZ UDPGothic", sans-serif',
       mono: '"Fira Code", monospace',
     },
   },

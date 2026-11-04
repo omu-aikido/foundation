@@ -23,7 +23,7 @@
 
 ## Site styles
 
-SiteのスタイルはUnoCSSとPandaCSSの共存中である。予定表はPandaで書き、それ以外はUnoCSSのままにする。Pandaは `design-tokens` の preset と `strictTokens` を使い、リセットはUnoCSSに任せて preflight は無効にする。UnoCSSのresetはPandaの `reset` レイヤーへ入れ、要素セレクタがPandaのクラスより優先されないようにする。UnoCSSのユーティリティはレイヤー外のままにする。`apps/site/styled-system` は `panda codegen` の生成物であり、Gitには含めない。
+SiteのスタイルはUnoCSSとPandaCSSの共存中である。予定表はPandaで書き、それ以外はUnoCSSのままにする。Pandaは `design-tokens` の preset と `strictTokens` を使い、リセットはUnoCSSに任せて preflight は無効にする。UnoCSSのresetはPandaの `reset` レイヤーへ入れ、要素セレクタがPandaのクラスより優先されないようにする。UnoCSSのユーティリティはレイヤー外のままにする。`apps/site/styled-system` は `panda codegen` の生成物であり、Gitには含めない。Webフォントは `@nuxt/fonts` がビルド時に取得し、外部オリジンへ接続せずサイト自身から配信する。
 
 ## Site rendering
 
