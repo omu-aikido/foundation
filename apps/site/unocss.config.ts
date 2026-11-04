@@ -10,6 +10,11 @@ import {
 } from "unocss";
 
 export default defineConfig({
+  // noScripts のページはクライアントのモジュールグラフに入らず、そこにしか無いクラス
+  // （FAQ のアイコンなど）が生成されない。ファイルから直接集める。
+  content: {
+    filesystem: ["app/**/*.vue", "../../packages/*/src/**/*.vue"],
+  },
   // reset は `button` や `h1` への指定を含む。レイヤー外だと、詳細度に関係なく
   // Panda の `@layer utilities` より勝つ。ユーティリティまで入れると、global.css の
   // 要素指定が Uno のクラスより勝ってしまう。
