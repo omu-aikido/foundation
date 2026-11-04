@@ -41,6 +41,8 @@ Cloudflare側のbuild watch pathsには、リポジトリルートからの相�
 | Site     | `apps/site/*`, `packages/design-tokens/*`, `packages/lot-aikido/*`, `packages/randori-timer/*`, `packages/vite-plugin-third-party-licenses/*`, `patches/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json` |
 | Platform | `apps/platform/*`, `packages/record-domain/*`, `packages/vite-plugin-third-party-licenses/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json`, `vite.config.ts`                                             |
 
+`omu-aikido.com` ゾーンのWAFは、URLに `s3`（大文字小文字を問わない）を含むリクエストを403にします。このためSiteとPlatformのクライアントは、ビルド資産のハッシュを `s` を含まないhexで出力します。`@nuxt/fonts` のフォントのファイル名はbase64urlのハッシュで変えられないため、名前に `s3` を含むフォントはWAFのルールを見直すまで配信されません。
+
 `*` はWorkers Buildsのパス指定でサブディレクトリも含めます。依存の更新は各アプリの `package.json` のexactなバージョンの変化で検知するため、ルートの `bun.lock` は監視対象に含めません。推移的依存だけが変わった場合は、次にそのアプリが変更されたときに反映されます。ルートの `package.json` の `overrides` と `catalog` は両アプリに効くため監視します。Cloudflareダッシュボードの作業ルート・依存導入・build/deployコマンド・監視パスは、この構成に合わせて設定してください。
 
 ## 開発と検証
