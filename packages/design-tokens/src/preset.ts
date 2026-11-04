@@ -17,7 +17,6 @@ const sky600 = "oklch(58.8% 0.158 241.966)";
 const sky700 = "oklch(50% 0.134 242.749)";
 
 const red400 = "oklch(70.4% 0.191 22.216)";
-const red600 = "oklch(57.7% 0.245 27.325)";
 const red700 = "oklch(50.5% 0.213 27.518)";
 const amber400 = "oklch(82.8% 0.189 84.429)";
 const amber700 = "oklch(55.5% 0.163 48.998)";
@@ -212,8 +211,8 @@ const prose = defineRecipe({
     "& li::before": { content: '"◆"', mr: "2", color: "fg.muted" },
     "& hr": { mt: "12", mb: "12", borderTopWidth: "1px", borderColor: "border.prose" },
     "& blockquote": {
-      mt: "1.6rem",
-      mb: "1.6rem",
+      mt: "6",
+      mb: "6",
       paddingInlineStart: "4",
       fontWeight: "medium",
       fontStyle: "italic",
@@ -232,7 +231,7 @@ const prose = defineRecipe({
     "& dl": { mt: "5", mb: "5" },
     // presetTypography は em の色や太さを変えない。斜体はブラウザの初期値のまま。
     "& dt": { color: "fg.heading", fontWeight: "semibold", mt: "5" },
-    "& dd": { mt: "2", paddingInlineStart: "1.625rem" },
+    "& dd": { mt: "2", paddingInlineStart: "6" },
     // 見出しと区切り線の直後は上余白を消す。`& h3` と詳細度が同じなので、後に置いて勝たせる。
     "& :is(h2, h3, hr) + *": { mt: "0" },
   },
@@ -297,8 +296,6 @@ export const preset = definePreset({
           "2xl": { value: "1.5rem" },
           "3xl": { value: "1.875rem" },
           "4xl": { value: "2.25rem" },
-          // サイト案内の見出し。text-[1.08rem] と同じで、他の段階には乗らない。
-          guide: { value: "1.08rem" },
           "5xl": { value: "3rem" },
           "6xl": { value: "3.75rem" },
           "7xl": { value: "4.5rem" },
@@ -332,12 +329,10 @@ export const preset = definePreset({
         },
         spacing: {
           ...lengthScale(spacingSteps),
-          // 分数と em は spacing の倍数ではない。Uno が出す値のままにする。
+          // 分数と em は spacing の倍数ではない。
           "1/4": { value: "25%" },
           "1/3": { value: "33.3333333333%" },
           "1/2": { value: "50%" },
-          "1.6rem": { value: "1.6rem" },
-          "1.625rem": { value: "1.625rem" },
           em: { value: "1em" },
         },
         sizes: {
@@ -415,12 +410,8 @@ export const preset = definePreset({
             invert: semanticColor(zinc50, zinc900),
             accent: semanticColor(sky700, sky400),
             error: semanticColor(error, red400),
-            // red-700 / red-400。fg.error は Uno の error でこれより明るい。calendar.sunday は同じ値だが予定表の色。
-            alert: semanticColor(red700, red400),
-            // amber-700 / amber-400。status.warning は両モード同じ橙。
-            caution: semanticColor(amber700, amber400),
-            // 削除ボタンの hover。ダークでも red-600。fg.alert の dark は red-400。
-            dangerHover: sameColor(red600),
+            // 注意の文字。status.warning は両モード同じ橙で、白地の文字には薄い。
+            warning: semanticColor(amber700, amber400),
             // presetTypography の prose-gray。本文を fg.base（zinc）にすると明るさが変わる。
             prose: semanticColor(gray700, gray300),
             heading: semanticColor(gray900, white),

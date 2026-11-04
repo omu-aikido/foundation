@@ -130,7 +130,7 @@
   const iconButton = [
     button(),
     buttonFocus,
-    css({ p: "2", color: "fg.muted", _hover: { color: "fg.dangerHover" } }),
+    css({ p: "2", color: "fg.muted", _hover: { color: "fg.error" } }),
   ];
   const addPersonButton = [
     button({ tone: "base" }),
@@ -210,7 +210,7 @@
   const customDelete = [
     button(),
     buttonFocus,
-    css({ p: "3", color: "fg.muted", _hover: { color: "fg.dangerHover" } }),
+    css({ p: "3", color: "fg.muted", _hover: { color: "fg.error" } }),
   ];
   const playback = css({ mt: "8" });
   const modes = css({
@@ -245,9 +245,9 @@
     lineHeight: "sm",
     color: "fg.muted",
   });
-  const caution = css({ mt: "3", fontSize: "sm", lineHeight: "sm", color: "fg.caution" });
+  const caution = css({ mt: "3", fontSize: "sm", lineHeight: "sm", color: "fg.warning" });
   const preparingText = css({ mt: "3", fontSize: "sm", lineHeight: "sm", color: "fg.muted" });
-  const failure = css({ mt: "3", fontSize: "sm", lineHeight: "sm", color: "fg.alert" });
+  const failure = css({ mt: "3", fontSize: "sm", lineHeight: "sm", color: "fg.error" });
   const retry = [
     button({ tone: "base" }),
     buttonFocus,

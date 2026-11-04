@@ -33,7 +33,7 @@
     }),
   ];
   const guideBody = css({ alignSelf: "center" });
-  const guideTitle = css({ display: "block", fontSize: "guide", fontWeight: "bold" });
+  const guideTitle = css({ display: "block", fontSize: "lg", fontWeight: "bold" });
   const guideDescription = css({
     mt: "1",
     display: "block",
