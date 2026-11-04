@@ -1,10 +1,9 @@
 /* 要素への指定は Panda の base レイヤーに置く。レイヤー外だと、詳細度に関係なく
    Panda のユーティリティ（`fs_sm` など）より勝つ。 */
 @layer base {
+  /* 背景と文字色は globalCss の html。:root に置くと詳細度で token に勝つ。 */
   :root {
     color-scheme: light dark;
-    background: #fafafa;
-    color: #18181b;
     font-family: "Inter", "BIZ UDPGothic", sans-serif;
   }
 
@@ -31,13 +30,6 @@
   input,
   textarea {
     font: inherit;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      background: #18181b;
-      color: #fafafa;
-    }
   }
 }
 

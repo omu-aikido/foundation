@@ -4,7 +4,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["node", "./.cloudflare/types"]
+    "types": ["node", "./.cloudflare/types", "unplugin-icons/types/vue"]
   },
   "exclude": [
     "node_modules",

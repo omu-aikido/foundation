@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { css } from "~~/styled-system/css";
   import { button } from "~~/styled-system/recipes";
+  import IconRiLinksLine from "~icons/ri/links-line";
   import { ref } from "vue";
   import { useGenerator } from "lot-aikido";
   import GeneratorForm from "lot-aikido/components/GeneratorForm.vue";
@@ -37,7 +38,7 @@
     }),
   ];
   const shareCopied = css({ borderColor: "border.accent", color: "fg.accent" });
-  // 中のアイコン span を行ボックスに入れない。inline のままだと 2px 伸びる。
+  // 中のアイコンを行ボックスに入れない。inline のままだと 2px 伸びる。
   const shareIcon = css({ display: "inline-flex", mr: "1.5", verticalAlign: "text-bottom" });
 
   async function handleShare() {
@@ -90,7 +91,7 @@
         :class="copied ? [shareButton, shareCopied] : shareButton"
         @click="handleShare"
       >
-        <span :class="shareIcon"><span class="i-ri:links-line" aria-hidden="true" /></span>
+        <span :class="shareIcon"><IconRiLinksLine aria-hidden="true" /></span>
         {{ copied ? "URLをコピーしました" : "このリストを共有" }}
       </button>
     </div>

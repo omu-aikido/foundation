@@ -82,8 +82,6 @@ const textLineHeights = {
   "4xl": { value: "2.5rem" },
 };
 
-// className を Uno の shortcut（button / link / card）と同じにしない。
-// shortcut はレイヤー外なので、同名クラスは recipe より優先される。
 const link = defineRecipe({
   className: "panda-link",
   base: {
@@ -275,7 +273,7 @@ export const preset = definePreset({
   name: "design-tokens",
   conditions: {
     extend: {
-      // Panda の既定 dark は `.dark &`。UnoCSS は `dark: "media"` なので、クラスに戻すと切り替わらない。
+      // 既定の dark は `.dark &`。クラスは付けていないので、media でないと切り替わらない。
       dark: "@media (prefers-color-scheme: dark)",
     },
   },

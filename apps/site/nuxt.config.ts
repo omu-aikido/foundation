@@ -36,7 +36,12 @@ export default defineNuxtConfig({
   devtools: {
     enabled: false,
   },
-  modules: ["@unocss/nuxt", "@nuxt/fonts", "@nuxtjs/sitemap"],
+  modules: [
+    // 既定の scale は 1.2 で、1em のアイコンより大きくなる。
+    ["unplugin-icons/nuxt", { compiler: "vue3", scale: 1, defaultClass: "icon" }],
+    "@nuxt/fonts",
+    "@nuxtjs/sitemap",
+  ],
   // panda.css のレイヤー順の宣言を、global.css の @layer base より先に読ませる。
   css: ["~/assets/panda.css", "~/assets/global.css"],
   postcss: {
@@ -50,7 +55,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      htmlAttrs: { lang: "ja", class: "base" },
+      htmlAttrs: { lang: "ja" },
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -169,8 +174,5 @@ export default defineNuxtConfig({
       },
       { name: "Fira Code", weights: [400] },
     ],
-  },
-  unocss: {
-    nuxtLayers: true,
   },
 });

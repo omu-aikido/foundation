@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { css } from "~~/styled-system/css";
   import { button } from "~~/styled-system/recipes";
+  import IconRiArrowLeftSLine from "~icons/ri/arrow-left-s-line";
+  import IconRiArrowRightSLine from "~icons/ri/arrow-right-s-line";
 
   const props = defineProps<{
     year: number;
@@ -131,6 +133,7 @@
     lineHeight: "tight",
   });
   const eventTitle = css({ display: "block", overflowWrap: "anywhere" });
+  const monthIcon = css({ display: "block", w: "5", h: "5" });
   const eventTime = css({
     display: "block",
     overflowWrap: "anywhere",
@@ -150,15 +153,15 @@
   <div :class="frame">
     <h2 :class="heading">
       <NuxtLink v-if="prevHref" :to="prevHref" :class="monthLink" aria-label="前の月"
-        ><span class="i-ri:arrow-left-s-line block h-5 w-5" /></NuxtLink
+        ><IconRiArrowLeftSLine :class="monthIcon" /></NuxtLink
       ><span v-else :class="monthDisabled" aria-disabled="true"
-        ><span class="i-ri:arrow-left-s-line block h-5 w-5"
+        ><IconRiArrowLeftSLine :class="monthIcon"
       /></span>
       <span>{{ getJstMonthName(year, month) }}</span>
       <NuxtLink v-if="nextHref" :to="nextHref" :class="monthLink" aria-label="次の月"
-        ><span class="i-ri:arrow-right-s-line block h-5 w-5" /></NuxtLink
+        ><IconRiArrowRightSLine :class="monthIcon" /></NuxtLink
       ><span v-else :class="monthDisabled" aria-disabled="true"
-        ><span class="i-ri:arrow-right-s-line block h-5 w-5"
+        ><IconRiArrowRightSLine :class="monthIcon"
       /></span>
     </h2>
     <div :class="weekdays">

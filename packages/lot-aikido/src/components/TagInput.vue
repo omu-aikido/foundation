@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { css } from "styled-system/css";
   import { button, control } from "styled-system/recipes";
+  import IconRiCloseLine from "~icons/ri/close-line";
   import { computed, ref, useId } from "vue";
 
   const props = defineProps<{
@@ -85,7 +86,7 @@
         @click="removeTag(tag)"
       >
         {{ tag }}
-        <span :class="removeIcon" class="i-ri:close-line" aria-hidden="true" />
+        <IconRiCloseLine :class="removeIcon" aria-hidden="true" />
       </button>
     </div>
   </div>

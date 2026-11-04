@@ -2,6 +2,7 @@
   import { css } from "~~/styled-system/css";
   import { stack } from "~~/styled-system/patterns";
   import { button, card } from "~~/styled-system/recipes";
+  import IconRiCheckboxCircleLine from "~icons/ri/checkbox-circle-line";
   import { validateContactFields } from "~~/shared/schemas/contact";
 
   type FieldName = "name" | "email" | "subject" | "body";
@@ -116,7 +117,7 @@
 
 <template>
   <div v-if="status === 'success'" role="alert" :class="success">
-    <span :class="successIcon"><span class="i-ri:checkbox-circle-line" /></span>
+    <span :class="successIcon"><IconRiCheckboxCircleLine /></span>
     <p :class="successTitle">お問い合わせを受け付けました。</p>
     <p :class="thanks">ありがとうございます。</p>
   </div>

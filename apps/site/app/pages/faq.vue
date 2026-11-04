@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { css } from "~~/styled-system/css";
   import { card, link } from "~~/styled-system/recipes";
+  import IconRiQuestionnaireLine from "~icons/ri/questionnaire-line";
 
   definePageMeta({
     title: "よくある質問",
@@ -123,7 +124,7 @@
       <ul :class="questions">
         <li v-for="faq in group.faqs" :key="faq.question" :class="item">
           <h3 :class="question">
-            <span class="i-ri:questionnaire-line" aria-hidden="true" />{{ faq.question }}
+            <IconRiQuestionnaireLine aria-hidden="true" />{{ faq.question }}
           </h3>
           <hr :class="divider" />
           <p v-for="answerText in faq.answers" :key="answerText" :class="answer">

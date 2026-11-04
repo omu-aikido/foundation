@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { css } from "~~/styled-system/css";
   import { button } from "~~/styled-system/recipes";
+  import IconRiArrowLeftSLine from "~icons/ri/arrow-left-s-line";
+  import IconRiArrowRightSLine from "~icons/ri/arrow-right-s-line";
 
   const images = [
     { src: "/images/hero/a899c25a.webp", alt: "2025年度集合写真", width: 1280, height: 696 },
@@ -86,7 +88,6 @@
     p: "3",
     color: "overlay.fg",
   } as const;
-  // 移行前は presetTagify が <button> に button shortcut（hover・押下・cursor）を当てていた。
   const prevButton = [button(), css({ ...navButton, left: "4" })];
   const nextButton = [button(), css({ ...navButton, right: "4" })];
   const navIcon = css({
@@ -144,10 +145,10 @@
     </div>
     <div :class="scrim" />
     <button type="button" :class="prevButton" aria-label="前の写真" @click="show(current - 1)">
-      <span :class="navIcon"><span class="i-ri:arrow-left-s-line" /></span>
+      <span :class="navIcon"><IconRiArrowLeftSLine /></span>
     </button>
     <button type="button" :class="nextButton" aria-label="次の写真" @click="show(current + 1)">
-      <span :class="navIcon"><span class="i-ri:arrow-right-s-line" /></span>
+      <span :class="navIcon"><IconRiArrowRightSLine /></span>
     </button>
     <div :class="dots">
       <button

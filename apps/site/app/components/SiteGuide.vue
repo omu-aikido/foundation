@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { css } from "~~/styled-system/css";
   import { card } from "~~/styled-system/recipes";
+  import IconRiArrowRightUpLine from "~icons/ri/arrow-right-up-line";
 
   const { navlinks } = useNavigation();
   const mainNav = computed(() => navlinks.value[0]?.children ?? []);
@@ -41,7 +42,7 @@
     lineHeight: "relaxed",
     color: "fg.muted",
   });
-  // アイコン span を行ボックスに入れない。入れると行高の分だけ下にずれる。
+  // アイコンを行ボックスに入れない。入れると行高の分だけ下にずれる。
   const guideArrow = css({
     position: "absolute",
     display: "flex",
@@ -73,7 +74,7 @@
         </span>
       </span>
       <span :class="guideArrow" aria-hidden="true">
-        <span class="i-ri:arrow-right-up-line" />
+        <IconRiArrowRightUpLine />
       </span>
     </NuxtLink>
   </nav>

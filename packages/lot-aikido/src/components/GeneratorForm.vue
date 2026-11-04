@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { css } from "styled-system/css";
   import { button, control } from "styled-system/recipes";
+  import IconRiShuffleFill from "~icons/ri/shuffle-fill";
 
   defineProps<{
     rank: number;
@@ -36,13 +37,13 @@
   const hiddenLabel = css({ srOnly: true });
   const select = [control(), css({ px: "2", py: "1.5", fontSize: "base", lineHeight: "normal" })];
   const countLabel = css({ display: "flex", alignItems: "center", gap: "2", color: "fg.muted" });
-  // tagify の input はレイヤー外で padding を付ける。ユーティリティのままでは px / py が負ける。
+  // control の px-3 / py-2 だと件数欄が広い。
   const countInput = [
     control(),
     css({
       w: "24",
-      px: "2!",
-      py: "1.5!",
+      px: "2",
+      py: "1.5",
       textAlign: "center",
     }),
   ];
@@ -116,7 +117,7 @@
           ソート
         </label>
         <button type="button" :class="shuffle" @click="emit('shuffle')">
-          <span :class="shuffleIcon" class="i-ri:shuffle-fill" aria-hidden="true" />シャッフル
+          <IconRiShuffleFill :class="shuffleIcon" aria-hidden="true" />シャッフル
         </button>
       </div>
     </div>

@@ -2,6 +2,9 @@
   import { css } from "styled-system/css";
   import { stack } from "styled-system/patterns";
   import { button, control } from "styled-system/recipes";
+  import IconRiAddFill from "~icons/ri/add-fill";
+  import IconRiAddLine from "~icons/ri/add-line";
+  import IconRiDeleteBinLine from "~icons/ri/delete-bin-line";
   import { ref, useId } from "vue";
   import {
     builtInRandoriPresets,
@@ -110,8 +113,8 @@
   });
   const person = css({ fontWeight: "bold" });
   const durationBox = css({ position: "relative", w: "32" });
-  // tagify の input はレイヤー外で padding-inline を付ける。pr だけだと右側が px-3 のままになる。
-  const inputPadEnd = css({ pr: "9!" });
+  // 単位が右に重なる。control の padding-inline だと右側が px-3 のまま。
+  const inputPadEnd = css({ pr: "9" });
   const durationInput = [
     control(),
     inputPadEnd,
@@ -357,7 +360,7 @@
             :aria-label="`${index + 1}人目を削除`"
             @click="removePerson(index)"
           >
-            <span class="i-ri:delete-bin-line" aria-hidden="true" />
+            <IconRiDeleteBinLine aria-hidden="true" />
           </button>
         </li>
       </ol>
@@ -367,7 +370,7 @@
         :disabled="durations.length >= 20"
         @click="addPerson"
       >
-        <span :class="leadingIcon" class="i-ri:add-fill" aria-hidden="true" /> 人を追加
+        <IconRiAddFill :class="leadingIcon" aria-hidden="true" /> 人を追加
       </button>
     </div>
 
@@ -411,7 +414,7 @@
         @keyup.enter="savePreset"
       />
       <button type="button" :class="saveButton" :disabled="!presetName.trim()" @click="savePreset">
-        <span :class="leadingIcon" class="i-ri:add-line" aria-hidden="true" /> 保存
+        <IconRiAddLine :class="leadingIcon" aria-hidden="true" /> 保存
       </button>
     </div>
 
@@ -431,7 +434,7 @@
           :aria-label="`${preset.name}を削除`"
           @click="$emit('deletePreset', preset.id)"
         >
-          <span class="i-ri:delete-bin-line" aria-hidden="true" />
+          <IconRiDeleteBinLine aria-hidden="true" />
         </button>
       </div>
     </div>

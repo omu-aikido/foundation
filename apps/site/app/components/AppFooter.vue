@@ -2,6 +2,9 @@
   import { css } from "~~/styled-system/css";
   import { container } from "~~/styled-system/patterns";
   import { link } from "~~/styled-system/recipes";
+  import IconRiGithubFill from "~icons/ri/github-fill";
+  import IconRiInstagramFill from "~icons/ri/instagram-fill";
+  import IconRiTwitterFill from "~icons/ri/twitter-fill";
 
   const footer = [
     container(),
@@ -29,7 +32,7 @@
     lineHeight: "2xl",
     sm: { px: "1/3" },
   });
-  // アイコン span を行ボックスに入れない。入れると 2xl の行高で 8px 伸びる。
+  // アイコンを行ボックスに入れない。入れると 2xl の行高で 8px 伸びる。
   const social = css({
     display: "flex",
     transitionProperty: "color",
@@ -61,7 +64,7 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span class="i-ri:twitter-fill" />
+        <IconRiTwitterFill />
       </a>
       <a
         href="https://instagram.com/hamudaiaikidoubu"
@@ -70,7 +73,7 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span class="i-ri:instagram-fill" />
+        <IconRiInstagramFill />
       </a>
       <a
         href="https://github.com/omu-aikido"
@@ -79,7 +82,7 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span class="i-ri:github-fill" />
+        <IconRiGithubFill />
       </a>
     </div>
   </footer>

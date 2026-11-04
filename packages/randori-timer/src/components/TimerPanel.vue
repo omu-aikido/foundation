@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import { css } from "styled-system/css";
   import { button, card } from "styled-system/recipes";
+  import IconRiPauseFill from "~icons/ri/pause-fill";
+  import IconRiPlayFill from "~icons/ri/play-fill";
+  import IconRiRestartLine from "~icons/ri/restart-line";
   import { computed } from "vue";
   import type { RandoriTimerStatus } from "../composables/useRandoriTimer";
 
@@ -136,7 +139,8 @@
         :aria-label="status === 'playing' ? '一時停止' : status === 'paused' ? '再開' : '開始'"
         @click="$emit('toggle')"
       >
-        <span :class="running ? 'i-ri:pause-fill' : 'i-ri:play-fill'" aria-hidden="true" />
+        <IconRiPauseFill v-if="running" aria-hidden="true" />
+        <IconRiPlayFill v-else aria-hidden="true" />
       </button>
       <button
         type="button"
@@ -145,7 +149,7 @@
         :disabled="resetDisabled"
         @click="$emit('reset')"
       >
-        <span class="i-ri:restart-line" aria-hidden="true" />
+        <IconRiRestartLine aria-hidden="true" />
       </button>
     </div>
   </section>

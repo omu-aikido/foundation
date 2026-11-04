@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { css } from "~~/styled-system/css";
   import { button } from "~~/styled-system/recipes";
+  import IconRiCalendarView from "~icons/ri/calendar-view";
+  import IconRiTimeLine from "~icons/ri/time-line";
 
   const startDate = getTodayInJst();
   const endDate = new Date(startDate.getTime() + 21 * 24 * 60 * 60 * 1000);
@@ -36,6 +38,8 @@
   const alert = css({ mb: "3", color: "fg.error" });
   const retry = [button(), css({ mt: "2" })];
   const empty = css({ display: "inline-flex", gap: "2", color: "fg.muted" });
+  const emptyIcon = css({ w: "6", h: "6" });
+  const metaIcon = css({ w: "4", h: "4" });
   const article = css({
     display: "grid",
     minW: "0",
@@ -67,7 +71,7 @@
     </button>
   </div>
   <div v-else-if="!events?.length" :class="empty">
-    <span class="i-ri:calendar-view h-6 w-6" aria-hidden="true" />
+    <IconRiCalendarView :class="emptyIcon" aria-hidden="true" />
     <p>今後3週間の稽古予定はありません</p>
   </div>
   <div v-else>
@@ -81,7 +85,7 @@
       <h2 :class="title">{{ event.title }}</h2>
       <div :class="details">
         <div :class="meta">
-          <span class="i-ri:calendar-view h-4 w-4" aria-hidden="true" />{{
+          <IconRiCalendarView :class="metaIcon" aria-hidden="true" />{{
             formatEventDateRange(event)
           }}
         </div>
@@ -89,9 +93,7 @@
           v-if="!isAllDayEvent(event) && event.start !== event.end && !isMultiDayEvent(event)"
           :class="meta"
         >
-          <span class="i-ri:time-line h-4 w-4" aria-hidden="true" />{{
-            formatEventTime(event.start)
-          }}
+          <IconRiTimeLine :class="metaIcon" aria-hidden="true" />{{ formatEventTime(event.start) }}
           -
           {{ formatEventTime(event.end) }}
         </div>

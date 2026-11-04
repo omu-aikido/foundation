@@ -39,6 +39,8 @@ async function compileComponent(name: string, globals: Record<string, unknown> =
         return `const { ${bindings} } = styledSystem[${JSON.stringify(specifier)}];`;
       },
     )
+    // Vite の仮想モジュールはここでは解決できない。図形そのものは描画契約ではない。
+    .replace(/^import (\w+) from ["']~icons\/[^"']+["'];?$/gm, "const $1 = icon;")
     .replace("export default", "module.exports.default =");
   const runtimeNames = Object.keys(Vue);
   const globalNames = Object.keys(globals);
@@ -49,6 +51,7 @@ async function compileComponent(name: string, globals: Record<string, unknown> =
     "vue",
     "dependencies",
     "styledSystem",
+    "icon",
     ...runtimeNames,
     ...globalNames,
     `${executable}\nreturn module.exports.default;`,
@@ -57,6 +60,7 @@ async function compileComponent(name: string, globals: Record<string, unknown> =
     Vue,
     { validateContactFields },
     { css: styledCss, recipes: styledRecipes, patterns: styledPatterns },
+    Vue.defineComponent({ setup: (_props, ctx) => () => Vue.h("svg", ctx.attrs) }),
     ...runtimeNames.map((key) => (Vue as Record<string, unknown>)[key]),
     ...Object.values(globals),
   );
