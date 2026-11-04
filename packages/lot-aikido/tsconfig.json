@@ -1,4 +1,9 @@
 {
   "extends": ["../../tsconfig.base.json"],
+  "compilerOptions": {
+    "paths": {
+      "styled-system/*": ["../../apps/site/styled-system/*"]
+    }
+  },
   "include": ["src/**/*.ts", "src/**/*.vue"]
 }

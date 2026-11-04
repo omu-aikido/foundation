@@ -11,7 +11,13 @@ export default defineConfig({
   // presetTagify が <section> に付けていた余白（section shortcut: mx-2 my-3）。
   // base レイヤーなので、各要素の margin 指定が軸ごとに上書きする。
   globalCss: { section: { mx: "2", my: "3" } },
-  include: ["./app/**/*.{vue,ts}"],
+  // site は `~~/styled-system`、packages は `styled-system`。片方だけだと、もう一方の css() が抽出されない。
+  importMap: ["styled-system", "~~/styled-system"],
+  include: [
+    "./app/**/*.{vue,ts}",
+    "../../packages/lot-aikido/src/**/*.{vue,ts}",
+    "../../packages/randori-timer/src/**/*.{vue,ts}",
+  ],
   exclude: [],
   outdir: "styled-system",
 });

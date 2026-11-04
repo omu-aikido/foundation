@@ -1,4 +1,7 @@
 <script setup lang="ts">
+  import { css } from "styled-system/css";
+  import { button, control } from "styled-system/recipes";
+
   defineProps<{
     rank: number;
     filter: string;
@@ -15,16 +18,63 @@
     "update:sortEnabled": [value: boolean];
     shuffle: [];
   }>();
+
+  const form = css({
+    borderBottomWidth: "1px",
+    borderBottomStyle: "solid",
+    borderColor: "border.muted",
+  });
+  const bar = css({
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "3",
+    p: "4",
+  });
+  const filters = css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "2" });
+  const hiddenLabel = css({ srOnly: true });
+  const select = [control(), css({ px: "2", py: "1.5", fontSize: "base", lineHeight: "normal" })];
+  const countLabel = css({ display: "flex", alignItems: "center", gap: "2", color: "fg.muted" });
+  // tagify の input はレイヤー外で padding を付ける。ユーティリティのままでは px / py が負ける。
+  const countInput = [
+    control(),
+    css({
+      w: "24",
+      px: "2!",
+      py: "1.5!",
+      textAlign: "center",
+    }),
+  ];
+  const actions = css({ display: "flex", alignItems: "center", gap: "3" });
+  const sortLabel = css({
+    display: "flex",
+    cursor: "pointer",
+    alignItems: "center",
+    gap: "1.5",
+    color: "fg.muted",
+  });
+  const sortInput = [control(), css({ accentColor: "accent.field" })];
+  // recipe の button は focus-visible の 1px ring を持たない。shortcut は持っていた。
+  const buttonFocus = css({
+    _focusVisible: { boxShadow: "ring", _hover: { boxShadow: "ringRaised" } },
+  });
+  const shuffle = [
+    button({ tone: "accent" }),
+    buttonFocus,
+    css({ px: "3", py: "1.5", fontSize: "sm", lineHeight: "sm", fontWeight: "semibold" }),
+  ];
+  const shuffleIcon = css({ mr: "1" });
 </script>
 
 <template>
-  <section class="border-b bordered-muted" aria-label="抽選条件">
-    <div class="flex flex-wrap items-center justify-between gap-3 p-4">
-      <div class="flex flex-wrap items-center gap-2">
-        <label class="sr-only" for="rank">級・段位</label>
+  <section :class="form" aria-label="抽選条件">
+    <div :class="bar">
+      <div :class="filters">
+        <label :class="hiddenLabel" for="rank">級・段位</label>
         <select
           id="rank"
-          class="control rounded-sm px-2 py-1.5 text-base"
+          :class="select"
           :value="rank"
           @change="emit('update:rank', Number(($event.target as HTMLSelectElement).value))"
         >
@@ -32,10 +82,10 @@
             {{ option.label }}
           </option>
         </select>
-        <label class="sr-only" for="filter">フィルター</label>
+        <label :class="hiddenLabel" for="filter">フィルター</label>
         <select
           id="filter"
-          class="control rounded-sm px-2 py-1.5 text-base"
+          :class="select"
           :value="filter"
           @change="emit('update:filter', ($event.target as HTMLSelectElement).value)"
         >
@@ -43,10 +93,10 @@
             {{ option.label }}
           </option>
         </select>
-        <label class="flex items-center gap-2 fg-muted" for="count">
+        <label :class="countLabel" for="count">
           <input
             id="count"
-            class="control w-24 rounded-sm px-2 py-1.5 text-center"
+            :class="countInput"
             min="1"
             type="number"
             :value="count"
@@ -55,22 +105,18 @@
           件
         </label>
       </div>
-      <div class="flex items-center gap-3">
-        <label class="flex cursor-pointer items-center gap-1.5 fg-muted">
+      <div :class="actions">
+        <label :class="sortLabel">
           <input
-            class="accent-sky-600"
+            :class="sortInput"
             type="checkbox"
             :checked="sortEnabled"
             @change="emit('update:sortEnabled', ($event.target as HTMLInputElement).checked)"
           />
           ソート
         </label>
-        <button
-          type="button"
-          class="button accent px-3 py-1.5 text-sm font-semibold"
-          @click="emit('shuffle')"
-        >
-          <span class="i-ri:shuffle-fill mr-1" aria-hidden="true" />シャッフル
+        <button type="button" :class="shuffle" @click="emit('shuffle')">
+          <span :class="shuffleIcon" class="i-ri:shuffle-fill" aria-hidden="true" />シャッフル
         </button>
       </div>
     </div>

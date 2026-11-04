@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { bundledLicenseListPlugin } from "vite-plugin-third-party-licenses";
 import cloudflareConfig from "./cloudflare.config";
 import vueDevTools from "vite-plugin-vue-devtools";
@@ -28,6 +29,10 @@ const prerenderRoutes = [
 
 export default defineNuxtConfig({
   compatibilityDate: "2026-07-19",
+  // packages は Nuxt の `~~` を使えない。`styled-system/*` を site の生成物へ向ける。
+  alias: {
+    "styled-system": fileURLToPath(new URL("./styled-system", import.meta.url)),
+  },
   devtools: {
     enabled: false,
   },

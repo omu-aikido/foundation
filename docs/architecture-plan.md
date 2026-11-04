@@ -23,7 +23,7 @@
 
 ## Site styles
 
-SiteのスタイルはUnoCSSとPandaCSSの共存中である。Siteの画面はPandaで書く。`packages/lot-aikido` と `packages/randori-timer` のUI、およびアイコン（`i-ri:*`）はUnoCSSのままである。`apps/site/unocss.config.ts` はこれらのpackagesを走査する。Pandaは `design-tokens` の preset と `strictTokens` を使い、リセットはUnoCSSに任せて preflight は無効にする。UnoCSSのresetはPandaの `reset` レイヤーへ入れ、要素セレクタがPandaのクラスより優先されないようにする。UnoCSSのユーティリティはレイヤー外のままにする。`global.css` の要素指定はPandaの `base` レイヤーに置く。UnoCSSの `presetTagify` は `section` と `button` を要素名で当てない。`<section>` の既定の余白はPandaの `globalCss` が持つ。UnoCSSは `noScripts` のページのクラスも拾えるよう、Vueファイルを直接走査する。Markdownから生成したリンクには `data-link` を付け、Pandaの `prose` recipe が色と外部リンクの印を付ける。`apps/site/styled-system` は `panda codegen` の生成物であり、Gitには含めない。Webフォントは `@nuxt/fonts` がビルド時に取得し、外部オリジンへ接続せずサイト自身から配信する。
+SiteのスタイルはUnoCSSとPandaCSSの共存中である。Siteの画面と `packages/lot-aikido`、`packages/randori-timer` のUIはPandaで書く。アイコン（`i-ri:*`）はUnoCSSのままである。packagesはNuxtの `~~` を使わず `styled-system/*` をimportし、siteのaliasが `apps/site/styled-system` へ解決する。Pandaの `importMap` は `~~/styled-system` と `styled-system` の両方を見る。`apps/site/unocss.config.ts` はこれらのpackagesを走査する。Pandaは `design-tokens` の preset と `strictTokens` を使い、リセットはUnoCSSに任せて preflight は無効にする。UnoCSSのresetはPandaの `reset` レイヤーへ入れ、要素セレクタがPandaのクラスより優先されないようにする。UnoCSSのユーティリティはレイヤー外のままにする。`global.css` の要素指定はPandaの `base` レイヤーに置く。UnoCSSの `presetTagify` は `section` と `button` を要素名で当てない。`<section>` の既定の余白はPandaの `globalCss` が持つ。UnoCSSは `noScripts` のページのクラスも拾えるよう、Vueファイルを直接走査する。Markdownから生成したリンクには `data-link` を付け、Pandaの `prose` recipe が色と外部リンクの印を付ける。`apps/site/styled-system` は `panda codegen` の生成物であり、Gitには含めない。Webフォントは `@nuxt/fonts` がビルド時に取得し、外部オリジンへ接続せずサイト自身から配信する。
 
 ## Site rendering
 

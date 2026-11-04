@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import { css } from "styled-system/css";
+  import { button, card } from "styled-system/recipes";
   import { computed } from "vue";
   import type { RandoriTimerStatus } from "../composables/useRandoriTimer";
 
@@ -16,6 +18,70 @@
   }>();
 
   defineEmits<{ reset: []; toggle: [] }>();
+
+  const panel = [card(), css({ mt: "6", overflow: "hidden" })];
+  const roundRow = css({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    fontSize: "sm",
+    lineHeight: "sm",
+    color: "fg.muted",
+  });
+  const time = css({
+    my: "4",
+    textAlign: "center",
+    fontFamily: "mono",
+    fontSize: "7xl",
+    fontWeight: "bold",
+    lineHeight: "none",
+    letterSpacing: "tighter",
+    fontVariantNumeric: "tabular-nums",
+    sm: { fontSize: "9xl" },
+  });
+  const progressBar = css({
+    display: "flex",
+    h: "3",
+    flexDirection: "row-reverse",
+    gap: "1",
+  });
+  const segmentTrack = css({
+    minW: "0",
+    flex: "1",
+    overflow: "hidden",
+    borderRadius: "full",
+    bg: "bg.muted",
+  });
+  const segmentFill = css({
+    display: "block",
+    h: "full",
+    borderRadius: "full",
+    bg: "bg.accent",
+    transitionProperty: "width",
+    transitionDuration: "0.8s",
+    transitionTimingFunction: "linear",
+  });
+  const controls = css({ mt: "5", display: "flex", justifyContent: "center", gap: "2" });
+  // recipe の button は focus-visible の 1px ring を持たない。shortcut は持っていた。
+  const buttonFocus = css({
+    _focusVisible: { boxShadow: "ring", _hover: { boxShadow: "ringRaised" } },
+  });
+  const toggleButton = [
+    button({ tone: "accent" }),
+    buttonFocus,
+    css({ px: "8", py: "3", fontWeight: "bold" }),
+  ];
+  const resetButton = [
+    button({ tone: "base" }),
+    buttonFocus,
+    css({
+      borderWidth: "1px",
+      borderStyle: "solid",
+      borderColor: "border.muted",
+      px: "4",
+      py: "3",
+    }),
+  ];
 
   const segments = computed(() =>
     props.durations.map((duration, index) => ({
@@ -37,19 +103,16 @@
 </script>
 
 <template>
-  <section class="card mt-6 overflow-hidden" aria-live="polite">
-    <div class="flex items-center justify-between text-sm fg-muted">
+  <section :class="panel" aria-live="polite">
+    <div :class="roundRow">
       <div aria-hidden="true"></div>
       <span>{{ activeRound }} / {{ totalRounds }}</span>
     </div>
-    <div
-      class="my-4 text-center font-mono text-7xl font-bold leading-none tracking-tighter sm:text-9xl tabular-nums"
-      aria-label="残り時間"
-    >
+    <div :class="time" aria-label="残り時間">
       {{ displayTime }}
     </div>
     <div
-      class="flex h-3 flex-row-reverse gap-1"
+      :class="progressBar"
       role="progressbar"
       aria-label="残りラウンド"
       :aria-valuenow="totalProgress"
@@ -59,31 +122,31 @@
       <div
         v-for="(segment, index) in segments"
         :key="index"
-        class="min-w-0 flex-1 overflow-hidden rounded-full bg-muted"
+        :class="segmentTrack"
         :style="{ flexGrow: segment.duration }"
       >
-        <i
-          class="block h-full rounded-full bg-accent transition-[width] duration-800 ease-linear"
-          :style="{ width: `${segment.fill}%` }"
-        />
+        <i :class="segmentFill" :style="{ width: `${segment.fill}%` }" />
       </div>
     </div>
-    <div class="mt-5 flex justify-center gap-2">
+    <div :class="controls">
       <button
         type="button"
-        class="button accent px-8 py-3 font-bold before:content-empty"
-        :class="running ? 'before:i-ri:pause-fill' : 'before:i-ri:play-fill'"
+        :class="toggleButton"
         :disabled="startDisabled"
         :aria-label="status === 'playing' ? '一時停止' : status === 'paused' ? '再開' : '開始'"
         @click="$emit('toggle')"
-      ></button>
+      >
+        <span :class="running ? 'i-ri:pause-fill' : 'i-ri:play-fill'" aria-hidden="true" />
+      </button>
       <button
         type="button"
-        class="button base bordered-muted border px-4 py-3 before:i-ri:restart-line before:content-empty"
+        :class="resetButton"
         aria-label="最初からやり直す"
         :disabled="resetDisabled"
         @click="$emit('reset')"
-      />
+      >
+        <span class="i-ri:restart-line" aria-hidden="true" />
+      </button>
     </div>
   </section>
 </template>

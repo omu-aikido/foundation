@@ -38,7 +38,7 @@ export default defineConfig({
     presetTypography(),
     // section と button は shortcut と同名で、要素そのものに当たる。レイヤー外なので Panda の
     // 値に勝つ。section の既定の余白は panda.config.ts の globalCss（@layer base）が持つ。
-    // input は packages のクラス無しの checkbox / radio が control を受けているので残す。
+    // input は要素セレクタのまま残す（この段では外さない）。packages の checkbox / radio は control recipe を自分で持つ。
     presetTagify({ excludedTags: ["b", /^h\d+$/, "table", "section", "button"] }),
   ],
   transformers: [

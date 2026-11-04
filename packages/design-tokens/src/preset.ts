@@ -17,7 +17,10 @@ const sky600 = "oklch(58.8% 0.158 241.966)";
 const sky700 = "oklch(50% 0.134 242.749)";
 
 const red400 = "oklch(70.4% 0.191 22.216)";
+const red600 = "oklch(57.7% 0.245 27.325)";
 const red700 = "oklch(50.5% 0.213 27.518)";
+const amber400 = "oklch(82.8% 0.189 84.429)";
+const amber700 = "oklch(55.5% 0.163 48.998)";
 const blue400 = "oklch(70.7% 0.165 254.624)";
 const blue700 = "oklch(48.8% 0.243 264.376)";
 const emerald300 = "oklch(84.5% 0.143 164.978)";
@@ -320,6 +323,10 @@ export const preset = definePreset({
           bold: { value: "700" },
           extrabold: { value: "800" },
         },
+        // tracking-tighter。spacing の倍数ではなく、fontSize の行間でもない。
+        letterSpacings: {
+          tighter: { value: "-0.05em" },
+        },
         // 日本語は BIZ UDPGothic。Inter の latin に無い字は次のファミリーで描く。
         fonts: {
           sans: { value: '"Inter", "BIZ UDPGothic", sans-serif' },
@@ -363,6 +370,13 @@ export const preset = definePreset({
           full: { value: "calc(infinity * 1px)" },
         },
         shadows: {
+          // 選択枠の 1px。outline の ring は box-shadow ではなく、hover の影と重ならない。
+          ring: { value: "0 0 0 1px {colors.border.accent}" },
+          // button の hover は輪と shadow.sm を一つの box-shadow に並べる。sm だけだと輪が消える。
+          ringRaised: {
+            value:
+              "0 0 0 1px {colors.border.accent}, 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+          },
           sm: {
             value: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
           },
@@ -403,6 +417,12 @@ export const preset = definePreset({
             invert: semanticColor(zinc50, zinc900),
             accent: semanticColor(sky700, sky400),
             error: semanticColor(error, red400),
+            // red-700 / red-400。fg.error は Uno の error でこれより明るい。calendar.sunday は同じ値だが予定表の色。
+            alert: semanticColor(red700, red400),
+            // amber-700 / amber-400。status.warning は両モード同じ橙。
+            caution: semanticColor(amber700, amber400),
+            // 削除ボタンの hover。ダークでも red-600。fg.alert の dark は red-400。
+            dangerHover: sameColor(red600),
             // presetTypography の prose-gray。本文を fg.base（zinc）にすると明るさが変わる。
             prose: semanticColor(gray700, gray300),
             heading: semanticColor(gray900, white),
@@ -415,6 +435,13 @@ export const preset = definePreset({
             invert: semanticColor(zinc900, zinc50),
             accent: semanticColor(sky700, sky500),
             subtle: semanticColor(zinc200At20, zinc800At20),
+            // bg-muted を 50% にしたもの。不透明な bg.muted でも、20% の bg.subtle でもない。
+            mutedHalf: semanticColor(
+              `color-mix(in srgb, ${zinc300} 50%, transparent)`,
+              `color-mix(in srgb, ${zinc700} 50%, transparent)`,
+            ),
+            // 選択行の地。sky-600 の 8% で、ダークでも sky-500 にしない。
+            selected: sameColor(`color-mix(in srgb, ${sky600} 8%, transparent)`),
           },
           border: {
             base: semanticColor(zinc300, zinc700),
@@ -423,6 +450,10 @@ export const preset = definePreset({
             invert: semanticColor(zinc600, zinc400),
             accent: semanticColor(sky600, sky500),
             prose: semanticColor(gray200, gray700),
+          },
+          accent: {
+            // checkbox の accent-color。border.accent はダークで sky-500 になる。
+            field: sameColor(sky600),
           },
           status: {
             success: sameColor(success),

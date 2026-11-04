@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import { css } from "styled-system/css";
+  import { button, control } from "styled-system/recipes";
   import { computed, ref, useId } from "vue";
 
   const props = defineProps<{
@@ -11,11 +13,35 @@
   const emit = defineEmits<{ "update:modelValue": [value: string[]] }>();
   const inputId = useId();
   const inputText = ref("");
-  const tone = computed(() =>
-    props.type === "positive"
-      ? "border-sky-600 dark:border-sky-500"
-      : "border-zinc-400 dark:border-zinc-500",
-  );
+  const field = css({ minW: "0" });
+  const labelClass = css({ mb: "1", display: "block", fontSize: "sm", lineHeight: "sm" });
+  const inputClass = [control(), css({ w: "full", fontSize: "base", lineHeight: "normal" })];
+  const tags = css({ mt: "2", display: "flex", flexWrap: "wrap", gap: "1.5" });
+  // recipe の button は focus-visible の 1px ring を持たない。shortcut は持っていた。
+  const buttonFocus = css({
+    _focusVisible: { boxShadow: "ring", _hover: { boxShadow: "ringRaised" } },
+  });
+  const tagButton = [
+    button({ tone: "base" }),
+    buttonFocus,
+    css({
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "1",
+      borderWidth: "1px",
+      borderStyle: "solid",
+      borderRadius: "full",
+      px: "2",
+      py: "1",
+      fontSize: "xs",
+      lineHeight: "xs",
+    }),
+  ];
+  const tagPositive = css({ borderColor: "border.accent" });
+  // 除外タグの枠は zinc-400/500。border.muted はダークが zinc-600。fg.ghost と同じ値。
+  const tagNegative = css({ borderColor: "fg.ghost" });
+  const tagTone = computed(() => (props.type === "positive" ? tagPositive : tagNegative));
+  const removeIcon = css({ fontSize: "sm", lineHeight: "sm" });
 
   function addTag() {
     const tag = inputText.value.trim();
@@ -39,28 +65,27 @@
 </script>
 
 <template>
-  <div class="min-w-0">
-    <label class="mb-1 block text-sm" :for="inputId">{{ label }}</label>
+  <div :class="field">
+    <label :class="labelClass" :for="inputId">{{ label }}</label>
     <input
       :id="inputId"
       v-model="inputText"
-      class="control w-full rounded-sm text-base"
+      :class="inputClass"
       type="text"
       :placeholder="placeholder || 'Enterで追加'"
       @keydown="onKeydown"
     />
-    <div v-if="modelValue.length" class="mt-2 flex flex-wrap gap-1.5">
+    <div v-if="modelValue.length" :class="tags">
       <button
         v-for="tag in modelValue"
         :key="tag"
         type="button"
-        class="button inline-flex items-center gap-1 rounded-full border bg-base px-2 py-1 text-xs fg-base"
-        :class="tone"
+        :class="[tagButton, tagTone]"
         :title="`${tag} を削除`"
         @click="removeTag(tag)"
       >
         {{ tag }}
-        <span class="i-ri:close-line text-sm" aria-hidden="true" />
+        <span :class="removeIcon" class="i-ri:close-line" aria-hidden="true" />
       </button>
     </div>
   </div>
