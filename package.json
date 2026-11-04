@@ -16,7 +16,6 @@
     "format:check": "bun fmt --check"
   },
   "devDependencies": {
-    "@iconify-json/ri": "1.2.10",
     "@types/bun": "1.4.4",
     "cf": "1.0.0-beta.26",
     "knip": "6.44.1",

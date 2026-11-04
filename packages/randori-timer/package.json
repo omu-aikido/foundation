@@ -13,6 +13,7 @@
     "vue": "3.5.44"
   },
   "devDependencies": {
-    "@types/bun": "1.4.4"
+    "@types/bun": "1.4.4",
+    "unplugin-icons": "24.0.0"
   }
 }

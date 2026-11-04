@@ -12,6 +12,7 @@
 - `apps/platform/tests/e2e`: Platform E2E環境ファイル
 - `packages/database`: Tursoローカル開発とDrizzle migrations
 - `packages/record-domain`: Recordの共有型・schema・ロジック
+- `packages/design-tokens`: Siteと共有UI向けのPanda preset（トークン、text style、recipe）。パレット色を直接書ける `@pandacss/preset-panda` は使わない
 - `packages/lot-aikido`: 抽選機能のUI・composable・技データ
 - `packages/randori-timer`: 乱取りタイマーのUI・composable・音声処理
 - `packages/vite-plugin-third-party-licenses`: third-party license一覧を出力するVite plugin
@@ -20,9 +21,13 @@
 
 依存関係はrootの1つのBun workspaceで管理し、`packages/*`、Site、Platform（Client、Server）をworkspaceに含める。ロックファイルはrootの `bun.lock` だけを置き、各 `package.json` には依存をexactなバージョンで書く。アプリは共有パッケージを `workspace:*` で参照する。導入手順とWorkers Buildsの設定は[開発ドキュメント](development.md)を正本とする。root共通コマンドのtask定義とVite+のlint・formatなどtoolchain設定はroot `vite.config.ts`を正本とする。app側のVite設定には各app固有のbuild/dev-server設定のみを置き、アプリ固有の依存とscriptは各アプリの `package.json` に置く。Bunのバージョンはrootの `package.json` の `packageManager` に定義する。
 
+## Site styles
+
+SiteのスタイルはPandaCSSだけである。Siteの画面と `packages/lot-aikido`、`packages/randori-timer` のUIはPandaで書く。アイコンは `unplugin-icons` がビルド時に `@iconify-json/ri` からSVGコンポーネントを作り、`~icons/ri/*` をimportする。大きさは1emで、表示は `inline-block`、色は `currentColor` である。`noScripts` のページにもSSRのHTMLへSVGが入る。packagesはNuxtの `~~` を使わず `styled-system/*` をimportし、siteのaliasが `apps/site/styled-system` へ解決する。Pandaの `importMap` は `~~/styled-system` と `styled-system` の両方を見る。Pandaは `design-tokens` の preset と `strictTokens` を使い、リセットはPandaの preflight である。`global.css` の要素指定はPandaの `base` レイヤーに置く。`<section>` の既定の余白と `html` の背景・文字色はPandaの `globalCss` が持つ。Markdownから生成したリンクには `data-link` を付け、Pandaの `prose` recipe が色と外部リンクの印を付ける。`apps/site/styled-system` は `panda codegen` の生成物であり、Gitには含めない。Webフォントは `@nuxt/fonts` がビルド時に取得し、外部オリジンへ接続せずサイト自身から配信する。
+
 ## Site rendering
 
-SiteはNuxtのSSRを基本とする。安定した公開ページとツールはSSRでprerenderしてcached assetsとして維持し、予定表は最新予定を取得するruntime SSRにする。route別のCSR overrideと重複したprerender ruleは設けない。security headersはNuxt routeRulesと生成するCloudflare `_headers`でSSR/asset双方に適用し、APIの`no-store`とNuxt SEO metadataも維持する。ブラウザAPIが必要なtimer/audio機能はmount後に初期化し、lotAikidoの乱数seedはSSR hydration後にshuffleしてサーバーと初期HTMLを一致させる。
+SiteはNuxtのSSRを基本とする。安定した公開ページとツールはSSRでprerenderしてcached assetsとして維持し、予定表は最新予定を取得するruntime SSRにする。route別のCSR overrideと重複したprerender ruleは設けない。動きのない静的ページはrouteRulesの`noScripts`でクライアントJSなしに配信し、ホーム、お問い合わせ、予定表、各ツールはJSを維持する。security headersは`/**`のrouteRulesが個別ルールへマージされたまま、生成するCloudflare `_headers`でもSSR/asset双方に適用し、APIの`no-store`とNuxt SEO metadataも維持する。JSのないページ間の遷移は、reduced motionを望まない閲覧者に対してCSSのcross-document view transitionで切り替える。ブラウザAPIが必要なtimer/audio機能はmount後に初期化し、lotAikidoの乱数seedはSSR hydration後にshuffleしてサーバーと初期HTMLを一致させる。
 
 ## Site security contract
 

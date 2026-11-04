@@ -1,7 +1,11 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+  import { link } from "~~/styled-system/recipes";
+
   definePageMeta({
-    title: "稽古予定",
+    title: "1ヶ月ごとの稽古予定",
     description: "大阪公立大学合氣道部の稽古予定を月ごとのカレンダーで確認できます。",
+    navigation: { parent: "/calendar", order: 1 },
     key: (route) => route.fullPath,
   });
 
@@ -19,11 +23,17 @@
   const next = new Date(year, month + 1, 1);
   const canPrev = selectedIndex > currentIndex;
   const canNext = selectedIndex < currentIndex + 1;
+
+  const page = css({ minH: "60dvh" });
+  const heading = css({ textStyle: "h1", mb: "6" });
+  const back = css({ _print: { display: "none" } });
+  const linkRow = css({ mt: "4", textAlign: "right" });
+  const listLink = [link(), css({ fontSize: "lg", lineHeight: "lg" })];
 </script>
 
 <template>
-  <section class="min-h-60dvh">
-    <h1 class="h1 mb-6">稽古予定</h1>
+  <section :class="page">
+    <h1 :class="heading">稽古予定</h1>
     <CalendarGrid
       :year="year"
       :month="month"
@@ -31,9 +41,9 @@
       :next-href="canNext ? href(next) : undefined"
     />
   </section>
-  <section class="print:hidden">
-    <p class="mt-4 text-right">
-      <NuxtLink to="/calendar" class="link text-lg">リスト表示</NuxtLink>
+  <section :class="back">
+    <p :class="linkRow">
+      <NuxtLink to="/calendar" :class="listLink">リスト表示</NuxtLink>
     </p>
   </section>
 </template>

@@ -1,33 +1,36 @@
-:root {
-  color-scheme: light dark;
-  background: #fafafa;
-  color: #18181b;
-  font-family: "Inter", sans-serif;
-}
+/* 要素への指定は Panda の base レイヤーに置く。レイヤー外だと、詳細度に関係なく
+   Panda のユーティリティ（`fs_sm` など）より勝つ。 */
+@layer base {
+  /* 背景と文字色は globalCss の html。:root に置くと詳細度で token に勝つ。 */
+  :root {
+    color-scheme: light dark;
+    font-family: "Inter", "BIZ UDPGothic", sans-serif;
+  }
 
-html {
-  min-width: 320px;
-  scroll-behavior: auto;
-}
+  html {
+    min-width: 320px;
+    scroll-behavior: auto;
+  }
 
-body {
-  min-height: 100dvh;
-  margin: 0;
-  background:
-    radial-gradient(circle at 15% 0%, rgb(29 78 216 / 12%), transparent 34%),
-    radial-gradient(circle at 85% 12%, rgb(6 95 70 / 14%), transparent 38%);
-}
+  body {
+    min-height: 100dvh;
+    margin: 0;
+    background:
+      radial-gradient(circle at 15% 0%, rgb(29 78 216 / 12%), transparent 34%),
+      radial-gradient(circle at 85% 12%, rgb(6 95 70 / 14%), transparent 38%);
+  }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-button,
-input,
-textarea {
-  font: inherit;
+  button,
+  input,
+  textarea {
+    font: inherit;
+  }
 }
 
 ::view-transition-old(root) {
@@ -50,10 +53,9 @@ textarea {
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    background: #18181b;
-    color: #fafafa;
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
   }
 }
 

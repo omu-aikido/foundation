@@ -1,6 +1,7 @@
 # build output and generated Nuxt files
 .output/
 .nuxt/
+styled-system/
 --host/
 app/generated/
 public/llms*.txt

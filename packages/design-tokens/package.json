@@ -1,0 +1,19 @@
+{
+  "name": "design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./preset": "./src/preset.ts"
+  },
+  "scripts": {
+    "typecheck": "bun check -p tsconfig.json && bun check -p test/tsconfig.json"
+  },
+  "dependencies": {
+    "@pandacss/dev": "2.5.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "culori": "4.0.2"
+  }
+}

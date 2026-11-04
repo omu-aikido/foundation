@@ -1,4 +1,8 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+  import { stack } from "~~/styled-system/patterns";
+  import { control } from "~~/styled-system/recipes";
+
   withDefaults(
     defineProps<{
       id: string;
@@ -17,13 +21,20 @@
   function update(event: Event) {
     emit("update:modelValue", (event.target as HTMLInputElement | HTMLTextAreaElement).value);
   }
+
+  const field = stack({ gap: "1" });
+  const labelText = css({ fontSize: "sm", lineHeight: "sm", fontWeight: "bold", color: "fg.base" });
+  const requiredMark = css({ fontWeight: "bold", color: "fg.error" });
+  const input = control();
+  const textarea = [control(), css({ resize: "vertical" })];
+  const message = css({ mt: "1", fontSize: "xs", lineHeight: "xs", color: "fg.error" });
 </script>
 
 <template>
-  <div class="stack gap-1">
-    <label :for="id" class="text-sm font-bold fg-base">
+  <div :class="field">
+    <label :for="id" :class="labelText">
       {{ label }}
-      <span v-if="required" class="font-bold text-error" aria-hidden="true">*</span>
+      <span v-if="required" :class="requiredMark" aria-hidden="true">*</span>
     </label>
     <input
       v-if="rows === 1"
@@ -35,7 +46,7 @@
       :autocomplete="autocomplete"
       :aria-invalid="error ? 'true' : undefined"
       :aria-describedby="error ? `${id}-error` : undefined"
-      class="control"
+      :class="input"
       @input="update"
     />
     <textarea
@@ -47,9 +58,9 @@
       :rows="rows"
       :aria-invalid="error ? 'true' : undefined"
       :aria-describedby="error ? `${id}-error` : undefined"
-      class="control resize-y"
+      :class="textarea"
       @input="update"
     />
-    <p v-if="error" :id="`${id}-error`" class="mt-1 text-xs text-error">{{ error }}</p>
+    <p v-if="error" :id="`${id}-error`" :class="message">{{ error }}</p>
   </div>
 </template>

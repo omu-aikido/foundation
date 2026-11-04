@@ -1,7 +1,17 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+  import { button } from "~~/styled-system/recipes";
+  import IconRiCalendarView from "~icons/ri/calendar-view";
+  import IconRiTimeLine from "~icons/ri/time-line";
+
   const startDate = getTodayInJst();
   const endDate = new Date(startDate.getTime() + 21 * 24 * 60 * 60 * 1000);
-  const { data: events, error } = await useFetch<CalendarEvent[]>("/__calendar", {
+  const {
+    data: events,
+    error,
+    pending,
+    refresh,
+  } = await useFetch<CalendarEvent[]>("/__calendar", {
     key: "calendar-list",
     query: {
       start: formatLocalDate(startDate),
@@ -9,43 +19,81 @@
     },
   });
 
-  function titleClass(title: string) {
-    if (title.includes("中百舌鳥")) return "event-nakamozu";
-    if (title.includes("杉本")) return "event-sugimoto";
-    if (title.includes("森之宮")) return "event-morinomiya";
-    if (title.includes("会")) return "event-event";
-    return "event-default";
+  const eventColor = {
+    "event.nakamozu": css({ color: "event.nakamozu" }),
+    "event.sugimoto": css({ color: "event.sugimoto" }),
+    "event.morinomiya": css({ color: "event.morinomiya" }),
+    "event.event": css({ color: "event.event" }),
+    "event.default": css({ color: "event.default" }),
+  };
+  type EventColor = keyof typeof eventColor;
+  function titleClass(title: string): EventColor {
+    if (title.includes("中百舌鳥")) return "event.nakamozu";
+    if (title.includes("杉本")) return "event.sugimoto";
+    if (title.includes("森之宮")) return "event.morinomiya";
+    if (title.includes("会")) return "event.event";
+    return "event.default";
   }
+
+  const alert = css({ mb: "3", color: "fg.error" });
+  const retry = [button(), css({ mt: "2" })];
+  const empty = css({ display: "inline-flex", gap: "2", color: "fg.muted" });
+  const emptyIcon = css({ w: "6", h: "6" });
+  const metaIcon = css({ w: "4", h: "4" });
+  const article = css({
+    display: "grid",
+    minW: "0",
+    gridTemplateColumns: "repeat(2,minmax(0,1fr))",
+    borderBottomWidth: "1px",
+    borderBottomStyle: "solid",
+    borderColor: "border.muted",
+    px: "4",
+    py: "5",
+    sm: { gridTemplateColumns: "1fr 2fr" },
+  });
+  const title = css({ textStyle: "h3" });
+  const details = css({ display: "flex", flexDirection: "column" });
+  const meta = css({
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "2",
+    fontSize: "sm",
+    lineHeight: "sm",
+    color: "fg.muted",
+  });
 </script>
 
 <template>
-  <div v-if="error" class="status-error">稽古予定を取得できませんでした。</div>
-  <div v-else-if="!events?.length" class="inline-flex gap-2 fg-muted">
-    <span class="i-ri:calendar-view h-6 w-6" aria-hidden="true" />
+  <div v-if="error" :class="alert" role="alert">
+    <p>稽古予定を取得できませんでした。再読み込みしてください。</p>
+    <button type="button" :class="retry" :disabled="pending" @click="refresh()">
+      {{ pending ? "再読み込み中..." : "予定を再読み込み" }}
+    </button>
+  </div>
+  <div v-else-if="!events?.length" :class="empty">
+    <IconRiCalendarView :class="emptyIcon" aria-hidden="true" />
     <p>今後3週間の稽古予定はありません</p>
   </div>
   <div v-else>
     <article
       v-for="(event, index) in events"
       :key="event.id"
-      class="stagger-item grid min-w-0 grid-cols-2 border-b px-4 py-5 bordered-muted sm:grid-cols-[1fr_2fr]"
-      :class="titleClass(event.title)"
+      class="stagger-item"
+      :class="[article, eventColor[titleClass(event.title)]]"
       :style="{ animationDelay: `${index * 60}ms` }"
     >
-      <h2 class="h3">{{ event.title }}</h2>
-      <div class="flex flex-col">
-        <div class="inline-flex items-center gap-2 text-sm fg-muted">
-          <span class="i-ri:calendar-view h-4 w-4" aria-hidden="true" />{{
+      <h2 :class="title">{{ event.title }}</h2>
+      <div :class="details">
+        <div :class="meta">
+          <IconRiCalendarView :class="metaIcon" aria-hidden="true" />{{
             formatEventDateRange(event)
           }}
         </div>
         <div
           v-if="!isAllDayEvent(event) && event.start !== event.end && !isMultiDayEvent(event)"
-          class="inline-flex items-center gap-2 text-sm fg-muted"
+          :class="meta"
         >
-          <span class="i-ri:time-line h-4 w-4" aria-hidden="true" />{{
-            formatEventTime(event.start)
-          }}
+          <IconRiTimeLine :class="metaIcon" aria-hidden="true" />{{ formatEventTime(event.start) }}
           -
           {{ formatEventTime(event.end) }}
         </div>

@@ -28,7 +28,7 @@ The states are the branches the component already has. Read it and its data hook
 
 A state the code cannot reach is not a state. Do not add a branch to render one. Where the design shows a state the code lacks, list it as missing and leave it out.
 
-Write the set down before building, one line each, named the way the product talks about it: `empty`, `enterprise`, `member-no-access`. Say which kinds you dropped and why in one line. Combine kinds only where the code branches on the combination, such as `member-empty`, never as a cross product.
+Write the set down before building, one line each, named the way the product talks about it: `empty`, `enterprise`, `member-no-access`. Group them under headings in the product's words, by what changes. Use `Data` and `Account` or narrower ones such as `Connection` or `Access`. The switcher shows these groups. Say which kinds you dropped and why in one line. Combine kinds only where the code branches on the combination, such as `member-empty`, never as a cross product.
 
 ## 3. Build the throwaway page
 
@@ -53,7 +53,7 @@ Loading and pending states hold still. Keep them pending until the switcher move
 
 ## 5. Add the switcher
 
-A fixed control flips the `__state` search param, so every state is a link. The double underscore keeps it clear of any param the app's layout reads. [switcher.md](switcher.md) holds the spec.
+A grouped list beside the component flips the `__state` search param, so every state is a link. Where there is no room beside the component, it moves above it as a select with the same groups. The double underscore keeps it clear of any param the app's layout reads. [switcher.md](switcher.md) holds the spec.
 
 ## 6. Confirm every state renders, then hand over
 
@@ -69,7 +69,7 @@ After a visual change, flip through every state again, since a fix for one state
 
 ## Remove it in one step, on the user's word
 
-Delete the page folder and any seam the user approved. Then search the codebase for the route and fixture names, and check that the diff touches nothing else of the setup. Commit only when asked.
+Delete the page folder and any seam the user approved. Then search the codebase for the route and fixture names, and check that the diff touches nothing else of the setup.
 
 ## Before you finish
 
@@ -84,6 +84,7 @@ Delete the page folder and any seam the user approved. Then search the codebase 
 | Loading resolves after a timeout | Hold it until the switcher moves |
 | Handed over without loading each state | Load every state; a blank or real-data state means broken plumbing |
 | Switcher styled with the project's tokens | Keep it visibly outside the design system |
+| One long row of tabs, one per state | A grouped list beside the component that scrolls on its own; a select above it where the list does not fit |
 | Visuals changed unasked | Hand over and wait |
 | Page deleted in the same turn it was built | Remove it only on the user's word |
 | Route or fixture names left behind | Search for both after removal |

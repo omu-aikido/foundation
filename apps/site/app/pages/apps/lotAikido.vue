@@ -1,4 +1,7 @@
 <script setup lang="ts">
+  import { css } from "~~/styled-system/css";
+  import { button } from "~~/styled-system/recipes";
+  import IconRiLinksLine from "~icons/ri/links-line";
   import { ref } from "vue";
   import { useGenerator } from "lot-aikido";
   import GeneratorForm from "lot-aikido/components/GeneratorForm.vue";
@@ -9,10 +12,34 @@
     title: "合気道 技ジェネレーター",
     description:
       "条件を指定して、合気道の稽古技をランダムに選びます。技の候補を並べた稽古リストの作成にも使えます。",
+    navigation: { parent: "/apps", order: 1 },
   });
 
   const gen = useGenerator();
   const copied = ref(false);
+  const page = css({ mx: "auto", maxW: "3xl" });
+  const body = css({ overflow: "hidden" });
+  const tags = css({
+    display: "grid",
+    gap: "2",
+    md: { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" },
+  });
+  const shareRow = css({ mt: "5", display: "flex", justifyContent: "right" });
+  const shareButton = [
+    button({ tone: "base" }),
+    css({
+      borderWidth: "1px",
+      borderStyle: "solid",
+      borderColor: "border.muted",
+      px: "4",
+      py: "2",
+      fontSize: "sm",
+      lineHeight: "sm",
+    }),
+  ];
+  const shareCopied = css({ borderColor: "border.accent", color: "fg.accent" });
+  // 中のアイコンを行ボックスに入れない。inline のままだと 2px 伸びる。
+  const shareIcon = css({ display: "inline-flex", mr: "1.5", verticalAlign: "text-bottom" });
 
   async function handleShare() {
     await gen.share();
@@ -24,8 +51,8 @@
 </script>
 
 <template>
-  <section class="mx-auto max-w-3xl">
-    <div class="overflow-hidden">
+  <section :class="page">
+    <div :class="body">
       <GeneratorForm
         :count="gen.count.value"
         :filter="gen.filter.value"
@@ -39,7 +66,7 @@
         @update:rank="gen.rank.value = $event"
         @update:sort-enabled="gen.sortEnabled.value = $event"
       />
-      <section class="grid gap-2 md:grid-cols-2">
+      <section :class="tags">
         <TagInput
           label="含める技"
           placeholder="含める技名を入力"
@@ -58,14 +85,13 @@
       <WazaTable :techniques="gen.techniques.value" />
     </div>
 
-    <div class="mt-5 flex justify-right">
+    <div :class="shareRow">
       <button
         type="button"
-        class="button base border px-4 py-2 text-sm bordered-muted"
-        :class="copied ? 'bordered-accent fg-accent' : ''"
+        :class="copied ? [shareButton, shareCopied] : shareButton"
         @click="handleShare"
       >
-        <span class="i-ri:links-line mr-1.5 align-text-bottom" aria-hidden="true" />
+        <span :class="shareIcon"><IconRiLinksLine aria-hidden="true" /></span>
         {{ copied ? "URLをコピーしました" : "このリストを共有" }}
       </button>
     </div>

@@ -3,6 +3,9 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import * as Vue from "vue";
 import { validateContactFields } from "../shared/schemas/contact";
+import * as styledCss from "../styled-system/css";
+import * as styledPatterns from "../styled-system/patterns";
+import * as styledRecipes from "../styled-system/recipes";
 import { createRenderer, createSSRApp, nextTick } from "vue";
 import { renderToString } from "vue/server-renderer";
 import { compileScript, parse } from "vue/compiler-sfc";
@@ -26,6 +29,18 @@ async function compileComponent(name: string, globals: Record<string, unknown> =
       /^import \{([^}]+)\} from ["']~~\/shared\/schemas\/contact["'];?$/gm,
       "const { $1 } = dependencies;",
     )
+    .replace(
+      /^import \{([^}]+)\} from ["']~~\/styled-system\/([^"']+)["'];?$/gm,
+      (_match, names: string, specifier: string) => {
+        const bindings = names
+          .split(",")
+          .map((name) => name.trim().replace(/\s+as\s+/, ": "))
+          .join(", ");
+        return `const { ${bindings} } = styledSystem[${JSON.stringify(specifier)}];`;
+      },
+    )
+    // Vite の仮想モジュールはここでは解決できない。図形そのものは描画契約ではない。
+    .replace(/^import (\w+) from ["']~icons\/[^"']+["'];?$/gm, "const $1 = icon;")
     .replace("export default", "module.exports.default =");
   const runtimeNames = Object.keys(Vue);
   const globalNames = Object.keys(globals);
@@ -35,6 +50,8 @@ async function compileComponent(name: string, globals: Record<string, unknown> =
     "module",
     "vue",
     "dependencies",
+    "styledSystem",
+    "icon",
     ...runtimeNames,
     ...globalNames,
     `${executable}\nreturn module.exports.default;`,
@@ -42,6 +59,8 @@ async function compileComponent(name: string, globals: Record<string, unknown> =
     { exports: {} },
     Vue,
     { validateContactFields },
+    { css: styledCss, recipes: styledRecipes, patterns: styledPatterns },
+    Vue.defineComponent({ setup: (_props, ctx) => () => Vue.h("svg", ctx.attrs) }),
     ...runtimeNames.map((key) => (Vue as Record<string, unknown>)[key]),
     ...Object.values(globals),
   );
@@ -111,6 +130,11 @@ function findNode(node: HostNode, predicate: (node: HostNode) => boolean): HostN
 function requireNode(node: HostNode | undefined, label: string): HostNode {
   if (!node) throw new Error(`Expected ${label} node to be rendered`);
   return node;
+}
+
+function className(node: HostNode | undefined): string {
+  const value = node?.props.class;
+  return typeof value === "string" ? value : "";
 }
 
 it("associates FormInput errors with the matching input and textarea", async () => {
@@ -498,7 +522,18 @@ it("mounts on the first slideshow image, navigates on click, and starts no inter
       (node) => node.tag === "img" && node.props.alt === "2025年度集合写真",
     );
     expect(first).toBeDefined();
-    expect((first?.parent?.parent?.props.class as string) ?? "").toContain("opacity-100");
+    const activeClass = className(first?.parent?.parent);
+    const idle = findNode(
+      root,
+      (node) => node.tag === "img" && node.props.alt === "普段の稽古の様子1",
+    );
+    expect(activeClass).not.toBe("");
+    expect(className(idle?.parent?.parent)).not.toBe(activeClass);
+    const currentDot = requireNode(
+      findNode(root, (node) => node.tag === "button" && node.props["aria-current"] === "true"),
+      "current photo",
+    );
+    expect(currentDot.props["aria-label"]).toBe("1枚目の写真");
     expect(intervals).toHaveLength(0);
 
     const next = requireNode(
@@ -512,7 +547,14 @@ it("mounts on the first slideshow image, navigates on click, and starts no inter
       (node) => node.tag === "img" && node.props.alt === "2026年度の新歓の様子です",
     );
     expect(second).toBeDefined();
-    expect((second?.parent?.parent?.props.class as string) ?? "").toContain("opacity-100");
+    expect(className(second?.parent?.parent)).toBe(activeClass);
+    expect(className(first?.parent?.parent)).not.toBe(activeClass);
+    expect(currentDot.props["aria-current"]).toBeUndefined();
+    const nextDot = requireNode(
+      findNode(root, (node) => node.tag === "button" && node.props["aria-current"] === "true"),
+      "next photo",
+    );
+    expect(nextDot.props["aria-label"]).toBe("2枚目の写真");
     expect(intervals).toHaveLength(0);
   } finally {
     app.unmount();
