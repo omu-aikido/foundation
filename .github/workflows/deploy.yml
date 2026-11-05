@@ -1,0 +1,67 @@
+name: Deploy
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 同じ main への push が続いても、Hook は順に呼ぶ。後の build が先に終わると古い版が残る。
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    # Hook の URL は main だけが読める environment secret に置く。
+    environment: deploy
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      # Workers Builds の push 連携は、20 コミット以上の push でビルドを起動しなかった（PR #25）。
+      # watch paths を Cloudflare で判定させず、ここで before..after の差分全体から決める。
+      # GitHub の on.push.paths も 300 ファイルを超える差分を取りこぼすので使わない。
+      - name: Select Workers to deploy
+        id: select
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          site=false
+          platform=false
+          if [ "$EVENT" = workflow_dispatch ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            site=true
+            platform=true
+          else
+            while IFS= read -r path; do
+              case "$path" in
+                package.json | bunfig.toml | tsconfig.base.json | tsconfig.test.json | packages/vite-plugin-third-party-licenses/*)
+                  site=true
+                  platform=true
+                  ;;
+                apps/site/* | packages/design-tokens/* | packages/lot-aikido/* | packages/randori-timer/* | patches/*)
+                  site=true
+                  ;;
+                apps/platform/* | packages/record-domain/* | vite.config.ts)
+                  platform=true
+                  ;;
+              esac
+            done < <(git diff --name-only "$BEFORE" "$AFTER")
+          fi
+          echo "site=$site" >> "$GITHUB_OUTPUT"
+          echo "platform=$platform" >> "$GITHUB_OUTPUT"
+      - name: Trigger Site build
+        if: steps.select.outputs.site == 'true'
+        env:
+          HOOK: ${{ secrets.DEPLOY_WEBHOOK_URL_SITE }}
+        run: curl --fail-with-body -sS -X POST "$HOOK"
+      - name: Trigger Platform build
+        if: steps.select.outputs.platform == 'true'
+        env:
+          HOOK: ${{ secrets.DEPLOY_WEBHOOK_URL_PLATFORM }}
+        run: curl --fail-with-body -sS -X POST "$HOOK"

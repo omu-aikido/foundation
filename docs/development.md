@@ -32,18 +32,20 @@ Workers Buildsでは以下を設定します。Build variablesは `SKIP_DEPENDEN
 
 PlatformのbuildはClient、Serverの順に実行します。ClientのVite設定はmodule runnerで読み込み、workspaceの共有TypeScriptプラグインも変換します。上記のDeploy commandは実際のデプロイ用です。ローカル検証には既存の `vp run deploy:site` / `vp run deploy:platform`（`--dry-run`）を使用してください。
 
-Workers Buildsの設定仕様は[Build image](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/)と[Build watch paths](https://developers.cloudflare.com/workers/ci-cd/builds/build-watch-paths/)を参照してください。
+Workers Buildsの設定仕様は[Build image](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/)と[Deploy Hooks](https://developers.cloudflare.com/workers/ci-cd/builds/deploy-hooks/)を参照してください。
 
-Cloudflare側のbuild watch pathsには、リポジトリルートからの相対パスで以下を設定します。
+ビルドはpushではなくDeploy Hookで起動します。Git連携のpushビルドは、20コミット以上のpushで起動しなかったためです。`.github/workflows/deploy.yml` は `main` へのpushごとに前回のpushからの差分を見て、該当するWorkerのHookを呼びます。手動で実行すると、両方のWorkerをビルドします。
 
-| Worker   | Include paths                                                                                                                                                                                                                         |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Site     | `apps/site/*`, `packages/design-tokens/*`, `packages/lot-aikido/*`, `packages/randori-timer/*`, `packages/vite-plugin-third-party-licenses/*`, `patches/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json` |
-| Platform | `apps/platform/*`, `packages/record-domain/*`, `packages/vite-plugin-third-party-licenses/*`, `package.json`, `bunfig.toml`, `tsconfig.base.json`, `tsconfig.test.json`, `vite.config.ts`                                             |
+| Worker   | ビルドする変更                                                                                                     | Hook のsecret                 |
+| -------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------- |
+| Site     | `apps/site/`, `packages/design-tokens/`, `packages/lot-aikido/`, `packages/randori-timer/`, `patches/`, 共通の変更 | `DEPLOY_WEBHOOK_URL_SITE`     |
+| Platform | `apps/platform/`, `packages/record-domain/`, `vite.config.ts`, 共通の変更                                          | `DEPLOY_WEBHOOK_URL_PLATFORM` |
+
+共通の変更は `packages/vite-plugin-third-party-licenses/`、ルートの `package.json`、`bunfig.toml`、`tsconfig.base.json`、`tsconfig.test.json` です。CloudflareではWorkerごとに `main` ブランチのDeploy Hookを作り、URLをGitHubの `deploy` environment（`main` ブランチのみ）のsecretに登録します。Git連携はHookに必要なので切らず、各Workerの自動ビルド（ビルド設定の `auto_build_enabled`）だけを無効にします。build watch pathsはpushビルド専用なので使いません。
 
 `omu-aikido.com` ゾーンのWAFは、URLに `s3`（大文字小文字を問わない）を含むリクエストを403にします。このためSiteとPlatformのクライアントは、ビルド資産のハッシュを `s` を含まないhexで出力します。`@nuxt/fonts` のフォントのファイル名はbase64urlのハッシュで変えられないため、名前に `s3` を含むフォントはWAFのルールを見直すまで配信されません。
 
-`*` はWorkers Buildsのパス指定でサブディレクトリも含めます。依存の更新は各アプリの `package.json` のexactなバージョンの変化で検知するため、ルートの `bun.lock` は監視対象に含めません。推移的依存だけが変わった場合は、次にそのアプリが変更されたときに反映されます。ルートの `package.json` の `overrides` と `catalog` は両アプリに効くため監視します。Cloudflareダッシュボードの作業ルート・依存導入・build/deployコマンド・監視パスは、この構成に合わせて設定してください。
+依存の更新は各アプリの `package.json` のexactなバージョンの変化で検知するため、ルートの `bun.lock` の変更だけではビルドしません。推移的依存だけが変わった場合は、次にそのアプリが変更されたときに反映されます。ルートの `package.json` の `overrides` と `catalog` は両アプリに効くため、両方をビルドします。
 
 ## 開発と検証
 
