@@ -111,6 +111,7 @@ export default defineNuxtConfig({
         writeCloudflareBuildOutput({
           preset: nitro.options.preset,
           rootDir: nitro.options.rootDir,
+          buildDir: nitro.options.buildDir,
           serverDir: nitro.options.output.serverDir,
           publicDir: nitro.options.output.publicDir,
           config: cloudflareConfig,

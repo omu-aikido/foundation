@@ -1,4 +1,4 @@
-import { access, cp, mkdir, rm, writeFile } from "node:fs/promises";
+import { access, copyFile, cp, mkdir, rm, stat, writeFile } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
 
 import type CFType from "../cloudflare.config";
@@ -11,6 +11,7 @@ type CloudflareBuildConfig = Omit<SiteCloudflareConfig, "worker"> & {
 type BuildOutputOptions = {
   preset: string;
   rootDir: string;
+  buildDir: string;
   serverDir: string;
   publicDir: string;
   config: CloudflareBuildConfig;
@@ -20,6 +21,7 @@ type BuildOutputOptions = {
 export async function writeCloudflareBuildOutput({
   preset,
   rootDir,
+  buildDir,
   serverDir,
   publicDir,
   config,
@@ -54,6 +56,10 @@ export async function writeCloudflareBuildOutput({
       "Nitro server entrypoint and public assets must exist before writing Cloudflare Build Output",
     );
   }
+
+  // Nuxt publishes dist/client/_nuxt only. The Cloudflare asset directory is a
+  // snapshot of publicDir, so the license report has to be copied before that.
+  await publishClientLicenseReport(buildDir, absolutePublicDir);
 
   const outputDir = join(absoluteRoot, ".cloudflare/output/v0");
   const workerDir = join(outputDir, "workers/default");
@@ -94,4 +100,21 @@ export async function writeCloudflareBuildOutput({
       }),
     ),
   ]);
+}
+
+async function publishClientLicenseReport(buildDir: string, publicDir: string): Promise<void> {
+  const source = join(buildDir, "dist/client/licenses.txt");
+  let size = 0;
+  try {
+    const info = await stat(source);
+    if (info.isFile()) size = info.size;
+  } catch (error) {
+    if (!isMissingFile(error)) throw error;
+  }
+  if (size === 0) throw new Error("Client license report not found");
+  await copyFile(source, join(publicDir, "licenses.txt"));
+}
+
+function isMissingFile(error: unknown): boolean {
+  return error instanceof Error && "code" in error && error.code === "ENOENT";
 }
