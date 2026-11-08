@@ -29,13 +29,13 @@
     "vue": "3.5.44"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "5.20261102.1",
+    "@cloudflare/workers-types": "5.20261104.1",
     "@iconify-json/ri": "1.2.10",
     "@pandacss/dev": "2.5.0",
     "@pandacss/preset-base": "2.5.0",
     "@types/bun": "1.4.4",
     "@types/node": "26.6.6",
-    "cf": "1.0.0-beta.26",
+    "cf": "1.0.0-beta.27",
     "rolldown": "1.2.16",
     "typescript": "6.0.3",
     "vite": "catalog:",
@@ -43,6 +43,6 @@
     "vite-plugin-vue-devtools": "8.2.1",
     "vue-router": "5.4.0",
     "vue-tsc": "3.3.14",
-    "wrangler": "4.156.2"
+    "wrangler": "4.157.0"
   }
 }
