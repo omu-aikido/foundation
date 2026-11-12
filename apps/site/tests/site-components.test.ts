@@ -543,7 +543,9 @@ it("mounts on the first slideshow image, navigates on click, and starts no inter
       (node) => node.props.alt === "" && node.props.src === first?.props.src,
     );
     expect(firstWash?.props.fetchpriority).toBeUndefined();
-    expect(images.filter((node) => node.props.fetchpriority === "high")).toEqual([first]);
+    expect(images.filter((node) => node.props.fetchpriority === "high")).toEqual([
+      requireNode(first, "first slideshow image"),
+    ]);
     for (const image of images) {
       if (image === first || image === firstWash) continue;
       expect(image.props.fetchpriority).toBe("low");
