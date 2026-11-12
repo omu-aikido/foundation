@@ -6,7 +6,7 @@
       type="email"
       :model-value="formValues.email"
       label="メールアドレス"
-      autocomplete="email"
+      autocomplete="username"
       required
       placeholder="name@example.com"
       :disabled="isSignUpCreated"
@@ -14,35 +14,18 @@
       @update:model-value="onUpdate('email', $event ?? '')"
     />
 
-    <div class="gap-2 flex flex-col">
-      <PasswordInput
-        id="password"
-        name="password"
-        autocomplete="new-password"
-        :model-value="formValues.newPassword"
-        label="パスワード"
-        required
-        placeholder="10文字以上のパスワード"
-        :disabled="isSignUpCreated"
-        :error="formErrors.newPassword"
-        @update:model-value="onUpdate('newPassword', $event ?? '')"
-      />
-    </div>
-
-    <div class="gap-2 flex flex-col">
-      <PasswordInput
-        id="password-confirm"
-        :model-value="formValues.passwordConfirm"
-        name="password-confirm"
-        autocomplete="new-password"
-        label="パスワード（確認）"
-        required
-        placeholder="パスワードを再入力"
-        :disabled="isSignUpCreated"
-        :error="formErrors.passwordConfirm"
-        @update:model-value="onUpdate('passwordConfirm', $event ?? '')"
-      />
-    </div>
+    <PasswordInput
+      id="password"
+      name="password"
+      autocomplete="new-password"
+      :model-value="formValues.newPassword"
+      label="パスワード"
+      required
+      placeholder="10文字以上のパスワード"
+      :disabled="isSignUpCreated"
+      :error="formErrors.newPassword"
+      @update:model-value="onUpdate('newPassword', $event ?? '')"
+    />
 
     <div class="pt-2 flex justify-end">
       <button
