@@ -6,7 +6,6 @@ import { reactive, readonly, ref } from "vue";
 const formDataSchema = type({
   email: /.+@.+\..+/u,
   newPassword: "10<=string<=100",
-  passwordConfirm: "string",
   firstName: "2<=string<=50",
   lastName: "2<=string<=50",
   username: "6<=string<=50 | '' | undefined",
@@ -29,7 +28,6 @@ const getValidationSchema = (currentStep: SignUpStep) => {
       return type({
         email: /.+@.+\..+/u,
         newPassword: "10<=string<=100",
-        passwordConfirm: "1<=string<=100",
       });
     case "personal":
       return type({
@@ -79,10 +77,6 @@ const validateStep = (
     for (const error of result) {
       formErrors[error.path[0] as keyof FormErrors] = error.message;
     }
-    return false;
-  }
-  if (currentStep === "basic" && formValues.passwordConfirm !== formValues.newPassword) {
-    formErrors.passwordConfirm = "パスワードが一致しません";
     return false;
   }
   return true;
@@ -164,7 +158,6 @@ export function useSignUpForm(currentYear: number) {
   const formValues = reactive<SignUpFormData>({
     email: "",
     newPassword: "",
-    passwordConfirm: "",
     firstName: "",
     lastName: "",
     username: undefined,

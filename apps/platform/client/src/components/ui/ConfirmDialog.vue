@@ -48,6 +48,7 @@
         <button
           type="button"
           class="btn-secondary"
+          autofocus
           :disabled="props.loading"
           data-testid="cancel-btn"
           @click="emit('cancel')"

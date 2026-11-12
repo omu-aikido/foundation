@@ -70,9 +70,6 @@ export default defineConfig({
       "filter-btn":
         "px-3 py-1.5 text-sm font-medium rounded-md text-subtext border-none cursor-pointer transition-all hover:text",
       "filter-btn-active": "bg-surface1 text shadow-sm",
-      "tab-list": "flex gap-1 border-b border-overlay1",
-      "tab-item":
-        "px-4 py-2.5 text-sm font-medium bg-transparent border-none border-b-2 cursor-pointer transition-colors text-subtext hover:text-blue-500 border-transparent aria-selected:(border-blue-500 text-blue-500)",
     },
 
     // --- Form Controls ---

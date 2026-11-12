@@ -16,9 +16,16 @@
     { src: "/images/hero/bea041cf.webp", alt: "普段の稽古の様子2", width: 1024, height: 575 },
   ];
   const current = ref(0);
+  const announcement = ref("");
+
+  function positionLabel(index: number) {
+    return `${index + 1}枚目（${images.length}枚中）`;
+  }
 
   function show(index: number) {
-    current.value = (index + images.length) % images.length;
+    const next = (index + images.length) % images.length;
+    if (next !== current.value) announcement.value = positionLabel(next);
+    current.value = next;
   }
 
   const frame = css({
@@ -121,16 +128,37 @@
   } as const;
   const dotOn = css({ ...dot, w: "8" });
   const dotOff = css({ ...dot, w: "2", opacity: "0.4" });
+  const statusText = css({
+    position: "absolute",
+    w: "[1px]",
+    h: "[1px]",
+    p: "0",
+    m: "[-1px]",
+    overflow: "hidden",
+    clipPath: "inset(50%)",
+    whiteSpace: "nowrap",
+    borderWidth: "0",
+  });
 </script>
 
 <template>
-  <div :class="frame">
+  <div :class="frame" role="region" aria-roledescription="carousel" aria-label="写真">
     <div
       v-for="(image, index) in images"
       :key="image.src"
       :class="index === current ? slideOn : slideOff"
+      role="group"
+      aria-roledescription="slide"
+      :aria-label="positionLabel(index)"
     >
-      <img :src="image.src" alt="" :class="wash" loading="lazy" />
+      <!-- 先頭のぼかしは LCP と同じ URL。low にすると high の取得優先度まで下がる。 -->
+      <img
+        :src="image.src"
+        alt=""
+        :class="wash"
+        loading="lazy"
+        :fetchpriority="index === 0 ? undefined : 'low'"
+      />
       <div :class="stage">
         <img
           :src="image.src"
@@ -139,10 +167,11 @@
           :height="image.height"
           :class="photo"
           :loading="index === 0 ? 'eager' : 'lazy'"
-          :fetchpriority="index === 0 ? 'high' : undefined"
+          :fetchpriority="index === 0 ? 'high' : 'low'"
         />
       </div>
     </div>
+    <p :class="statusText" role="status">{{ announcement }}</p>
     <div :class="scrim" />
     <button type="button" :class="prevButton" aria-label="前の写真" @click="show(current - 1)">
       <span :class="navIcon"><IconRiArrowLeftSLine /></span>
