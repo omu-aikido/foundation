@@ -1,6 +1,6 @@
 <template>
   <div class="h-50dvh w-full flex flex-col items-center justify-center">
-    <div class="i-lucide:loader-circle animate-spin text-2xl" aria-hidden />
+    <div class="i-lucide:loader-circle motion-safe:animate-spin text-2xl" aria-hidden />
   </div>
   <p class="text-sub text-center">
     画面が切り替わらない場合は

@@ -36,7 +36,7 @@
           label="メールアドレス"
           name="email"
           required
-          autocomplete="email"
+          autocomplete="username"
           placeholder="example@mail.com"
         />
 

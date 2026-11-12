@@ -522,6 +522,40 @@ it("mounts on the first slideshow image, navigates on click, and starts no inter
       (node) => node.tag === "img" && node.props.alt === "2025年度集合写真",
     );
     expect(first).toBeDefined();
+    expect(first?.props.loading).toBe("eager");
+    expect(first?.props.fetchpriority).toBe("high");
+    expect(first?.props.width).toBe(1280);
+    expect(first?.props.height).toBe(696);
+    const frame = first?.parent?.parent?.parent;
+    expect(frame?.props.role).toBe("region");
+    expect(frame?.props["aria-roledescription"]).toBe("carousel");
+    expect(frame?.props["aria-label"]).toBe("写真");
+    expect(first?.parent?.parent?.props.role).toBe("group");
+    expect(first?.parent?.parent?.props["aria-roledescription"]).toBe("slide");
+    expect(first?.parent?.parent?.props["aria-label"]).toBe("1枚目（4枚中）");
+    const images: HostNode[] = [];
+    const visit = (node: HostNode) => {
+      if (node.tag === "img") images.push(node);
+      for (const child of node.children) visit(child);
+    };
+    visit(root);
+    const firstWash = images.find(
+      (node) => node.props.alt === "" && node.props.src === first?.props.src,
+    );
+    expect(firstWash?.props.fetchpriority).toBeUndefined();
+    expect(images.filter((node) => node.props.fetchpriority === "high")).toEqual([
+      requireNode(first, "first slideshow image"),
+    ]);
+    for (const image of images) {
+      if (image === first || image === firstWash) continue;
+      expect(image.props.fetchpriority).toBe("low");
+      expect(image.props.loading).toBe("lazy");
+    }
+    const status = requireNode(
+      findNode(root, (node) => node.props.role === "status"),
+      "slide status",
+    );
+    expect(status.text ?? "").toBe("");
     const activeClass = className(first?.parent?.parent);
     const idle = findNode(
       root,
@@ -549,6 +583,8 @@ it("mounts on the first slideshow image, navigates on click, and starts no inter
     expect(second).toBeDefined();
     expect(className(second?.parent?.parent)).toBe(activeClass);
     expect(className(first?.parent?.parent)).not.toBe(activeClass);
+    expect(second?.parent?.parent?.props["aria-label"]).toBe("2枚目（4枚中）");
+    expect(status.text).toBe("2枚目（4枚中）");
     expect(currentDot.props["aria-current"]).toBeUndefined();
     const nextDot = requireNode(
       findNode(root, (node) => node.tag === "button" && node.props["aria-current"] === "true"),

@@ -69,7 +69,7 @@ vp run build:platform
 
 SiteのスタイルはPandaCSSだけです。アイコンは `unplugin-icons`、リセットはPandaの preflight です。詳細は[アーキテクチャ方針](architecture-plan.md)のSite stylesを正本とします。Pandaは `design-tokens` の preset と `strictTokens` を使い、`apps/site/styled-system` は codegen の生成物です。`apps/site` の `postinstall` と `build` が `panda codegen` を実行します。Webフォントは `@nuxt/fonts` がビルド時に取得し、外部オリジンへ接続せずサイト自身から配信します。
 
-`build:site` はコンテンツ生成、`panda codegen`、`nuxt build` を実行し、Nuxt/Nitro の出力を Cloudflare Build Output Specification v0 (`apps/site/.cloudflare/output/v0`) に構成して `cf deploy --prebuilt --dry-run` で検証します。`build:platform` はClient SPAとServer Workerをローカルでbuildします。どちらもdeployやCloudflareリソース変更は行いません。`test:*`、`typecheck:*` もローカル検証です。
+`build:site` はコンテンツ生成、`panda codegen`、`nuxt build` を実行し、Nuxt/Nitro の出力を Cloudflare Build Output Specification v0 (`apps/site/.cloudflare/output/v0`) に構成して `cf deploy --prebuilt --dry-run` で検証します。クライアントビルドの第三者ライセンス報告は `.output/public/licenses.txt` と Cloudflare の静的アセットに置かれ、フッターの `/licenses.txt` から配信されます。報告が無い、または空のときはビルドが失敗します。`build:platform` はClient SPAとServer Workerをローカルでbuildします。どちらもdeployやCloudflareリソース変更は行いません。`test:*`、`typecheck:*` もローカル検証です。
 
 SiteのWorker previewはSite build後に実行します。
 
