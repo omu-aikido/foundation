@@ -10,21 +10,21 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.json && vue-tsc --noEmit -p test/tsconfig.json"
   },
   "dependencies": {
-    "@clerk/vue": "2.5.18",
-    "@iconify-json/lucide": "1.2.151",
+    "@clerk/vue": "2.5.19",
+    "@iconify-json/lucide": "1.2.153",
     "@tanstack/vue-form": "1.33.5",
-    "@tanstack/vue-query": "5.106.0",
+    "@tanstack/vue-query": "5.107.1",
     "arktype": "2.2.9",
     "date-fns": "4.4.0",
-    "hono": "4.13.16",
+    "hono": "4.13.18",
     "record-domain": "workspace:*",
     "reka-ui": "2.11.0",
     "unocss": "66.12.0",
-    "vue": "3.5.44",
-    "vue-router": "5.4.0"
+    "vue": "3.5.45",
+    "vue-router": "5.5.0"
   },
   "devDependencies": {
-    "@tanstack/vue-query-devtools": "6.3.10",
+    "@tanstack/vue-query-devtools": "6.4.1",
     "@types/bun": "1.4.4",
     "@types/node": "26.6.6",
     "@vitejs/plugin-vue": "6.0.10",
