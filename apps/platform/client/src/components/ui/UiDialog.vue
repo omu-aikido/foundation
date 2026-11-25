@@ -112,6 +112,9 @@
 
 <style scoped>
   dialog:modal {
+    /* preflight の margin:0 が UA の inset:0 + margin:auto 中央寄せを潰すので明示する */
+    inset: 0;
+    margin: auto;
     overscroll-behavior: contain;
   }
 
